@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
 import Link from 'next/link';
-import { Menu, Search, ShoppingCart, Shield } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, Search, ShoppingCart } from 'lucide-react';
 import { useMemo } from 'react';
 
 const navLinks = [
@@ -23,20 +24,16 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 backdrop-blur bg-white/90">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 backdrop-blur bg-white/95">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 text-slate-900 shadow">
-            <Shield className="h-5 w-5" />
-          </div>
-          <div className="leading-tight">
-            <p className="text-sm font-semibold uppercase tracking-[0.15em] text-amber-700">
-              Zeus Safety
-            </p>
-            <p className="text-lg font-extrabold text-slate-900">
-              Next
-            </p>
-          </div>
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/logo_zeus_azul.svg"
+            alt="Zeus Safety Next"
+            width={140}
+            height={44}
+            priority
+          />
         </Link>
 
         <div className="hidden flex-1 items-center gap-3 rounded-full bg-slate-50 px-4 py-2 sm:flex">
@@ -55,7 +52,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="transition hover:text-amber-600"
+              className="transition hover:text-[#103a7b]"
             >
               {link.label}
             </Link>
@@ -69,7 +66,7 @@ export function Navbar() {
           >
             <ShoppingCart className="h-5 w-5" />
             {total > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-slate-900">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[#00b5e2] px-1 text-[10px] font-bold text-slate-900">
                 {total}
               </span>
             )}

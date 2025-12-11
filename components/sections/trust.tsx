@@ -13,8 +13,8 @@ export function TrustSection() {
           align="center"
         />
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">
+          <div className="rounded-2xl border border-[#00b5e2]/30 bg-[#e7f8ff] p-4 text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0b2d60]">
               Certificaciones
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-800">
@@ -33,7 +33,7 @@ export function TrustSection() {
               {brands.map((brand) => (
                 <div
                   key={brand}
-                  className="flex h-16 items-center justify-center rounded-lg bg-white text-sm font-bold uppercase tracking-wide text-slate-700 shadow-sm"
+                  className="flex h-16 items-center justify-center rounded-lg bg-white text-sm font-bold uppercase tracking-wide text-[#103a7b] shadow-sm"
                 >
                   {brand}
                 </div>

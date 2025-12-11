@@ -3,6 +3,7 @@ import { TrustSection } from '@/components/sections/trust';
 import { CategoriesSection } from '@/components/sections/categories';
 import { FeaturedProducts } from '@/components/sections/featured-products';
 import { B2BCtaSection } from '@/components/sections/b2b-cta';
+import { PresenceMapSection } from '@/components/sections/presence-map';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <TrustSection />
       <CategoriesSection />
       <FeaturedProducts />
+      <PresenceMapSection />
       <B2BCtaSection />
     </main>
   );
