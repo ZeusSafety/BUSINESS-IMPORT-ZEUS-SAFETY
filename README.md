@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zeus Safety Next
 
-## Getting Started
+Aplicación web moderna para la venta de Equipos de Protección Personal (EPP) y Seguridad Industrial.
 
-First, run the development server:
+## 🚀 Tecnologías
+
+- **Next.js 14** (App Router)
+- **Tailwind CSS**
+- **Framer Motion**
+- **Zustand**
+- **Lucide React**
+
+## 📦 Instalación
+
+```bash
+npm install
+```
+
+## 🛠️ Desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚢 Despliegue en GitHub Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Configuración Inicial
 
-## Learn More
+1. **Habilita GitHub Pages en tu repositorio:**
+   - Ve a Settings → Pages
+   - En "Source", selecciona "GitHub Actions"
 
-To learn more about Next.js, take a look at the following resources:
+2. **El workflow se ejecutará automáticamente** cuando hagas push a `main` o `master`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **URL de despliegue:**
+   - Si tu repo es `usuario/BUSINESS-IMPORT-ZEUS-SAFETY`, la URL será:
+   - `https://usuario.github.io/BUSINESS-IMPORT-ZEUS-SAFETY/`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Configuración Manual del BasePath
 
-## Deploy on Vercel
+Si necesitas cambiar el nombre del repositorio o el basePath, edita `next.config.ts`:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+const basePath = "/TU-NOMBRE-DE-REPO";
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Build Local para Probar
+
+```bash
+npm run build
+```
+
+Los archivos estáticos se generarán en la carpeta `out/`.
+
+## 📝 Notas
+
+- El proyecto está configurado para export estático (`output: 'export'`)
+- Las imágenes están desoptimizadas para compatibilidad con GitHub Pages
+- El archivo `.nojekyll` evita que GitHub Pages procese el sitio con Jekyll
