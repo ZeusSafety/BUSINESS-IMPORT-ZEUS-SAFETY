@@ -39,7 +39,7 @@ export function Navbar() {
           >
             <div className="relative h-12 w-auto">
               <Image
-                src="/logo_zeus_azul.jpeg"
+                src="/Logo de Zeus.png"
                 alt="Zeus Safety"
                 width={180}
                 height={48}

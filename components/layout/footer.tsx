@@ -18,7 +18,7 @@ export function Footer() {
             <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
               <Link href="/" className="inline-block mb-4 transition-opacity duration-200 hover:opacity-85">
                 <Image
-                  src="/logo_zeus_azul.jpeg"
+                  src="/Logo de Zeus.png"
                   alt="Zeus Safety"
                   width={180}
                   height={56}
