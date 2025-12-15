@@ -1,18 +1,114 @@
-'use client';
+/* eslint-disable @next/next/no-img-element */
+ 'use client';
 
-import { advisors } from '@/lib/mockData';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Clock, Award, CheckCircle2, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+
+type ApiAdvisor = {
+  NOMBRE: string;
+  SEGUNDO_NOMBRE: string | null;
+  APELLIDO: string;
+  SEGUNDO_APELLIDO: string | null;
+  IMAGE_URL: string | null;
+  DATOS: string;
+};
+
+type ContactData = {
+  TIPO: string;
+  MEDIO: string;
+  NOMBRE: string;
+  CONTENIDO: string;
+};
+
+type Advisor = {
+  id: string;
+  name: string;
+  specialty: string;
+  avatar?: string | null;
+  phone?: string | null;
+};
+
+const API_URL =
+  'https://productoscrud-2946605267.us-central1.run.app?metodo=ASESORES_PAGINA_ESTATICA';
+
+const DEFAULT_WA_MESSAGE = encodeURIComponent(
+  'Hola 👋, me gustaría recibir información y cotizar productos de seguridad industrial de Zeus Safety.'
+);
 
 export default function AdvisorsPage() {
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const specialties = [
     { icon: '⛏️', name: 'Minería' },
     { icon: '🛢️', name: 'Oil & Gas' },
     { icon: '🏗️', name: 'Construcción' },
     { icon: '⚡', name: 'Eléctrico' },
   ];
+
+  useEffect(() => {
+    const fetchAdvisors = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error(`Error al cargar asesores (${response.status})`);
+        }
+
+        const data: ApiAdvisor[] = await response.json();
+
+        const mapped: Advisor[] = data.map((item, index) => {
+          let contacts: ContactData[] = [];
+          try {
+            contacts = JSON.parse(item.DATOS || '[]') as ContactData[];
+          } catch {
+            contacts = [];
+          }
+
+          const phoneContact =
+            contacts.find((c) => c.MEDIO.toUpperCase() === 'TELEFONO') ?? null;
+
+          const rawPhone = phoneContact?.CONTENIDO?.trim() ?? null;
+
+          let waPhone: string | null = rawPhone;
+          if (rawPhone && /^[0-9]{9}$/.test(rawPhone)) {
+            waPhone = `51${rawPhone}`;
+          }
+
+          const fullName = [
+            item.NOMBRE,
+            item.SEGUNDO_NOMBRE,
+            item.APELLIDO,
+            item.SEGUNDO_APELLIDO,
+          ]
+            .filter(Boolean)
+            .join(' ');
+
+          return {
+            id: `${index}-${fullName}`,
+            name: fullName,
+            specialty: phoneContact?.NOMBRE || 'Asesor corporativo',
+            avatar: item.IMAGE_URL,
+            phone: waPhone,
+          };
+        });
+
+        setAdvisors(mapped);
+      } catch (err) {
+        console.error(err);
+        setError('No se pudieron cargar los asesores. Intenta nuevamente más tarde.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdvisors();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
@@ -57,7 +153,7 @@ export default function AdvisorsPage() {
             <h2 className="text-lg font-bold text-slate-900">Especialidades que cubrimos</h2>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {specialties.map((specialty, index) => (
+            {specialties.map((specialty) => (
               <div
                 key={specialty.name}
                 className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 text-center shadow-sm transition-all hover:shadow-md"
@@ -85,95 +181,109 @@ export default function AdvisorsPage() {
             </p>
           </motion.div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-            {advisors.map((advisor, index) => (
-              <motion.div
-                key={advisor.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-              >
-                {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#00b5e2]/5 via-transparent to-[#103a7b]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                
-                <div className="relative">
-                  {/* Avatar Section */}
-                  <div className="relative h-56 overflow-hidden bg-gradient-to-br from-[#e7f2ff] via-white to-[#f4f7fb]">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {advisor.avatar ? (
-                        <Image
-                          src={advisor.avatar}
-                          alt={advisor.name}
-                          width={200}
-                          height={200}
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            // Fallback si la imagen no existe
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#00b5e2] to-[#103a7b] text-4xl font-bold text-white shadow-lg">
-                          {advisor.name.charAt(0)}
+          {loading && (
+            <p className="text-center text-slate-500">Cargando asesores...</p>
+          )}
+
+          {error && !loading && (
+            <p className="text-center text-sm text-red-600">{error}</p>
+          )}
+
+          {!loading && !error && advisors.length === 0 && (
+            <p className="text-center text-slate-500">
+              No hay asesores disponibles en este momento.
+            </p>
+          )}
+
+          {!loading && !error && advisors.length > 0 && (
+            <div className="flex flex-wrap md:flex-nowrap justify-center gap-8">
+              {advisors.map((advisor, index) => (
+                <motion.div
+                  key={advisor.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group relative flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                >
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#00b5e2]/5 via-transparent to-[#103a7b]/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  
+                  <div className="relative">
+                    {/* Avatar Section */}
+                    <div className="relative h-72 overflow-hidden bg-gradient-to-br from-[#e7f2ff] via-white to-[#f4f7fb]">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        {advisor.avatar ? (
+                          <img
+                            src={advisor.avatar}
+                            alt={advisor.name}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-[#00b5e2] to-[#103a7b] text-4xl font-bold text-white shadow-lg">
+                            {advisor.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="relative p-6">
+                      <div className="mb-4 space-y-2">
+                        <h3 className="text-xl font-bold text-slate-900">{advisor.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-amber-600" />
+                          <p className="text-sm font-semibold text-amber-700">
+                            {advisor.specialty}
+                          </p>
                         </div>
+                      </div>
+
+                      {/* Features */}
+                      <div className="mb-6 space-y-2 border-t border-slate-100 pt-4">
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <Clock className="h-3.5 w-3.5 text-[#00b5e2]" />
+                          <span className="font-medium">Respuesta inmediata</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                          <span className="font-medium">Asesoría técnica especializada</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-600">
+                          <Award className="h-3.5 w-3.5 text-amber-500" />
+                          <span className="font-medium">Certificaciones internacionales</span>
+                        </div>
+                      </div>
+
+                      {/* WhatsApp Button */}
+                      {advisor.phone ? (
+                        <Button
+                          className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md transition-all hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg group-hover:scale-[1.02]"
+                          asChild
+                        >
+                          <a
+                            href={`https://wa.me/${advisor.phone}?text=${DEFAULT_WA_MESSAGE}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            Chatear por WhatsApp
+                          </a>
+                        </Button>
+                      ) : (
+                        <p className="text-center text-xs text-slate-400">
+                          Teléfono no disponible
+                        </p>
                       )}
                     </div>
-                    {/* Badge de disponibilidad */}
-                    <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white shadow-lg">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
-                      Disponible
-                    </div>
                   </div>
-
-                  {/* Content Section */}
-                  <div className="relative p-6">
-                    <div className="mb-4 space-y-2">
-                      <h3 className="text-xl font-bold text-slate-900">{advisor.name}</h3>
-                      <div className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-amber-600" />
-                        <p className="text-sm font-semibold text-amber-700">
-                          {advisor.specialty}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Features */}
-                    <div className="mb-6 space-y-2 border-t border-slate-100 pt-4">
-                      <div className="flex items-center gap-2 text-xs text-slate-600">
-                        <Clock className="h-3.5 w-3.5 text-[#00b5e2]" />
-                        <span className="font-medium">Respuesta inmediata</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-600">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                        <span className="font-medium">Asesoría técnica especializada</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-600">
-                        <Award className="h-3.5 w-3.5 text-amber-500" />
-                        <span className="font-medium">Certificaciones internacionales</span>
-                      </div>
-                    </div>
-
-                    {/* WhatsApp Button */}
-                    <Button
-                      className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md transition-all hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg group-hover:scale-[1.02]"
-                      asChild
-                    >
-                      <a
-                        href={`https://wa.me/${advisor.phone}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Chatear por WhatsApp
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* CTA Section */}
