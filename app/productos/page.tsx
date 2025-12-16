@@ -59,14 +59,20 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0b2d60] via-[#103a7b] to-[#0a1528] text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,181,226,0.15),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(16,58,123,0.12),transparent_40%)]" />
-        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0a1528] via-[#0b2d60] to-[#0c1427] text-white">
+        {/* Efectos de fondo mejorados */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,181,226,0.25),transparent_50%),radial-gradient(circle_at_85%_15%,rgba(16,58,123,0.3),transparent_45%),radial-gradient(circle_at_50%_80%,rgba(0,181,226,0.15),transparent_40%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,181,226,0.08)_0%,transparent_50%,rgba(16,58,123,0.12)_100%)]" />
+        
+        {/* Patrón de grid sutil */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+        
+        <div className="relative mx-auto max-w-7xl px-2 py-12 sm:px-3 lg:px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-6 text-center"
           >
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#00d2ff]">
               Catálogo
@@ -77,7 +83,7 @@ export default function ProductsPage() {
                 Seguridad Industrial
               </span>
             </h1>
-            <p className="max-w-2xl text-lg text-slate-200 sm:text-xl">
+            <p className="mx-auto max-w-2xl text-lg text-slate-200 sm:text-xl">
               Explora productos certificados listos para cotizar en volumen. 
               Stock inmediato y asesoría especializada.
             </p>
@@ -86,7 +92,7 @@ export default function ProductsPage() {
       </section>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-2 py-12 sm:px-3 lg:px-4">
         {/* Search and Mobile Filter Toggle */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative flex-1 max-w-2xl">
@@ -135,7 +141,7 @@ export default function ProductsPage() {
           </div>
         )}
 
-        <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Filters Sidebar */}
           <aside className={`space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-lg lg:sticky lg:top-8 lg:h-fit ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
             <div className="flex items-center justify-between mb-2">
@@ -274,7 +280,7 @@ export default function ProductsPage() {
                 )}
               </motion.div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredProducts.map((product, index) => (
                   <motion.div
                     key={product.id}

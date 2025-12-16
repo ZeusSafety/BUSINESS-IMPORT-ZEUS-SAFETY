@@ -5,8 +5,281 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, PlayCircle, Clock, Package, Users, CheckCircle2, Award, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+
+type RegionData = { REGION: string; TOTAL: number };
+
+const apiURL =
+  'https://crudventas-2946605267.us-central1.run.app?area=VENTAS_REGIONES';
+
+const fallbackData: RegionData[] = [
+  { REGION: 'LIMA', TOTAL: 4778414.63 },
+  { REGION: 'ICA', TOTAL: 41675.0 },
+  { REGION: 'AREQUIPA', TOTAL: 280000.0 },
+  { REGION: 'CUSCO', TOTAL: 190000.0 },
+  { REGION: 'PIURA', TOTAL: 230000.0 },
+  { REGION: 'LA LIBERTAD', TOTAL: 310000.0 },
+  { REGION: 'ANCASH', TOTAL: 180000.0 },
+  { REGION: 'CAJAMARCA', TOTAL: 150000.0 },
+  { REGION: 'LAMBAYEQUE', TOTAL: 120000.0 },
+  { REGION: 'JUNIN', TOTAL: 140000.0 },
+  { REGION: 'AYACUCHO', TOTAL: 95000.0 },
+  { REGION: 'APURIMAC', TOTAL: 85000.0 },
+  { REGION: 'HUANCAVELICA', TOTAL: 75000.0 },
+  { REGION: 'PASCO', TOTAL: 65000.0 },
+  { REGION: 'HUANUCO', TOTAL: 55000.0 },
+  { REGION: 'SAN MARTIN', TOTAL: 45000.0 },
+  { REGION: 'MOQUEGUA', TOTAL: 35000.0 },
+  { REGION: 'TACNA', TOTAL: 25000.0 },
+  { REGION: 'PUNO', TOTAL: 30000.0 },
+];
+
+// Mapeo de nombres de regiones a IDs del SVG
+const regionToSvgId: Record<string, string> = {
+  'LIMA': 'PELMA',
+  'LIMA PROVINCE': 'PELIM',
+  'LIMA PROVINCIA': 'PELIM',
+  'LIMA METROPOLITANA': 'PELMA',
+  'LIMA METROPOLITAN': 'PELMA',
+  'CALLAO': 'PECAL',
+  'PROVINCIA CONSTITUCIONAL DEL CALLAO': 'PECAL',
+  'ICA': 'PEICA',
+  'AREQUIPA': 'PEARE',
+  'CUSCO': 'PECUS',
+  'CUSC': 'PECUS',
+  'CUSCO REGION': 'PECUS',
+  'PIURA': 'PEPIU',
+  'LA LIBERTAD': 'PELAL',
+  'LIBERTAD': 'PELAL',
+  'LIBERTAD REGION': 'PELAL',
+  'ANCASH': 'PEANC',
+  'ÁNCASH': 'PEANC',
+  'ANCASH REGION': 'PEANC',
+  'CAJAMARCA': 'PECAJ',
+  'LAMBAYEQUE': 'PELAM',
+  'TUMBES': 'PETUM',
+  'AMAZONAS': 'PEAMA',
+  'LORETO': 'PELOR',
+  'SAN MARTIN': 'PESAM',
+  'SAN MARTÍN': 'PESAM',
+  'SAN MARTIN REGION': 'PESAM',
+  'UCAYALI': 'PEUCA',
+  'UCAYAL': 'PEUCA',
+  'UCAYALI REGION': 'PEUCA',
+  'MADRE DE DIOS': 'PEMDD',
+  'MADRE DE DIOS REGION': 'PEMDD',
+  'PASCO': 'PEPAS',
+  'HUANUCO': 'PEHUC',
+  'HUÁNUCO': 'PEHUC',
+  'HUANUCO REGION': 'PEHUC',
+  'JUNIN': 'PEJUN',
+  'JUNÍN': 'PEJUN',
+  'JUNIN REGION': 'PEJUN',
+  'HUANCAYO': 'PEJUN',
+  'HUANCAVELICA': 'PEHUV',
+  'HUANCAVELICA REGION': 'PEHUV',
+  'AYACUCHO': 'PEAYA',
+  'AYACUCHO REGION': 'PEAYA',
+  'APURIMAC': 'PEAPU',
+  'APURÍMAC': 'PEAPU',
+  'APURIMAC REGION': 'PEAPU',
+  'PUNO': 'PEPUN',
+  'PUNO REGION': 'PEPUN',
+  'MOQUEGUA': 'PEMOQ',
+  'MOQUEGUA REGION': 'PEMOQ',
+  'TACNA': 'PETAC',
+  'TACNA REGION': 'PETAC',
+};
+
+// Función de color igual al mapa principal
+function heroIntensityColor(value: number) {
+  // Gradiente de azul muy claro a azul oscuro (de menos a más intensidad)
+  // value ya viene normalizado logarítmicamente (0 a 1)
+  const start = [240, 248, 255]; // azul muy claro (casi blanco) - menos intensidad
+  const end = [11, 45, 96]; // azul muy oscuro (#0b2d60) - más intensidad
+  
+  // Aplicar una curva de potencia para suavizar el gradiente
+  const eased = Math.pow(value, 0.9);
+  
+  // Asegurar un mínimo visible para valores > 0
+  const finalValue = value > 0 ? Math.max(eased, 0.15) : 0;
+  const clamp = Math.min(Math.max(finalValue, 0), 1);
+  
+  const channel = start.map((s, i) =>
+    Math.round(s + (end[i] - s) * clamp),
+  );
+  return `rgb(${channel[0]}, ${channel[1]}, ${channel[2]})`;
+}
+
+const normalizeRegionName = (name: string): string => {
+  return name
+    .toUpperCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
 
 export function HeroSection() {
+  const [data, setData] = useState<RegionData[]>(fallbackData);
+  const [svgContent, setSvgContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    
+    fetch(apiURL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((incoming: unknown) => {
+        if (cancelled) return;
+        
+        if (Array.isArray(incoming) && incoming.length > 0) {
+          const validData = incoming.filter(
+            (item): item is RegionData =>
+              item &&
+              typeof item === 'object' &&
+              'REGION' in item &&
+              'TOTAL' in item &&
+              item.REGION !== null &&
+              item.REGION !== undefined &&
+              typeof item.REGION === 'string' &&
+              item.REGION.trim() !== '' &&
+              (typeof item.TOTAL === 'number' || typeof item.TOTAL === 'string')
+          ).map((item) => ({
+            REGION: String(item.REGION).trim(),
+            TOTAL: typeof item.TOTAL === 'string' ? parseFloat(item.TOTAL) || 0 : Number(item.TOTAL) || 0,
+          }));
+          
+          if (validData.length > 0) {
+            setData(validData);
+          }
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.warn('Error al cargar datos de la API, usando datos de respaldo:', error);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      });
+    
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    fetch('/pe.svg')
+      .then((res) => res.text())
+      .then((text) => setSvgContent(text))
+      .catch(() => {});
+  }, []);
+
+  const max = useMemo(() => {
+    const totals = data
+      .map((d) => d?.TOTAL)
+      .filter((total): total is number => typeof total === 'number' && total > 0);
+    return totals.length > 0 ? Math.max(...totals) : 1;
+  }, [data]);
+
+  const regionIntensities = useMemo(() => {
+    const intensities: Record<string, number> = {};
+    
+    const normalizedMap: Record<string, string> = {};
+    Object.entries(regionToSvgId).forEach(([key, value]) => {
+      const normalized = normalizeRegionName(key);
+      if (!normalizedMap[normalized]) {
+        normalizedMap[normalized] = value;
+      }
+    });
+
+    data.forEach((item) => {
+      if (!item?.REGION || typeof item.TOTAL !== 'number') return;
+      const regionName = item.REGION.toUpperCase().trim();
+
+      let svgId = regionToSvgId[regionName];
+
+      if (!svgId) {
+        const normalizedName = normalizeRegionName(regionName);
+        svgId = normalizedMap[normalizedName];
+
+        if (!svgId) {
+          const matchingKey = Object.keys(normalizedMap).find(
+            (key) =>
+              normalizedName.includes(key) || key.includes(normalizedName)
+          );
+          if (matchingKey) {
+            svgId = normalizedMap[matchingKey];
+          }
+        }
+      }
+
+      if (svgId) {
+        if (max && item.TOTAL > 0) {
+          const logValue = Math.log10(item.TOTAL + 1) / Math.log10(max + 1);
+          intensities[svgId] = logValue;
+        } else {
+          intensities[svgId] = 0;
+        }
+      }
+    });
+
+    return intensities;
+  }, [data, max]);
+
+  const modifiedSvg = useMemo(() => {
+    if (!svgContent) return '';
+    return svgContent;
+  }, [svgContent]);
+
+  // Aplicar colores al mapa después de que se renderice
+  useEffect(() => {
+    if (!modifiedSvg) return;
+
+    const timeoutId = setTimeout(() => {
+      const svgContainers = document.querySelectorAll('[data-svg-container] svg');
+
+      svgContainers.forEach((svg) => {
+        // Aplicar colores a las regiones con datos
+        Object.entries(regionIntensities).forEach(([svgId, intensity]) => {
+          const color = heroIntensityColor(intensity);
+          const element = svg.querySelector(`#${svgId}`) as SVGGeometryElement | null;
+
+          if (element && 'getBBox' in element) {
+            element.setAttribute('fill', color);
+          }
+        });
+
+        // Aplicar color base a las regiones sin datos
+        const allRegions = svg.querySelectorAll('path[id^="PE"], circle[id^="PE"], polygon[id^="PE"], rect[id^="PE"]');
+        allRegions.forEach((element) => {
+          const svgId = element.getAttribute('id');
+          if (svgId && !regionIntensities[svgId]) {
+            element.setAttribute('fill', '#e6f3ff');
+          }
+        });
+      });
+    }, 200);
+
+    return () => clearTimeout(timeoutId);
+  }, [modifiedSvg, regionIntensities]);
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#0a1528] via-[#0b2d60] to-[#0c1427] text-white">
       {/* Efectos de fondo mejorados */}
@@ -16,19 +289,20 @@ export function HeroSection() {
       {/* Patrón de grid sutil */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
       
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:py-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-2 py-6 sm:py-8 sm:px-3 lg:grid-cols-[1.1fr_0.9fr] lg:px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="space-y-8"
+          className="space-y-6"
         >
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <Badge className="mb-4 bg-gradient-to-r from-[#00b5e2]/20 to-[#00d2ff]/20 border border-[#00b5e2]/30 text-[#00d2ff] backdrop-blur-sm px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em]">
+            <Badge className="mb-4 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#00b5e2]/15 to-[#00d2ff]/15 border border-[#00b5e2]/40 text-[#00d2ff] backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] shadow-md shadow-[#00b5e2]/10">
+              <span className="h-1 w-1 rounded-full bg-[#00d2ff] animate-pulse" />
               Seguridad Industrial Integral
             </Badge>
           </motion.div>
@@ -37,11 +311,11 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl font-black leading-[1.1] sm:text-5xl lg:text-6xl"
+            className="text-4xl font-black leading-[1.1] sm:text-5xl lg:text-6xl tracking-tight"
           >
-            Protección total para tu{' '}
-            <span className="bg-gradient-to-r from-[#00d2ff] to-[#00b5e2] bg-clip-text text-transparent">
-              fuerza laboral
+            Protección total para{' '}
+            <span className="block bg-gradient-to-r from-[#00d2ff] via-[#00b5e2] to-[#00d2ff] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+              tu fuerza laboral
             </span>
           </motion.h1>
           
@@ -49,36 +323,37 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-lg leading-relaxed text-slate-200/90 sm:text-xl max-w-2xl"
+            className="text-base leading-relaxed text-slate-300 sm:text-lg max-w-2xl"
           >
-            Equipamos a equipos de alto riesgo con EPP certificado y asesoría
-            especializada para minería, energía, construcción y oil & gas.
+            Equipamos a equipos de alto riesgo<br />
+            con EPP certificado y asesoría especializada<br />
+            para minería, energía, construcción y oil & gas.
           </motion.p>
           
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-wrap gap-4"
+            className="flex flex-wrap items-center gap-3 pt-1"
           >
             <Button 
               size="lg" 
-              className="group px-8 py-6 text-base font-semibold shadow-lg shadow-[#103a7b]/50 hover:shadow-xl hover:shadow-[#103a7b]/60 transition-all duration-300 hover:scale-105" 
+              className="group relative px-6 py-5 text-sm font-semibold bg-gradient-to-r from-[#103a7b] to-[#0b2d60] hover:from-[#154a9b] hover:to-[#0d3d70] shadow-xl shadow-[#103a7b]/40 hover:shadow-[#103a7b]/60 transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden" 
               asChild
             >
-              <Link href="/productos">
+              <Link href="/productos" className="relative z-10 flex items-center">
                 Ver catálogo
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
             <Button 
               variant="secondary" 
               size="lg" 
-              className="group px-8 py-6 text-base font-semibold bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm transition-all duration-300 hover:scale-105" 
+              className="group relative px-6 py-5 text-sm font-semibold bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-white/30 shadow-md shadow-black/20" 
               asChild
             >
-              <Link href="/cotizacion">
-                <PlayCircle className="mr-2 h-5 w-5" />
+              <Link href="/cotizacion" className="relative z-10 flex items-center">
+                <PlayCircle className="mr-2 h-4 w-4" />
                 Hablar con un asesor
               </Link>
             </Button>
@@ -88,24 +363,24 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap items-center gap-6 pt-4"
+            className="flex flex-wrap items-center gap-3 pt-4"
           >
-            <div className="flex items-center gap-3 rounded-lg bg-white/5 px-4 py-2.5 backdrop-blur-sm border border-white/10">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20">
-                <Clock className="h-4 w-4 text-emerald-400" />
+            <div className="group flex items-center gap-2.5 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-4 py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-400/20">
+                <Clock className="h-4 w-4 text-emerald-300" />
               </div>
               <div>
-                <p className="text-xs font-medium text-slate-300/80">Respuesta rápida</p>
-                <p className="text-sm font-semibold text-white">&lt; 30 minutos</p>
+                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-0.5">Respuesta rápida</p>
+                <p className="text-xs font-bold text-white">&lt; 30 minutos</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-lg bg-white/5 px-4 py-2.5 backdrop-blur-sm border border-white/10">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00b5e2]/20">
-                <Package className="h-4 w-4 text-[#00b5e2]" />
+            <div className="group flex items-center gap-2.5 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-4 py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#00b5e2]/30 to-[#00d2ff]/20 border border-[#00b5e2]/20">
+                <Package className="h-4 w-4 text-[#00d2ff]" />
               </div>
               <div>
-                <p className="text-xs font-medium text-slate-300/80">Stock disponible</p>
-                <p className="text-sm font-semibold text-white">Proyectos gran escala</p>
+                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-0.5">Stock disponible</p>
+                <p className="text-xs font-bold text-white">Proyectos gran escala</p>
               </div>
             </div>
           </motion.div>
@@ -115,109 +390,93 @@ export function HeroSection() {
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-          className="relative"
+          className="relative space-y-6"
         >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-gradient-to-br from-[#0b2d60] via-[#103a7b] to-[#0a1528] p-1 shadow-2xl shadow-black/50">
-            {/* Borde con gradiente */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#00b5e2]/20 via-transparent to-[#00d2ff]/20 opacity-50" />
-            
-            <div className="relative h-full overflow-hidden rounded-[22px] bg-gradient-to-br from-[#0b2d60]/95 via-[#103a7b]/95 to-[#0a1528]/95 backdrop-blur-xl">
-              {/* Efectos de luz internos */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,181,226,0.3),transparent_50%),radial-gradient(circle_at_90%_80%,rgba(16,58,123,0.25),transparent_50%)]" />
-              
-              <div className="relative flex h-full flex-col justify-between p-8">
-                <div className="space-y-5">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-[#00d2ff]/10 px-4 py-1.5 border border-[#00d2ff]/20">
-                    <div className="h-1.5 w-1.5 rounded-full bg-[#00d2ff] animate-pulse" />
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#00d2ff]">
-                      Seguridad Industrial
-                    </p>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
-                    Soluciones integrales de EPP para operaciones críticas
-                  </h3>
-                  
-                  <p className="text-sm leading-relaxed text-slate-200/80">
-                    Kits personalizados, control de stock y soporte técnico a nivel nacional.
-                  </p>
-                </div>
-                
-                <div className="space-y-4 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 p-6 backdrop-blur-md border border-white/10">
-                  <div className="flex items-center gap-2">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300">Resumen Operativo</p>
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                      className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-4 backdrop-blur-sm border border-white/10 hover:border-[#00d2ff]/30 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#00d2ff]/0 to-[#00d2ff]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative">
-                        <div className="mb-2 flex items-center gap-2">
-                          <Users className="h-4 w-4 text-[#00d2ff]" />
-                          <p className="text-xs font-medium text-slate-300/90">Clientes B2B</p>
-                        </div>
-                        <p className="text-2xl font-black text-white">250+</p>
-                      </div>
-                    </motion.div>
-                    
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                      className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-4 backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative">
-                        <div className="mb-2 flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                          <p className="text-xs font-medium text-slate-300/90">Entregas OTIF</p>
-                        </div>
-                        <p className="text-2xl font-black text-white">98%</p>
-                      </div>
-                    </motion.div>
-                    
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                      className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-4 backdrop-blur-sm border border-white/10 hover:border-amber-400/30 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative">
-                        <div className="mb-2 flex items-center gap-2">
-                          <Award className="h-4 w-4 text-amber-400" />
-                          <p className="text-xs font-medium text-slate-300/90">Certificaciones</p>
-                        </div>
-                        <p className="text-xl font-black text-white">ANSI · ISO</p>
-                      </div>
-                    </motion.div>
-                    
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.9 }}
-                      className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-4 backdrop-blur-sm border border-white/10 hover:border-[#00b5e2]/30 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#00b5e2]/0 to-[#00b5e2]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative">
-                        <div className="mb-2 flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-[#00b5e2]" />
-                          <p className="text-xs font-medium text-slate-300/90">Cobertura</p>
-                        </div>
-                        <p className="text-xl font-black text-white">Nacional</p>
-                      </div>
-                    </motion.div>
-                  </div>
-                </div>
+          {/* Mapa de Perú */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b2d60] via-[#103a7b] to-[#0a1528] p-3 shadow-xl shadow-black/50 border border-white/10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,181,226,0.1),transparent_70%)]" />
+            {isLoading ? (
+              <div className="relative flex h-[320px] items-center justify-center z-10">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#00d2ff] border-t-transparent" />
               </div>
-            </div>
+            ) : modifiedSvg ? (
+              <div 
+                className="relative w-full [&_svg]:w-full [&_svg]:h-auto z-10"
+                data-svg-container
+                dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+              />
+            ) : (
+              <div className="relative flex h-[320px] items-center justify-center text-slate-300 z-10">
+                Cargando mapa...
+              </div>
+            )}
+          </div>
+
+          {/* Cuadros de métricas */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.6 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-[#00d2ff]/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00d2ff]/0 to-[#00d2ff]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-[#00d2ff]" />
+                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Clientes B2B</p>
+                </div>
+                <p className="text-xl font-black text-white">250+</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.7 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Entregas OTIF</p>
+                </div>
+                <p className="text-xl font-black text-white">98%</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.8 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-amber-400/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <Award className="h-3.5 w-3.5 text-amber-400" />
+                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Certificaciones</p>
+                </div>
+                <p className="text-lg font-black text-white">ANSI · ISO</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.9 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-[#00b5e2]/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00b5e2]/0 to-[#00b5e2]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-[#00b5e2]" />
+                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Cobertura</p>
+                </div>
+                <p className="text-lg font-black text-white">Nacional</p>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>

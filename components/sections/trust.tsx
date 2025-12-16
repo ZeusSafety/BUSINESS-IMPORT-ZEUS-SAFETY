@@ -1,45 +1,149 @@
-import { SectionHeading } from '@/components/ui/section-heading';
+'use client';
 
-const certifications = ['ANSI', 'ISO 9001', 'OSHA', 'EN 388'];
+import { useState } from 'react';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { motion } from 'framer-motion';
+import { Award, Shield, CheckCircle2, FileCheck } from 'lucide-react';
+
+const allCertifications = [
+  { name: 'ANSI', icon: Shield },
+  { name: 'ISO 9001', icon: Award },
+  { name: 'OSHA', icon: CheckCircle2 },
+  { name: 'EN 388', icon: FileCheck },
+];
+
+const brandCertifications: Record<string, typeof allCertifications> = {
+  '3M': [
+    { name: 'ANSI', icon: Shield },
+    { name: 'ISO 9001', icon: Award },
+    { name: 'OSHA', icon: CheckCircle2 },
+    { name: 'EN 388', icon: FileCheck },
+  ],
+  'CAT': [
+    { name: 'ANSI', icon: Shield },
+    { name: 'ISO 9001', icon: Award },
+    { name: 'OSHA', icon: CheckCircle2 },
+  ],
+  'Zeus': [
+    { name: 'ISO 9001', icon: Award },
+    { name: 'OSHA', icon: CheckCircle2 },
+    { name: 'EN 388', icon: FileCheck },
+  ],
+  'MSA': [
+    { name: 'ANSI', icon: Shield },
+    { name: 'ISO 9001', icon: Award },
+    { name: 'OSHA', icon: CheckCircle2 },
+    { name: 'EN 388', icon: FileCheck },
+  ],
+  'UVEX': [
+    { name: 'ANSI', icon: Shield },
+    { name: 'ISO 9001', icon: Award },
+    { name: 'EN 388', icon: FileCheck },
+  ],
+};
+
 const brands = ['3M', 'CAT', 'Zeus', 'MSA', 'UVEX'];
 
 export function TrustSection() {
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+
+  const certifications = selectedBrand 
+    ? brandCertifications[selectedBrand] || allCertifications
+    : allCertifications;
   return (
-    <section className="border-y border-slate-200 bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Certificaciones y marcas que nos respaldan"
-          subtitle="Trabajamos solo con fabricantes y estándares internacionales"
-          align="center"
-        />
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-[#00b5e2]/30 bg-[#e7f8ff] p-4 text-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#0b2d60]">
-              Certificaciones
-            </p>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-800">
-              {certifications.map((cert) => (
-                <span
-                  key={cert}
-                  className="rounded-full bg-white px-3 py-1 shadow-sm"
-                >
-                  {cert}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div className="sm:col-span-2 lg:col-span-3">
-            <div className="grid grid-cols-2 gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:grid-cols-3 md:grid-cols-5">
-              {brands.map((brand) => (
-                <div
-                  key={brand}
-                  className="flex h-16 items-center justify-center rounded-lg bg-white text-sm font-bold uppercase tracking-wide text-[#103a7b] shadow-sm"
-                >
-                  {brand}
+    <section className="relative overflow-hidden bg-white">
+      {/* Efectos de fondo sutiles */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(0,181,226,0.02),transparent_50%)]" />
+      
+      <div className="relative mx-auto max-w-7xl px-2 py-12 sm:px-3 lg:px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <SectionHeading
+            title="Certificaciones y marcas que nos respaldan"
+            subtitle="Trabajamos solo con fabricantes y estándares internacionales"
+            align="center"
+          />
+        </motion.div>
+
+        <div className="mt-10 grid gap-5 lg:grid-cols-5">
+          {/* Certificaciones */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="group relative overflow-hidden rounded-xl border border-[#00b5e2]/20 bg-gradient-to-br from-[#e7f8ff] to-white p-5 shadow-md"
+          >
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#00b5e2] to-[#103a7b] shadow-md">
+                  <Award className="h-5 w-5 text-white" />
                 </div>
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#0b2d60]">
+                  Certificaciones
+                </p>
+              </div>
+              <div className="space-y-2">
+                {certifications.map((cert, index) => {
+                  const Icon = cert.icon;
+                  return (
+                    <motion.div
+                      key={cert.name}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                      className="group/item flex items-center gap-2.5 rounded-lg bg-white px-3 py-2 border border-slate-200 transition-all hover:border-[#00b5e2]/30 hover:shadow-sm"
+                    >
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#00b5e2]/10 to-[#103a7b]/10">
+                        <Icon className="h-3.5 w-3.5 text-[#0b2d60]" />
+                      </div>
+                      <span className="text-xs font-bold text-slate-800">{cert.name}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Marcas */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:col-span-4"
+          >
+            <div className="grid grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-md sm:grid-cols-3 md:grid-cols-5">
+              {brands.map((brand, index) => (
+                <motion.button
+                  key={brand}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                  onClick={() => setSelectedBrand(selectedBrand === brand ? null : brand)}
+                  className={`group relative flex h-16 items-center justify-center overflow-hidden rounded-lg border transition-all cursor-pointer ${
+                    selectedBrand === brand
+                      ? 'bg-[#103a7b] border-[#103a7b] shadow-md'
+                      : 'bg-slate-50 border-slate-200 hover:border-[#103a7b]/30 hover:bg-white hover:shadow-md'
+                  }`}
+                >
+                  <span className={`text-sm font-black uppercase tracking-wider transition-colors ${
+                    selectedBrand === brand
+                      ? 'text-white'
+                      : 'text-[#103a7b] group-hover:text-[#0b2d60]'
+                  }`}>
+                    {brand}
+                  </span>
+                </motion.button>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
