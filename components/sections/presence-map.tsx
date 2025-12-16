@@ -214,6 +214,11 @@ export function PresenceMapSection() {
 
   const max = useMemo(() => {
     const totals = data
+      .filter((d) => {
+        const regionName = d?.REGION?.toUpperCase().trim();
+        // Excluir Lima del cálculo del max
+        return regionName !== 'LIMA' && regionName !== 'LIMA METROPOLITANA' && regionName !== 'LIMA METROPOLITAN';
+      })
       .map((d) => d?.TOTAL)
       .filter((total): total is number => typeof total === 'number' && total > 0);
     return totals.length > 0 ? Math.max(...totals) : 1;
@@ -248,6 +253,11 @@ export function PresenceMapSection() {
     data.forEach((item) => {
       if (!item?.REGION || typeof item.TOTAL !== 'number') return;
       const regionName = item.REGION.toUpperCase().trim();
+      
+      // Excluir Lima del coloreado
+      if (regionName === 'LIMA' || regionName === 'LIMA METROPOLITANA' || regionName === 'LIMA METROPOLITAN') {
+        return;
+      }
       
       // Intentar encontrar el ID del SVG directamente
       let svgId = regionToSvgId[regionName];

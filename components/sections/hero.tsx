@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ArrowRight, PlayCircle, Clock, Package, Users, CheckCircle2, Award, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -193,6 +192,11 @@ export function HeroSection() {
 
   const max = useMemo(() => {
     const totals = data
+      .filter((d) => {
+        const regionName = d?.REGION?.toUpperCase().trim();
+        // Excluir Lima del cálculo del max
+        return regionName !== 'LIMA' && regionName !== 'LIMA METROPOLITANA' && regionName !== 'LIMA METROPOLITAN';
+      })
       .map((d) => d?.TOTAL)
       .filter((total): total is number => typeof total === 'number' && total > 0);
     return totals.length > 0 ? Math.max(...totals) : 1;
@@ -212,6 +216,11 @@ export function HeroSection() {
     data.forEach((item) => {
       if (!item?.REGION || typeof item.TOTAL !== 'number') return;
       const regionName = item.REGION.toUpperCase().trim();
+      
+      // Excluir Lima del coloreado
+      if (regionName === 'LIMA' || regionName === 'LIMA METROPOLITANA' || regionName === 'LIMA METROPOLITAN') {
+        return;
+      }
 
       let svgId = regionToSvgId[regionName];
 
@@ -289,29 +298,18 @@ export function HeroSection() {
       {/* Patrón de grid sutil */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
       
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-2 py-6 sm:py-8 sm:px-3 lg:grid-cols-[1.1fr_0.9fr] lg:px-4">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-6 px-2 py-8 sm:gap-10 sm:py-6 sm:px-3 lg:grid-cols-[1.1fr_0.9fr] lg:px-4 lg:py-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="space-y-6"
+          className="space-y-4 sm:space-y-6"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <Badge className="mb-4 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#00b5e2]/15 to-[#00d2ff]/15 border border-[#00b5e2]/40 text-[#00d2ff] backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] shadow-md shadow-[#00b5e2]/10">
-              <span className="h-1 w-1 rounded-full bg-[#00d2ff] animate-pulse" />
-              Seguridad Industrial Integral
-            </Badge>
-          </motion.div>
-          
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-4xl font-black leading-[1.1] sm:text-5xl lg:text-6xl tracking-tight"
+            className="text-2xl font-black leading-[1.1] sm:text-4xl sm:leading-[1.1] lg:text-6xl tracking-tight"
           >
             Protección total para{' '}
             <span className="block bg-gradient-to-r from-[#00d2ff] via-[#00b5e2] to-[#00d2ff] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
@@ -323,7 +321,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-base leading-relaxed text-slate-300 sm:text-lg max-w-2xl"
+            className="text-sm leading-relaxed text-slate-300 sm:text-base lg:text-lg max-w-2xl"
           >
             Equipamos a equipos de alto riesgo<br />
             con EPP certificado y asesoría especializada<br />
@@ -334,26 +332,26 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-wrap items-center gap-3 pt-1"
+            className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1"
           >
             <Button 
               size="lg" 
-              className="group relative px-6 py-5 text-sm font-semibold bg-gradient-to-r from-[#103a7b] to-[#0b2d60] hover:from-[#154a9b] hover:to-[#0d3d70] shadow-xl shadow-[#103a7b]/40 hover:shadow-[#103a7b]/60 transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden" 
+              className="group relative px-4 py-3 text-xs font-semibold sm:px-6 sm:py-5 sm:text-sm bg-gradient-to-r from-[#103a7b] to-[#0b2d60] hover:from-[#154a9b] hover:to-[#0d3d70] shadow-xl shadow-[#103a7b]/40 hover:shadow-[#103a7b]/60 transition-all duration-300 hover:scale-[1.02] border border-white/10 overflow-hidden" 
               asChild
             >
               <Link href="/productos" className="relative z-10 flex items-center">
                 Ver catálogo
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5 sm:ml-2 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
             <Button 
               variant="secondary" 
               size="lg" 
-              className="group relative px-6 py-5 text-sm font-semibold bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-white/30 shadow-md shadow-black/20" 
+              className="group relative px-4 py-3 text-xs font-semibold sm:px-6 sm:py-5 sm:text-sm bg-white/10 hover:bg-white/15 border border-white/20 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-white/30 shadow-md shadow-black/20" 
               asChild
             >
               <Link href="/cotizacion" className="relative z-10 flex items-center">
-                <PlayCircle className="mr-2 h-4 w-4" />
+                <PlayCircle className="mr-1.5 h-3.5 w-3.5 sm:mr-2 sm:h-4 sm:w-4" />
                 Hablar con un asesor
               </Link>
             </Button>
@@ -363,26 +361,94 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap items-center gap-3 pt-4"
+            className="flex flex-wrap items-center gap-2 sm:gap-3 pt-2 sm:pt-4"
           >
-            <div className="group flex items-center gap-2.5 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-4 py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-400/20">
-                <Clock className="h-4 w-4 text-emerald-300" />
+            <div className="group flex items-center gap-2 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 border border-emerald-400/20 sm:h-8 sm:w-8">
+                <Clock className="h-3 w-3 text-emerald-300 sm:h-4 sm:w-4" />
               </div>
               <div>
-                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-0.5">Respuesta rápida</p>
-                <p className="text-xs font-bold text-white">&lt; 30 minutos</p>
+                <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider mb-0.5 sm:text-[10px]">Respuesta rápida</p>
+                <p className="text-[10px] font-bold text-white sm:text-xs">&lt; 30 minutos</p>
               </div>
             </div>
-            <div className="group flex items-center gap-2.5 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-4 py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#00b5e2]/30 to-[#00d2ff]/20 border border-[#00b5e2]/20">
-                <Package className="h-4 w-4 text-[#00d2ff]" />
+            <div className="group flex items-center gap-2 rounded-lg bg-gradient-to-br from-white/8 to-white/4 px-3 py-2 sm:gap-2.5 sm:px-4 sm:py-2.5 backdrop-blur-md border border-white/15 hover:border-white/25 hover:from-white/12 hover:to-white/6 transition-all duration-300 shadow-md shadow-black/10">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#00b5e2]/30 to-[#00d2ff]/20 border border-[#00b5e2]/20 sm:h-8 sm:w-8">
+                <Package className="h-3 w-3 text-[#00d2ff] sm:h-4 sm:w-4" />
               </div>
               <div>
-                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-0.5">Stock disponible</p>
-                <p className="text-xs font-bold text-white">Proyectos gran escala</p>
+                <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider mb-0.5 sm:text-[10px]">Stock disponible</p>
+                <p className="text-[10px] font-bold text-white sm:text-xs">Proyectos gran escala</p>
               </div>
             </div>
+          </motion.div>
+
+          {/* Cuadros de métricas */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4 pt-2 sm:pt-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.7 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 px-3 py-2 sm:px-4 sm:py-3 backdrop-blur-sm border border-white/10 hover:border-[#00d2ff]/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="relative">
+                <div className="mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                  <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#00d2ff]" />
+                  <p className="text-[9px] sm:text-[10px] font-medium text-slate-300/90 leading-tight">Clientes B2B</p>
+                </div>
+                <p className="text-base sm:text-lg font-black text-white">250+</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.8 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 px-3 py-2 sm:px-4 sm:py-3 backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="relative">
+                <div className="mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                  <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-400" />
+                  <p className="text-[9px] sm:text-[10px] font-medium text-slate-300/90 leading-tight">Entregas OTIF</p>
+                </div>
+                <p className="text-base sm:text-lg font-black text-white">98%</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.9 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 px-3 py-2 sm:px-4 sm:py-3 backdrop-blur-sm border border-white/10 hover:border-amber-400/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="relative">
+                <div className="mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                  <Award className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400" />
+                  <p className="text-[9px] sm:text-[10px] font-medium text-slate-300/90 leading-tight">Certificaciones</p>
+                </div>
+                <p className="text-sm sm:text-base font-black text-white">ANSI · ISO</p>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 1.0 }}
+              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 px-3 py-2 sm:px-4 sm:py-3 backdrop-blur-sm border border-white/10 hover:border-[#00b5e2]/30 transition-all duration-300 hover:scale-105"
+            >
+              <div className="relative">
+                <div className="mb-1 sm:mb-1.5 flex items-center gap-1 sm:gap-1.5">
+                  <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-[#00b5e2]" />
+                  <p className="text-[9px] sm:text-[10px] font-medium text-slate-300/90 leading-tight">Cobertura</p>
+                </div>
+                <p className="text-sm sm:text-base font-black text-white">Nacional</p>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
 
@@ -390,14 +456,14 @@ export function HeroSection() {
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-          className="relative space-y-6"
+          className="relative"
         >
           {/* Mapa de Perú */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b2d60] via-[#103a7b] to-[#0a1528] p-3 shadow-xl shadow-black/50 border border-white/10">
+          <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0b2d60] via-[#103a7b] to-[#0a1528] p-2 sm:p-3 shadow-xl shadow-black/50 border border-white/10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,181,226,0.1),transparent_70%)]" />
             {isLoading ? (
-              <div className="relative flex h-[320px] items-center justify-center z-10">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#00d2ff] border-t-transparent" />
+              <div className="relative flex h-[200px] sm:h-[320px] items-center justify-center z-10">
+                <div className="h-6 w-6 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-[#00d2ff] border-t-transparent" />
               </div>
             ) : modifiedSvg ? (
               <div 
@@ -406,77 +472,10 @@ export function HeroSection() {
                 dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
             ) : (
-              <div className="relative flex h-[320px] items-center justify-center text-slate-300 z-10">
+              <div className="relative flex h-[200px] sm:h-[320px] items-center justify-center text-slate-300 z-10 text-sm sm:text-base">
                 Cargando mapa...
               </div>
             )}
-          </div>
-
-          {/* Cuadros de métricas */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.6 }}
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-[#00d2ff]/30 transition-all duration-300 hover:scale-105"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00d2ff]/0 to-[#00d2ff]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="mb-1.5 flex items-center gap-1.5">
-                  <Users className="h-3.5 w-3.5 text-[#00d2ff]" />
-                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Clientes B2B</p>
-                </div>
-                <p className="text-xl font-black text-white">250+</p>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.7 }}
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:scale-105"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/0 to-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="mb-1.5 flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Entregas OTIF</p>
-                </div>
-                <p className="text-xl font-black text-white">98%</p>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.8 }}
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-amber-400/30 transition-all duration-300 hover:scale-105"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400/0 to-amber-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="mb-1.5 flex items-center gap-1.5">
-                  <Award className="h-3.5 w-3.5 text-amber-400" />
-                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Certificaciones</p>
-                </div>
-                <p className="text-lg font-black text-white">ANSI · ISO</p>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.9 }}
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-white/10 to-white/5 p-3 backdrop-blur-sm border border-white/10 hover:border-[#00b5e2]/30 transition-all duration-300 hover:scale-105"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00b5e2]/0 to-[#00b5e2]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="mb-1.5 flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-[#00b5e2]" />
-                  <p className="text-[10px] font-medium text-slate-300/90 leading-tight">Cobertura</p>
-                </div>
-                <p className="text-lg font-black text-white">Nacional</p>
-              </div>
-            </motion.div>
           </div>
         </motion.div>
       </div>
