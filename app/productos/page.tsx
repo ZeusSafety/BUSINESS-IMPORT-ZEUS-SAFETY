@@ -3,17 +3,120 @@
 import { ProductCard } from '@/components/products/product-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { products, categories, certifications } from '@/lib/mockData';
-import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal } from 'lucide-react';
+import { Product, certifications } from '@/lib/mockData';
+import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Tipo para los datos de la API
+type ApiProduct = {
+  ID: number;
+  NOMBRE: string;
+  CATEGORIA: string;
+  TIPO_PRODUCTO: string;
+  COLOR_TIPO: string;
+  PARES_POR_CAJA: number;
+  FICHA_TECNICA_ENLACE: string;
+  IMG_URL: string;
+  DESCRIPCION: string | null;
+  PRECIO: string;
+};
+
+// Función para generar slug a partir del nombre
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Función para mapear categorías de la API a categorías del sistema
+function mapCategory(apiCategory: string): string {
+  const categoryMap: Record<string, string> = {
+    'Corporal': 'Protección de Cabeza',
+    'Manual': 'Protección Manual',
+    'Visual': 'Protección Visual',
+    'Respiratoria': 'Protección Respiratoria',
+    'Auditiva': 'Protección Auditiva',
+    'Calzado': 'Calzado de Seguridad',
+  };
+  return categoryMap[apiCategory] || apiCategory;
+}
+
+// Función para transformar datos de la API al formato Product
+function transformApiProduct(apiProduct: ApiProduct): Product {
+  const price = parseFloat(apiProduct.PRECIO) || 0;
+  const specs = [];
+  
+  if (apiProduct.PARES_POR_CAJA) {
+    specs.push({ label: 'Pares por caja', value: apiProduct.PARES_POR_CAJA.toString() });
+  }
+  if (apiProduct.COLOR_TIPO) {
+    specs.push({ label: 'Color/Tipo', value: apiProduct.COLOR_TIPO });
+  }
+  if (apiProduct.TIPO_PRODUCTO) {
+    specs.push({ label: 'Tipo', value: apiProduct.TIPO_PRODUCTO });
+  }
+
+  return {
+    id: `prd-${apiProduct.ID}`,
+    name: apiProduct.NOMBRE,
+    slug: generateSlug(apiProduct.NOMBRE),
+    category: mapCategory(apiProduct.CATEGORIA) as any,
+    brand: 'Zeus Safety',
+    price: price,
+    certification: [],
+    description: apiProduct.DESCRIPCION || `Producto de seguridad industrial ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
+    specs: specs,
+    image: apiProduct.IMG_URL,
+  };
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCertifications, setSelectedCertifications] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<string>('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Cargar productos de la API
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch('https://productoscrud-2946605267.us-central1.run.app?metodo=LISTADO_PRODUCTOS_ESTATICA');
+        
+        if (!response.ok) {
+          throw new Error('Error al cargar los productos');
+        }
+        
+        const data = await response.json();
+        
+        // Transformar los productos de la API
+        const transformedProducts = data.map(transformApiProduct);
+        setProducts(transformedProducts);
+        
+        // Extraer categorías únicas de los productos
+        const uniqueCategories = Array.from(new Set(transformedProducts.map(p => p.category)));
+        setCategories(uniqueCategories);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchProducts();
+  }, []);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories(prev =>
@@ -41,7 +144,7 @@ export default function ProductsPage() {
     const matchesSearch = searchQuery === '' || 
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
     
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
     const matchesCertification = selectedCertifications.length === 0 || 
@@ -258,7 +361,46 @@ export default function ProductsPage() {
 
           {/* Products Grid */}
           <div>
-            {filteredProducts.length === 0 ? (
+            {loading ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white to-slate-50 p-12 text-center"
+              >
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#00b5e2]/10 to-[#103a7b]/10">
+                  <Loader2 className="h-10 w-10 text-[#103a7b] animate-spin" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-slate-900">
+                  Cargando productos...
+                </h3>
+                <p className="text-sm text-slate-600">
+                  Por favor espera mientras cargamos el catálogo.
+                </p>
+              </motion.div>
+            ) : error ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border-2 border-red-200 bg-gradient-to-br from-red-50 to-white p-12 text-center"
+              >
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-red-50">
+                  <Package className="h-10 w-10 text-red-500" />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-slate-900">
+                  Error al cargar productos
+                </h3>
+                <p className="mb-6 text-sm text-slate-600">
+                  {error}
+                </p>
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline"
+                  className="border-red-300 text-red-600 hover:bg-red-50"
+                >
+                  Reintentar
+                </Button>
+              </motion.div>
+            ) : filteredProducts.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

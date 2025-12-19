@@ -13,11 +13,14 @@ export function Map({ lat, lng, address }: MapProps) {
   const [MapComponents, setMapComponents] = useState<any>(null);
 
   useEffect(() => {
-    // Cargar react-leaflet solo en el cliente
+    // Cargar react-leaflet y leaflet solo en el cliente
     if (typeof window !== 'undefined') {
-      import('react-leaflet').then((leaflet) => {
-        const { MapContainer, TileLayer, Marker, Popup } = leaflet;
-        const L = require('leaflet');
+      Promise.all([
+        import('react-leaflet'),
+        import('leaflet')
+      ]).then(([leafletModule, LModule]) => {
+        const { MapContainer, TileLayer, Marker, Popup } = leafletModule;
+        const L = LModule.default;
         
         // Fix para los iconos de Leaflet
         delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -44,6 +47,8 @@ export function Map({ lat, lng, address }: MapProps) {
           Popup,
           icon,
         });
+      }).catch((error) => {
+        console.error('Error loading map libraries:', error);
       });
     }
   }, []);
