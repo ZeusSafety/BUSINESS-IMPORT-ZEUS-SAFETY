@@ -6,25 +6,27 @@ import { AddToQuoteButton } from '@/components/products/add-to-quote-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, FileText, ExternalLink } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Loader2, ArrowLeft, FileText, ExternalLink, Package, Tag, Ruler, Palette, Layers, Info, Shield, Factory } from 'lucide-react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 // Tipo para los datos de la API
 type ApiProduct = {
   ID: number;
+  CODIGO?: string;
   NOMBRE: string;
   CATEGORIA: string;
-  TIPO_PRODUCTO: string;
-  COLOR_TIPO: string;
-  PARES_POR_CAJA: number;
-  FICHA_TECNICA_ENLACE: string;
-  IMG_URL: string;
+  TIPO_PRODUCTO: string | null;
+  COLOR_TIPO: string | null;
+  TAMAÑO?: string | null;
+  PARES_POR_CAJA: number | null;
+  FICHA_TECNICA_ENLACE: string | null;
+  IMG_URL: string | null;
   DESCRIPCION: string | null;
   PRECIO: string;
 };
@@ -56,17 +58,31 @@ function normalizeSlug(slug: string): string {
 function mapCategory(apiCategory: string): string {
   const categoryMap: Record<string, string> = {
     'Corporal': 'Protección de Cabeza',
+    'Guantes': 'Protección Manual',
     'Manual': 'Protección Manual',
     'Visual': 'Protección Visual',
+    'Lentes': 'Protección Visual',
+    'Respiradores': 'Protección Respiratoria',
     'Respiratoria': 'Protección Respiratoria',
     'Auditiva': 'Protección Auditiva',
+    'Auditivo': 'Protección Auditiva',
     'Calzado': 'Calzado de Seguridad',
+    'Vial': 'Vial',
+    'Laboral': 'Laboral',
+    'Electric': 'Electric',
+    'SEGURIDAD INDUSTRIAL': 'SEGURIDAD INDUSTRIAL',
+    'Delivery': 'Delivery',
   };
   return categoryMap[apiCategory] || apiCategory;
 }
 
 // Función para transformar datos de la API al formato Product
-function transformApiProduct(apiProduct: ApiProduct): Product {
+function transformApiProduct(apiProduct: ApiProduct): Product & { 
+  fichaTecnica?: string;
+  codigo?: string;
+  tamanio?: string | null;
+  apiData?: ApiProduct;
+} {
   const price = parseFloat(apiProduct.PRECIO) || 0;
   const specs = [];
   
@@ -77,7 +93,13 @@ function transformApiProduct(apiProduct: ApiProduct): Product {
     specs.push({ label: 'Color/Tipo', value: apiProduct.COLOR_TIPO });
   }
   if (apiProduct.TIPO_PRODUCTO) {
-    specs.push({ label: 'Tipo', value: apiProduct.TIPO_PRODUCTO });
+    specs.push({ label: 'Tipo de Producto', value: apiProduct.TIPO_PRODUCTO });
+  }
+  if (apiProduct.TAMAÑO) {
+    specs.push({ label: 'Tamaño', value: apiProduct.TAMAÑO });
+  }
+  if (apiProduct.CODIGO) {
+    specs.push({ label: 'Código', value: apiProduct.CODIGO });
   }
 
   return {
@@ -90,14 +112,22 @@ function transformApiProduct(apiProduct: ApiProduct): Product {
     certification: [],
     description: apiProduct.DESCRIPCION || `Producto de seguridad industrial ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
     specs: specs,
-    image: apiProduct.IMG_URL,
-    // Agregar campo adicional para la ficha técnica
-    fichaTecnica: apiProduct.FICHA_TECNICA_ENLACE,
-  } as Product & { fichaTecnica?: string };
+    image: apiProduct.IMG_URL || '',
+    fichaTecnica: apiProduct.FICHA_TECNICA_ENLACE || undefined,
+    codigo: apiProduct.CODIGO,
+    tamanio: apiProduct.TAMAÑO,
+    apiData: apiProduct, // Guardar todos los datos originales
+  };
 }
 
 export default function ProductDetailPage({ params }: Props) {
-  const [product, setProduct] = useState<(Product & { fichaTecnica?: string }) | null>(null);
+  const { slug } = use(params);
+  const [product, setProduct] = useState<(Product & { 
+    fichaTecnica?: string;
+    codigo?: string;
+    tamanio?: string | null;
+    apiData?: ApiProduct;
+  }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -109,7 +139,7 @@ export default function ProductDetailPage({ params }: Props) {
         setError(null);
         
         // Decodificar y normalizar el slug de la URL
-        const decodedSlug = decodeURIComponent(params.slug);
+        const decodedSlug = decodeURIComponent(slug);
         const normalizedSearchSlug = normalizeSlug(decodedSlug);
         
         console.log('Buscando producto con slug:', decodedSlug);
@@ -126,31 +156,68 @@ export default function ProductDetailPage({ params }: Props) {
         // Transformar los productos de la API
         const transformedProducts = data.map(transformApiProduct);
         
-        console.log('Total de productos cargados:', transformedProducts.length);
-        console.log('Primeros 3 slugs:', transformedProducts.slice(0, 3).map((p: Product) => p.slug));
+        console.log('🔍 Buscando producto...');
+        console.log('📝 Slug recibido:', decodedSlug);
+        console.log('📝 Slug normalizado:', normalizedSearchSlug);
+        console.log('📦 Total de productos cargados:', transformedProducts.length);
         
         // Buscar el producto por slug (comparación flexible)
         let foundProduct = transformedProducts.find((p: Product) => {
           const productSlugNormalized = normalizeSlug(p.slug);
-          return productSlugNormalized === normalizedSearchSlug || p.slug === decodedSlug;
+          const productNameNormalized = normalizeSlug(generateSlug(p.name));
+          const productNameLower = normalizeSlug(p.name.toLowerCase());
+          
+          // Múltiples estrategias de búsqueda
+          return productSlugNormalized === normalizedSearchSlug || 
+                 p.slug === decodedSlug ||
+                 p.slug === normalizedSearchSlug ||
+                 productNameNormalized === normalizedSearchSlug ||
+                 productNameLower === normalizedSearchSlug ||
+                 normalizeSlug(p.name) === normalizedSearchSlug ||
+                 // También comparar sin normalizar
+                 p.slug.toLowerCase() === decodedSlug.toLowerCase() ||
+                 p.name.toLowerCase().replace(/\s+/g, '-') === normalizedSearchSlug ||
+                 // Buscar por ID si el slug contiene el ID
+                 (decodedSlug.includes(p.id.replace('prd-', '')) && decodedSlug.length < 10);
         });
         
         // Si no se encuentra, intentar buscar por ID o nombre (fallback)
         if (!foundProduct) {
+          console.log('⚠️ No se encontró por slug exacto, intentando búsqueda flexible...');
+          
           // Intentar buscar por ID si el slug es un número
           const slugAsId = parseInt(decodedSlug);
           if (!isNaN(slugAsId)) {
             foundProduct = transformedProducts.find((p: Product) => p.id === `prd-${slugAsId}`);
+            if (foundProduct) {
+              console.log('✅ Producto encontrado por ID:', slugAsId);
+            }
           }
           
-          // Si aún no se encuentra, buscar por nombre normalizado
+          // Si aún no se encuentra, buscar por nombre parcial (más flexible)
           if (!foundProduct) {
-            foundProduct = transformedProducts.find((p: Product) => {
-              const productSlug = normalizeSlug(p.slug);
-              const productNameSlug = normalizeSlug(generateSlug(p.name));
-              return productSlug === normalizedSearchSlug || productNameSlug === normalizedSearchSlug;
-            });
+            const searchTerms = normalizedSearchSlug.split('-').filter(t => t.length > 2);
+            console.log('🔎 Términos de búsqueda:', searchTerms);
+            
+            if (searchTerms.length > 0) {
+              foundProduct = transformedProducts.find((p: Product) => {
+                const productNameLower = normalizeSlug(p.name.toLowerCase());
+                const productSlugLower = normalizeSlug(p.slug);
+                // Verificar si todos los términos de búsqueda están en el nombre o slug
+                const matches = searchTerms.every(term => 
+                  productNameLower.includes(term) || 
+                  productSlugLower.includes(term) ||
+                  p.name.toLowerCase().includes(term)
+                );
+                if (matches) {
+                  console.log('✅ Producto encontrado por búsqueda parcial:', p.name);
+                }
+                return matches;
+              });
+            }
           }
+        } else {
+          console.log('✅ Producto encontrado por slug exacto:', foundProduct.name);
         }
         
         if (!foundProduct) {
@@ -177,7 +244,7 @@ export default function ProductDetailPage({ params }: Props) {
     }
     
     fetchProduct();
-  }, [params.slug]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -210,135 +277,269 @@ export default function ProductDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* Botón de regreso */}
         <Button
           variant="ghost"
           onClick={() => router.push('/productos')}
-          className="mb-6 text-slate-600 hover:text-[#103a7b]"
+          className="mb-6 text-slate-600 hover:text-[#103a7b] hover:bg-slate-100"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Volver al catálogo
         </Button>
 
-        <div className="grid gap-10 lg:grid-cols-2">
-          {/* Imagen del producto */}
-          <div className="space-y-4">
-            <div className="relative h-[500px] w-full overflow-hidden rounded-3xl bg-gradient-to-br from-slate-100 via-white to-amber-50 border border-slate-200 shadow-lg">
-              {product.image ? (
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-contain p-6"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-32 w-32 rounded-full bg-gradient-to-br from-[#103a7b]/10 to-slate-200/50" />
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+          {/* Imagen del producto - Lado izquierdo */}
+          <div className="space-y-5">
+            {/* Imagen principal */}
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg">
+              <div className="relative h-[450px] w-full overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100">
+                {product.image && product.image.trim() !== '' ? (
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-contain p-10"
+                    priority
+                    unoptimized
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="h-24 w-24 rounded-full bg-gradient-to-br from-[#103a7b]/10 to-slate-200/50 flex items-center justify-center mb-3">
+                      <Package className="h-12 w-12 text-slate-300" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-400">Imagen no disponible</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Precio y botón - Debajo de la imagen */}
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white shadow-lg">
+              <CardContent className="p-5">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                      Precio Referencial
+                    </p>
+                    <p className="text-3xl font-black bg-gradient-to-r from-[#103a7b] to-[#00b5e2] bg-clip-text text-transparent">
+                      ${product.price.toFixed(2)}
+                    </p>
+                  </div>
+                  <AddToQuoteButton product={product} />
                 </div>
-              )}
-            </div>
-            
+              </CardContent>
+            </Card>
+
+            {/* Ficha técnica */}
+            {product.fichaTecnica && (
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full h-12 border-2 border-[#103a7b] text-[#103a7b] hover:bg-[#103a7b] hover:text-white shadow-md hover:shadow-lg transition-all font-semibold"
+              >
+                <a
+                  href={product.fichaTecnica}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2"
+                >
+                  <FileText className="h-5 w-5" />
+                  <span>Ver ficha técnica</span>
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+
             {/* Certificaciones */}
             {product.certification && product.certification.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {product.certification.map((cert) => (
-                  <Badge key={cert} className="bg-[#103a7b] text-white">
-                    {cert}
+                  <Badge key={cert} className="bg-gradient-to-br from-amber-50 to-amber-100 text-amber-800 border border-amber-200 px-3 py-1.5 shadow-sm">
+                    <Shield className="h-3.5 w-3.5 mr-1.5 text-amber-600" />
+                    <span className="font-bold text-xs">{cert}</span>
                   </Badge>
                 ))}
               </div>
             )}
-
-            {/* Ficha técnica */}
-            {product.fichaTecnica && (
-              <Card className="border-[#103a7b]/20">
-                <CardContent className="p-4">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full border-[#103a7b] text-[#103a7b] hover:bg-[#103a7b] hover:text-white"
-                  >
-                    <a
-                      href={product.fichaTecnica}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>Ver ficha técnica</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
-          {/* Información del producto */}
+          {/* Información del producto - Lado derecho */}
           <div className="space-y-6">
-            <div className="space-y-3">
-              <Badge className="bg-[#103a7b] text-white">{product.category}</Badge>
-              <h1 className="text-4xl font-black text-slate-900 leading-tight">{product.name}</h1>
-              <p className="text-lg text-slate-600 leading-relaxed">{product.description}</p>
-            </div>
-
-            {/* Precio y botón de agregar */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-[#103a7b]/5 to-white border border-[#103a7b]/10">
-              <div className="flex-1">
-                <p className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                  Precio referencial
+            {/* Header con categoría, marca y código */}
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-start justify-between gap-3 flex-wrap">
+                  <Badge className="bg-gradient-to-r from-[#00b5e2] to-[#103a7b] text-white border-0 px-4 py-2 text-xs font-black uppercase tracking-wider rounded-lg shadow-md">
+                    {product.category}
+                  </Badge>
+                  <div className="flex items-center gap-2 rounded-lg bg-gradient-to-br from-slate-50 to-white px-3 py-1.5 border-2 border-slate-200 shadow-sm">
+                    <Factory className="h-4 w-4 text-[#103a7b]" />
+                    <span className="text-xs font-bold text-slate-800">{product.brand}</span>
+                  </div>
+                </div>
+                
+                {product.codigo && (
+                  <div className="mb-4 flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 border border-slate-200">
+                    <Tag className="h-4 w-4 text-[#103a7b]" />
+                    <span className="text-sm font-semibold text-slate-700">Código: <span className="text-[#103a7b]">{product.codigo}</span></span>
+                  </div>
+                )}
+                
+                {/* Título del producto */}
+                <h1 className="text-3xl lg:text-4xl font-black leading-tight text-slate-900 mb-3">
+                  {product.name}
+                </h1>
+                
+                {/* Descripción */}
+                <p className="text-base text-slate-600 leading-relaxed">
+                  {product.description}
                 </p>
-                <p className="text-5xl font-black text-[#103a7b]">
-                  ${product.price.toFixed(2)}
-                </p>
-              </div>
-              <AddToQuoteButton product={product} />
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Especificaciones técnicas */}
-            {product.specs && product.specs.length > 0 && (
-              <Card className="border-slate-200 shadow-sm">
-                <CardContent className="space-y-4 py-6">
-                  <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-[#103a7b]" />
-                    Especificaciones técnicas
-                  </h3>
-                  <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {product.specs.map((spec) => (
-                      <div key={spec.label} className="rounded-lg bg-slate-50 p-4 border border-slate-200">
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg">
+              <div className="bg-gradient-to-r from-[#103a7b] to-[#00b5e2] px-6 py-4">
+                <h3 className="text-lg font-black text-white flex items-center gap-3">
+                  <FileText className="h-5 w-5" />
+                  Especificaciones Técnicas
+                </h3>
+              </div>
+              <CardContent className="p-6">
+                <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {product.apiData?.TIPO_PRODUCTO && (
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-5 border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-[#103a7b]/30 transition-all">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200">
+                          <Layers className="h-5 w-5 text-[#103a7b]" />
+                        </div>
+                        <div className="flex-1">
+                          <dt className="text-xs font-black uppercase tracking-wide text-slate-500 mb-2">
+                            Tipo de Producto
+                          </dt>
+                          <dd className="text-base font-bold text-slate-900">{product.apiData.TIPO_PRODUCTO}</dd>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {product.apiData?.COLOR_TIPO && (
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-5 border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-[#103a7b]/30 transition-all">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 border border-purple-200">
+                          <Palette className="h-5 w-5 text-purple-700" />
+                        </div>
+                        <div className="flex-1">
+                          <dt className="text-xs font-black uppercase tracking-wide text-slate-500 mb-2">
+                            Color/Tipo
+                          </dt>
+                          <dd className="text-base font-bold text-slate-900">{product.apiData.COLOR_TIPO}</dd>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {product.apiData?.PARES_POR_CAJA && (
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-5 border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-[#103a7b]/30 transition-all">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200">
+                          <Package className="h-5 w-5 text-amber-700" />
+                        </div>
+                        <div className="flex-1">
+                          <dt className="text-xs font-black uppercase tracking-wide text-slate-500 mb-2">
+                            Pares por Caja
+                          </dt>
+                          <dd className="text-base font-bold text-slate-900">{product.apiData.PARES_POR_CAJA}</dd>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {product.apiData?.TAMAÑO && (
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-5 border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-[#103a7b]/30 transition-all">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 rounded-lg bg-gradient-to-br from-emerald-100 to-emerald-50 border border-emerald-200">
+                          <Ruler className="h-5 w-5 text-emerald-700" />
+                        </div>
+                        <div className="flex-1">
+                          <dt className="text-xs font-black uppercase tracking-wide text-slate-500 mb-2">
+                            Tamaño
+                          </dt>
+                          <dd className="text-base font-bold text-slate-900">{product.apiData.TAMAÑO}</dd>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {product.specs && product.specs.length > 0 && product.specs.map((spec) => {
+                    // Evitar duplicados de campos ya mostrados
+                    if (spec.label === 'Código' || spec.label === 'Tipo de Producto' || 
+                        spec.label === 'Color/Tipo' || spec.label === 'Tamaño' || 
+                        spec.label === 'Pares por caja') {
+                      return null;
+                    }
+                    return (
+                      <div key={spec.label} className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-50 via-white to-slate-50 p-5 border-2 border-slate-200 shadow-sm hover:shadow-md hover:border-[#103a7b]/30 transition-all">
+                        <dt className="text-xs font-black uppercase tracking-wide text-slate-500 mb-2">
                           {spec.label}
                         </dt>
-                        <dd className="text-base font-semibold text-slate-900">{spec.value}</dd>
+                        <dd className="text-base font-bold text-slate-900">{spec.value}</dd>
                       </div>
-                    ))}
-                  </dl>
-                </CardContent>
-              </Card>
-            )}
+                    );
+                  })}
+                </dl>
+              </CardContent>
+            </Card>
 
             {/* Información adicional */}
-            <Card className="border-slate-200 bg-gradient-to-br from-blue-50/50 to-white">
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg">
+              <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-4">
+                <h3 className="text-lg font-black text-white flex items-center gap-3">
+                  <Info className="h-5 w-5" />
+                  Información del Producto
+                </h3>
+              </div>
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-3">Información del producto</h3>
-                <div className="space-y-2 text-sm text-slate-600">
-                  <p>
-                    <span className="font-semibold text-slate-900">Marca:</span> {product.brand}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-900">Categoría:</span> {product.category}
-                  </p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 hover:border-[#103a7b]/30 transition-all">
+                    <span className="font-bold text-slate-700 flex items-center gap-2">
+                      <Tag className="h-4 w-4 text-[#103a7b]" />
+                      ID del Producto
+                    </span>
+                    <span className="text-slate-900 font-black text-base">{product.apiData?.ID || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 hover:border-[#103a7b]/30 transition-all">
+                    <span className="font-bold text-slate-700 flex items-center gap-2">
+                      <Factory className="h-4 w-4 text-[#103a7b]" />
+                      Marca
+                    </span>
+                    <span className="text-slate-900 font-bold">{product.brand}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 hover:border-[#103a7b]/30 transition-all">
+                    <span className="font-bold text-slate-700 flex items-center gap-2">
+                      <Package className="h-4 w-4 text-[#103a7b]" />
+                      Categoría
+                    </span>
+                    <Badge className="bg-gradient-to-r from-[#00b5e2] to-[#103a7b] text-white border-0 px-3 py-1 font-bold">
+                      {product.category}
+                    </Badge>
+                  </div>
+                  {product.apiData?.CATEGORIA && product.apiData.CATEGORIA !== product.category && (
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 hover:border-[#103a7b]/30 transition-all">
+                      <span className="font-bold text-slate-700">Categoría Original</span>
+                      <span className="text-slate-900 font-medium">{product.apiData.CATEGORIA}</span>
+                    </div>
+                  )}
                   {product.tags && product.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {product.tags.map((tag) => (
-                        <Badge key={tag} className="text-xs border border-slate-300 bg-white text-slate-700">
-                          {tag}
-                        </Badge>
-                      ))}
+                    <div className="pt-2">
+                      <p className="font-bold text-slate-700 mb-3">Etiquetas:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.tags.map((tag) => (
+                          <Badge key={tag} className="text-xs border-2 border-slate-300 bg-white text-slate-700 font-semibold px-3 py-1">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import 'leaflet/dist/leaflet.css';
 
 type MapProps = {
   lat: number;
@@ -15,38 +14,48 @@ export function Map({ lat, lng, address }: MapProps) {
   useEffect(() => {
     // Cargar react-leaflet y leaflet solo en el cliente
     if (typeof window !== 'undefined') {
+      // Cargar CSS de leaflet dinámicamente usando un link tag
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      link.crossOrigin = '';
+      document.head.appendChild(link);
+
       Promise.all([
         import('react-leaflet'),
         import('leaflet')
       ]).then(([leafletModule, LModule]) => {
         const { MapContainer, TileLayer, Marker, Popup } = leafletModule;
-        const L = LModule.default;
+        const L = LModule.default || LModule;
         
         // Fix para los iconos de Leaflet
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        });
+        if (L.Icon && L.Icon.Default) {
+          delete (L.Icon.Default.prototype as any)._getIconUrl;
+          L.Icon.Default.mergeOptions({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+          });
 
-        const icon = L.icon({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        });
+          const icon = L.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41],
+          });
 
-        setMapComponents({
-          MapContainer,
-          TileLayer,
-          Marker,
-          Popup,
-          icon,
-        });
+          setMapComponents({
+            MapContainer,
+            TileLayer,
+            Marker,
+            Popup,
+            icon,
+          });
+        }
       }).catch((error) => {
         console.error('Error loading map libraries:', error);
       });
