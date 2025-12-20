@@ -393,11 +393,25 @@ export default function ProductDetailPage({ params }: Props) {
                 <h1 className="text-3xl lg:text-4xl font-black leading-tight text-slate-900 mb-3">
                   {product.name}
                 </h1>
-                
-                {/* Descripción */}
-                <p className="text-base text-slate-600 leading-relaxed">
-                  {product.description}
-                </p>
+              </CardContent>
+            </Card>
+
+            {/* Descripción del producto - Siempre se muestra */}
+            <Card className="overflow-hidden rounded-2xl border-2 border-slate-200 bg-white shadow-lg">
+              <div className="bg-gradient-to-r from-[#103a7b] to-[#00b5e2] px-6 py-4">
+                <h3 className="text-lg font-black text-white flex items-center gap-3">
+                  <FileText className="h-5 w-5" />
+                  Descripción del Producto
+                </h3>
+              </div>
+              <CardContent className="p-6">
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-base text-slate-700 leading-relaxed whitespace-pre-line">
+                    {product.apiData?.DESCRIPCION && product.apiData.DESCRIPCION.trim() !== '' 
+                      ? product.apiData.DESCRIPCION
+                      : `Producto de seguridad industrial ${product.apiData?.TIPO_PRODUCTO ? product.apiData.TIPO_PRODUCTO : product.category} de alta calidad.${product.apiData?.COLOR_TIPO ? ` Disponible en ${product.apiData.COLOR_TIPO}.` : ''} Fabricado por ${product.brand}.`}
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
