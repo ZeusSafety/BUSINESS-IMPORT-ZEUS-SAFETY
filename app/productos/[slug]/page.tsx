@@ -335,7 +335,7 @@ export default function ProductDetailPage({ params }: Props) {
                   {product.tags && product.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {product.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} className="text-xs border border-slate-300 bg-white text-slate-700">
                           {tag}
                         </Badge>
                       ))}

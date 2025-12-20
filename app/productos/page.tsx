@@ -105,7 +105,7 @@ export default function ProductsPage() {
         setProducts(transformedProducts);
         
         // Extraer categorías únicas de los productos
-        const uniqueCategories = Array.from(new Set(transformedProducts.map(p => p.category)));
+        const uniqueCategories = Array.from(new Set(transformedProducts.map((p: Product) => p.category)));
         setCategories(uniqueCategories);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
