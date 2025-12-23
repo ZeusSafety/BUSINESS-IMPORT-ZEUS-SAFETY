@@ -1,11 +1,10 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, Search, ShoppingCart, X } from 'lucide-react';
+import { Menu, ShoppingCart, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const navLinks = [
@@ -25,10 +24,10 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm py-2">
       {/* Main navigation container */}
       <div className="mx-auto max-w-7xl">
-        <div className="flex h-16 items-center justify-between gap-4 px-2 sm:px-3 lg:px-4">
+        <div className="flex items-center justify-between gap-4 px-2 sm:px-3 lg:px-4 py-5">
           
           {/* Logo Section - Fixed width for stability */}
           <Link 
@@ -47,27 +46,6 @@ export function Navbar() {
               />
             </div>
           </Link>
-
-          {/* Search Bar - Desktop - Professional design */}
-          <div className="hidden lg:flex flex-1 items-center justify-center max-w-lg mx-4">
-            <div className="group relative flex w-full items-center">
-              <div className="flex w-full items-center rounded-lg bg-transparent transition-all duration-300">
-                <div className="flex items-center px-4 py-2.5 flex-1 min-w-0">
-                  <Search className="h-4 w-4 shrink-0 text-slate-400 transition-colors duration-200 group-focus-within:text-[#103a7b] mr-3" />
-                  <Input
-                    placeholder="Busca por producto..."
-                    className="border-0 bg-transparent px-0 text-sm placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 min-w-0"
-                  />
-                </div>
-                <Button 
-                  size="sm" 
-                  className="rounded-l-none rounded-r-lg h-[42px] px-5 font-semibold bg-[#103a7b] text-white hover:bg-[#0b2d60] shadow-none transition-all duration-200"
-                >
-                  Buscar
-                </Button>
-              </div>
-            </div>
-          </div>
 
           {/* Navigation Links - Desktop - Professional design */}
           <nav className="hidden xl:flex items-center gap-1">
