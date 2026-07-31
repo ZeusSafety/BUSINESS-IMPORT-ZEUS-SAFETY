@@ -6,6 +6,7 @@
   --primary: #103a7b;
   --primary-strong: #0b2d60;
   --accent: #00b5e2;
+  --yellow: #f5c400;
   --muted: #e4e9f2;
   --surface: #ffffff;
 }
@@ -17,23 +18,26 @@
   --font-sans: var(--font-inter);
 }
 
-* {
-  box-sizing: border-box;
-}
+/*
+  Important: unlayered CSS beats Tailwind utilities.
+  Keep resets inside @layer base so text-white / text-* on <a> work.
+*/
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-}
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a {
-  transition: color 150ms ease, opacity 150ms ease;
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 150ms ease, opacity 150ms ease;
+  }
 }
 
 ::selection {

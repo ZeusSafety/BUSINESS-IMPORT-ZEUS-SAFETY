@@ -1,136 +1,212 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, ShoppingCart, X } from 'lucide-react';
+import {
+  Clock,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  Menu,
+  Phone,
+  Search,
+  ShoppingCart,
+  X,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
+  { href: '/', label: 'Inicio' },
   { href: '/productos', label: 'Catálogo' },
   { href: '/cotizacion', label: 'Arma tu cotización' },
   { href: '/asesores', label: 'Asesores' },
   { href: '/sobre-nosotros', label: 'Sobre nosotros' },
 ];
 
+const PHONE_DISPLAY = '+51 1 555 5555';
+const PHONE_HREF = 'tel:+5115555555';
+const EMAIL = 'ventas@zeussafety.com';
+
 export function Navbar() {
   const items = useQuoteStore((state) => state.items);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const total = useMemo(
     () => items.reduce((acc, item) => acc + item.quantity, 0),
     [items],
   );
 
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm py-2">
-      {/* Main navigation container */}
-      <div className="mx-auto max-w-7xl">
-        <div className="flex items-center justify-between gap-4 px-2 sm:px-3 lg:px-4 py-5">
-          
-          {/* Logo Section - Fixed width for stability */}
-          <Link 
-            href="/" 
-            className="flex items-center shrink-0 transition-opacity duration-200 hover:opacity-85"
-          >
-            <div className="relative h-12 w-auto">
-              <Image
-                src="/Logo de Zeus.png"
-                alt="Zeus Safety"
-                width={180}
-                height={48}
-                priority
-                className="h-full w-auto object-contain"
-                style={{ maxHeight: '48px', objectFit: 'contain' }}
-              />
-            </div>
-          </Link>
-
-          {/* Navigation Links - Desktop - Professional design */}
-          <nav className="hidden xl:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="relative px-3 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:text-[#103a7b] rounded-md hover:bg-slate-50 group"
-              >
-                <span className="relative z-10">{link.label}</span>
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 w-0 bg-[#103a7b] transition-all duration-200 group-hover:w-[calc(100%-0.5rem)]"></span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Right side actions - Professional design */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Shopping Cart */}
-            <Link
-              href="/cotizacion"
-              className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white transition-all duration-200 hover:border-[#103a7b] hover:bg-slate-50 hover:shadow-sm group"
-              aria-label="Carrito de compras"
+    <header className="sticky top-0 z-50 w-full bg-white">
+      {/* Top utility bar — full width edge to edge */}
+      <div className="hidden border-b border-[#eeeeee] bg-white lg:block">
+        <div className="flex h-11 w-full items-center justify-between gap-4">
+          <div className="flex flex-1 flex-wrap items-center gap-x-7 gap-y-1 pl-6 pr-4 text-[13px] font-medium text-[#0b2d60] xl:pl-8">
+            <a
+              href={PHONE_HREF}
+              className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
             >
-              <ShoppingCart className="h-5 w-5 text-slate-600 transition-colors group-hover:text-[#103a7b]" />
-              {total > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#103a7b] px-1 text-[10px] font-bold text-white shadow-md ring-2 ring-white">
-                  {total > 99 ? '99+' : total}
-                </span>
-              )}
-            </Link>
-            
-            {/* CTA Button - Desktop only (completely hidden on mobile/tablet) */}
-            <div className="hidden lg:block">
-              <Button
-                size="sm"
-                className="rounded-lg bg-white border border-slate-200 text-slate-700 px-4 font-medium hover:bg-slate-50 hover:border-[#103a7b] hover:text-[#103a7b] transition-all duration-200 hover:shadow-sm whitespace-nowrap"
-                asChild
-              >
-                <Link href="/cotizacion">Hablar con un asesor</Link>
-              </Button>
-            </div>
-            
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 lg:hidden"
-              aria-label="Menú"
+              <Phone className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              {PHONE_DISPLAY}
+            </a>
+            <a
+              href={`mailto:${EMAIL}`}
+              className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
             >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-slate-600" />
-              ) : (
-                <Menu className="h-5 w-5 text-slate-600" />
-              )}
-            </button>
+              <Mail className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              {EMAIL}
+            </a>
+            <span className="inline-flex items-center gap-2">
+              <Clock className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+              Lun – Sáb 9:00 – 17:30, Dom – CERRADO
+            </span>
+          </div>
+          <div className="flex items-center gap-4 pr-6 text-[#0b2d60] xl:pr-8">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+              className="transition-opacity hover:opacity-70"
+            >
+              <Facebook className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="transition-opacity hover:opacity-70"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+              className="transition-opacity hover:opacity-70"
+            >
+              <Linkedin className="h-3.5 w-3.5" />
+            </a>
           </div>
         </div>
       </div>
 
+      {/* Main nav — logo flush left, hamburger flush right */}
+      <div className="border-b border-[#eeeeee] bg-white">
+        <div className="flex h-[78px] w-full items-stretch">
+          {/* Yellow logo block — left edge */}
+          <Link
+            href="/"
+            className="flex shrink-0 items-center justify-center bg-[#F5C400] px-6 transition-opacity hover:opacity-95 sm:px-8 lg:px-10"
+          >
+            <Image
+              src="/Logo de Zeus.png"
+              alt="Zeus Safety"
+              width={150}
+              height={40}
+              priority
+              className="h-10 w-auto object-contain"
+            />
+          </Link>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="border-t border-slate-100 bg-white lg:hidden">
-          <div className="mx-auto max-w-7xl px-2 py-4">
-            <nav className="flex flex-col gap-1">
-              {navLinks.map((link) => (
+          {/* Nav links fill the middle */}
+          <nav className="hidden min-w-0 flex-1 items-stretch lg:flex">
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-4 py-3 text-sm font-medium text-slate-700 rounded-lg transition-all duration-200 hover:text-[#103a7b] hover:bg-slate-50"
+                  className={`flex flex-1 items-center justify-center border-r border-[#eeeeee] px-2 text-[14px] font-semibold tracking-wide transition-colors duration-200 ${
+                    active
+                      ? 'text-[#F5C400]'
+                      : 'text-[#0b2d60] hover:text-[#F5C400]'
+                  }`}
                 >
                   {link.label}
                 </Link>
-              ))}
-              <div className="mt-2 pt-2 border-t border-slate-200">
-                <Button
-                  size="sm"
-                  className="w-full rounded-lg bg-white border border-slate-200 text-slate-700 px-4 font-medium hover:bg-slate-50 hover:border-[#103a7b] hover:text-[#103a7b] transition-all duration-200"
-                  asChild
-                >
-                  <Link href="/cotizacion" onClick={() => setIsMobileMenuOpen(false)}>
-                    Hablar con un asesor
+              );
+            })}
+          </nav>
+
+          {/* Search */}
+          <Link
+            href="/productos"
+            className="hidden items-center justify-center border-r border-[#eeeeee] px-5 text-[#0b2d60] transition-colors hover:text-[#F5C400] lg:flex xl:px-6"
+            aria-label="Buscar productos"
+          >
+            <Search className="h-5 w-5" strokeWidth={2} />
+          </Link>
+
+          {/* Cart */}
+          <Link
+            href="/cotizacion"
+            className="relative flex items-center justify-center border-r border-[#eeeeee] px-5 text-[#0b2d60] transition-colors hover:text-[#F5C400] xl:px-6"
+            aria-label="Carrito de cotización"
+          >
+            <ShoppingCart className="h-5 w-5" strokeWidth={2} />
+            <span className="absolute right-2.5 top-4 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F5C400] px-1 text-[10px] font-bold text-white">
+              {total > 99 ? '99+' : total}
+            </span>
+          </Link>
+
+          {/* Yellow hamburger — right edge */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className="flex w-[72px] shrink-0 items-center justify-center bg-[#F5C400] text-white transition-opacity hover:opacity-90 xl:w-20"
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" strokeWidth={2.5} />
+            ) : (
+              <Menu className="h-6 w-6" strokeWidth={2.5} />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Dropdown menu */}
+      {isMobileMenuOpen && (
+        <div className="border-b border-[#eeeeee] bg-white shadow-lg">
+          <div className="w-full px-6 py-4 xl:px-8">
+            <nav className="flex flex-col">
+              {navLinks.map((link) => {
+                const active = isActive(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`border-b border-[#eeeeee] py-3.5 text-[15px] font-semibold transition-colors ${
+                      active
+                        ? 'text-[#F5C400]'
+                        : 'text-[#0b2d60] hover:text-[#F5C400]'
+                    }`}
+                  >
+                    {link.label}
                   </Link>
-                </Button>
-              </div>
+                );
+              })}
+              <Link
+                href="/cotizacion"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="mt-4 inline-flex h-12 items-center justify-center bg-[#0b2d60] text-[13px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#103a7b]"
+              >
+                Hablar con un asesor
+              </Link>
             </nav>
           </div>
         </div>
@@ -138,4 +214,3 @@ export function Navbar() {
     </header>
   );
 }
-
