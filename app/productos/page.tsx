@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Product, certifications } from '@/lib/mockData';
 import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Loader2, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 // Tipo para los datos de la API
@@ -90,7 +91,8 @@ export default function ProductsPage() {
   const [showTopProducts, setShowTopProducts] = useState(false);
   const [starProductIds, setStarProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 9;
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const productsPerPage = 12;
 
   // Cargar IDs de productos estrella (TODOS los productos estrella, no solo uno por categoría)
   useEffect(() => {
@@ -258,62 +260,49 @@ export default function ProductsPage() {
   }, [searchQuery, selectedCategories, selectedCertifications, priceRange, showTopProducts]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0a1528] via-[#0b2d60] to-[#0c1427] text-white">
-        {/* Efectos de fondo mejorados */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(0,181,226,0.25),transparent_50%),radial-gradient(circle_at_85%_15%,rgba(16,58,123,0.3),transparent_45%),radial-gradient(circle_at_50%_80%,rgba(0,181,226,0.15),transparent_40%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,181,226,0.08)_0%,transparent_50%,rgba(16,58,123,0.12)_100%)]" />
-        
-        {/* Patrón de grid sutil */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
-        
-        <div className="relative mx-auto max-w-7xl px-2 py-12 sm:px-3 lg:px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-6 text-center"
-          >
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#00d2ff]">
-              Catálogo
-            </p>
-            <h1 className="text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-              EPP y{' '}
-              <span className="bg-gradient-to-r from-[#00d2ff] to-[#00b5e2] bg-clip-text text-transparent">
-                Seguridad Industrial
-              </span>
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-slate-200 sm:text-xl">
-              Explora productos certificados listos para cotizar en volumen. 
-              Stock inmediato y asesoría especializada.
-            </p>
-          </motion.div>
+    <div className="min-h-screen bg-[#f3f5f8]">
+      {/* Hero */}
+      <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[280px]">
+        <Image
+          src="/zeus2.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#0b2d60]/78" />
+        <div className="relative z-10 mx-auto max-w-3xl px-4 text-center">
+          <p className="mb-2 text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+            Catálogo
+          </p>
+          <h1 className="text-4xl font-black uppercase tracking-wide text-white sm:text-5xl">
+            EPP industrial
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+            Productos certificados listos para cotizar. Stock inmediato y
+            asesoría especializada.
+          </p>
         </div>
       </section>
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-2 py-12 sm:px-3 lg:px-4">
-        {/* Search and Mobile Filter Toggle */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full lg:w-[calc(100%-288px)] max-w-full">
-            <div className="group relative flex w-full items-center">
-              <div className="flex w-full items-center rounded-2xl bg-white border-2 border-slate-200 shadow-md transition-all duration-300 hover:border-[#103a7b]/50 hover:shadow-lg focus-within:border-[#103a7b] focus-within:shadow-xl focus-within:ring-4 focus-within:ring-[#103a7b]/10">
-                <div className="flex items-center px-5 py-2.5 flex-1 min-w-0">
-                  <Search className="h-5 w-5 shrink-0 text-slate-400 transition-colors duration-200 group-focus-within:text-[#103a7b] mr-4" />
-                  <Input
-                    placeholder="Buscar por nombre, marca o código..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border-0 bg-transparent px-0 text-base placeholder:text-slate-400/70 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 min-w-0 h-auto"
-                  />
-                </div>
-              </div>
+      <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
+        {/* Search */}
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full max-w-2xl">
+            <div className="flex items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#F5C400]">
+              <Search className="mr-3 h-4 w-4 shrink-0 text-slate-400" />
+              <Input
+                placeholder="Buscar por nombre, marca o código..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-12 border-0 bg-transparent px-0 text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-0"
+              />
             </div>
           </div>
           <Button
             variant="outline"
-            className="lg:hidden border-2 border-slate-300 shadow-sm hover:shadow-md"
+            className="h-12 rounded-none border-slate-200 lg:hidden"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
             <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -321,132 +310,141 @@ export default function ProductsPage() {
           </Button>
         </div>
 
-        {/* Results Count and Clear Filters */}
         {hasActiveFilters && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl bg-blue-50 border border-blue-200 p-4">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-[#103a7b]" />
-              <span className="text-sm font-medium text-slate-700">
-                {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
-              </span>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border border-[#F5C400]/40 bg-[#fff8db] px-4 py-3">
+            <div className="flex items-center gap-2 text-sm font-medium text-[#0b2d60]">
+              <Filter className="h-4 w-4 text-[#F5C400]" />
+              {filteredProducts.length} producto
+              {filteredProducts.length !== 1 ? 's' : ''} encontrado
+              {filteredProducts.length !== 1 ? 's' : ''}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
+              type="button"
               onClick={clearFilters}
-              className="text-slate-600 hover:text-red-600"
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] hover:text-red-600"
             >
-              <X className="mr-2 h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
               Limpiar filtros
-            </Button>
+            </button>
           </div>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          {/* Filters Sidebar */}
-          <aside className={`space-y-6 rounded-2xl border-2 border-slate-200 bg-gradient-to-br from-white via-slate-50/30 to-white p-6 shadow-xl lg:sticky lg:top-8 lg:h-fit ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
-            <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-slate-200">
-              <h2 className="text-xl font-black text-slate-900 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-[#103a7b] to-[#00b5e2] text-white shadow-md">
-                  <Filter className="h-5 w-5" />
-                </div>
+        <div className="grid gap-6 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
+          {/* Sidebar */}
+          <aside
+            className={`h-fit border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
+              showMobileFilters ? 'block' : 'hidden lg:block'
+            }`}
+          >
+            <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
+              <h2 className="flex items-center gap-2 text-base font-bold text-[#0c1427]">
+                <span className="flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-white">
+                  <Filter className="h-4 w-4" />
+                </span>
                 Filtros
               </h2>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setShowMobileFilters(false)}
-                className="lg:hidden hover:bg-slate-100"
+                className="lg:hidden"
+                aria-label="Cerrar filtros"
               >
-                <X className="h-4 w-4" />
-              </Button>
+                <X className="h-4 w-4 text-slate-500" />
+              </button>
             </div>
 
-            {/* Productos Top */}
-            <div className="rounded-xl bg-gradient-to-br from-amber-50/50 to-white p-4 border border-amber-200/50">
+            {/* Top products */}
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-sm">
-                  <Star className="h-3.5 w-3.5 fill-white" />
-                </div>
-                <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">Productos Top</h3>
+                <Star className="h-3.5 w-3.5 fill-[#F5C400] text-[#F5C400]" />
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                  Productos top
+                </h3>
               </div>
-              <label className="group flex items-center gap-3 rounded-lg p-3 transition-all hover:bg-white/80 cursor-pointer border-2 border-transparent hover:border-amber-200">
+              <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
                 <input
                   type="checkbox"
                   checked={showTopProducts}
                   onChange={(e) => setShowTopProducts(e.target.checked)}
-                  className="h-4 w-4 rounded border-2 border-slate-300 text-[#103a7b] focus:ring-2 focus:ring-[#103a7b]/20 cursor-pointer"
+                  className="h-4 w-4 accent-[#F5C400]"
                 />
-                <span className="text-sm font-bold text-slate-700 group-hover:text-[#103a7b] transition-colors flex items-center gap-2">
-                  <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                  Solo productos estrella
-                </span>
+                Solo productos estrella
               </label>
             </div>
 
-            {/* Categories */}
-            <div className="rounded-xl bg-gradient-to-br from-blue-50/30 to-white p-4 border border-blue-200/50">
+            {/* Categories — sin scroll feo: mostrar todas o Ver más */}
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-[#103a7b] to-[#00b5e2] text-white shadow-sm">
-                  <Package className="h-3.5 w-3.5" />
-                </div>
-                <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">Categorías</h3>
+                <Package className="h-3.5 w-3.5 text-[#0b2d60]" />
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                  Categorías
+                </h3>
               </div>
               <div className="space-y-2">
-                {categories.map((cat) => (
+                {(showAllCategories
+                  ? categories
+                  : categories.slice(0, 6)
+                ).map((cat) => (
                   <label
                     key={cat}
-                    className="group flex items-center gap-3 rounded-lg p-2.5 transition-all hover:bg-white/80 cursor-pointer border-2 border-transparent hover:border-blue-200"
+                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
                   >
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(cat)}
                       onChange={() => toggleCategory(cat)}
-                      className="h-4 w-4 rounded border-2 border-slate-300 text-[#103a7b] focus:ring-2 focus:ring-[#103a7b]/20 cursor-pointer"
+                      className="h-4 w-4 shrink-0 accent-[#F5C400]"
                     />
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-[#103a7b] transition-colors">
-                      {cat}
-                    </span>
+                    <span className="leading-snug">{cat}</span>
                   </label>
                 ))}
               </div>
+              {categories.length > 6 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllCategories((v) => !v)}
+                  className="mt-3 text-xs font-bold uppercase tracking-wide text-[#F5C400] transition-colors hover:text-[#0b2d60]"
+                >
+                  {showAllCategories
+                    ? 'Ver menos'
+                    : `Ver más (${categories.length - 6})`}
+                </button>
+              )}
             </div>
 
             {/* Certifications */}
-            <div className="rounded-xl bg-gradient-to-br from-emerald-50/30 to-white p-4 border border-emerald-200/50">
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm">
-                  <Award className="h-3.5 w-3.5" />
-                </div>
-                <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">Certificación</h3>
+                <Award className="h-3.5 w-3.5 text-[#0b2d60]" />
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                  Certificación
+                </h3>
               </div>
               <div className="space-y-2">
                 {certifications.map((cert) => (
                   <label
                     key={cert}
-                    className="group flex items-center gap-3 rounded-lg p-2.5 transition-all hover:bg-white/80 cursor-pointer border-2 border-transparent hover:border-emerald-200"
+                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
                   >
                     <input
                       type="checkbox"
                       checked={selectedCertifications.includes(cert)}
                       onChange={() => toggleCertification(cert)}
-                      className="h-4 w-4 rounded border-2 border-slate-300 text-[#103a7b] focus:ring-2 focus:ring-[#103a7b]/20 cursor-pointer"
+                      className="h-4 w-4 accent-[#F5C400]"
                     />
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-[#103a7b] transition-colors">
-                      {cert}
-                    </span>
+                    {cert}
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Price Range */}
-            <div className="rounded-xl bg-gradient-to-br from-purple-50/30 to-white p-4 border border-purple-200/50">
+            {/* Price */}
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-sm">
-                  <DollarSign className="h-3.5 w-3.5" />
-                </div>
-                <h3 className="text-sm font-black uppercase tracking-wide text-slate-900">Rango de precio</h3>
+                <DollarSign className="h-3.5 w-3.5 text-[#0b2d60]" />
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                  Rango de precio
+                </h3>
               </div>
               <div className="space-y-2">
                 {[
@@ -456,7 +454,7 @@ export default function ProductsPage() {
                 ].map((range) => (
                   <label
                     key={range.value}
-                    className="group flex items-center gap-3 rounded-lg p-2.5 transition-all hover:bg-white/80 cursor-pointer border-2 border-transparent hover:border-purple-200"
+                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
                   >
                     <input
                       type="radio"
@@ -464,171 +462,165 @@ export default function ProductsPage() {
                       value={range.value}
                       checked={priceRange === range.value}
                       onChange={(e) => setPriceRange(e.target.value)}
-                      className="h-4 w-4 border-2 border-slate-300 text-[#103a7b] focus:ring-2 focus:ring-[#103a7b]/20 cursor-pointer"
+                      className="h-4 w-4 accent-[#F5C400]"
                     />
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-[#103a7b] transition-colors">
-                      {range.label}
-                    </span>
+                    {range.label}
                   </label>
                 ))}
               </div>
             </div>
 
             {hasActiveFilters && (
-              <Button
-                variant="outline"
-                size="sm"
+              <button
+                type="button"
                 onClick={clearFilters}
-                className="w-full border-slate-300 text-slate-600 hover:text-red-600 hover:border-red-300"
+                className="inline-flex h-10 w-full items-center justify-center gap-2 border border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-600 transition-colors hover:border-red-300 hover:text-red-600"
               >
-                <X className="mr-2 h-4 w-4" />
-                Limpiar todos los filtros
-              </Button>
+                <X className="h-3.5 w-3.5" />
+                Limpiar filtros
+              </button>
             )}
           </aside>
 
-          {/* Products Grid */}
+          {/* Grid */}
           <div>
             {loading ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl border-2 border-slate-200 bg-gradient-to-br from-white to-slate-50 p-12 text-center"
-              >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#00b5e2]/10 to-[#103a7b]/10">
-                  <Loader2 className="h-10 w-10 text-[#103a7b] animate-spin" />
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">
+              <div className="border border-slate-200 bg-white p-12 text-center">
+                <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-[#0b2d60]" />
+                <h3 className="text-lg font-bold text-[#0c1427]">
                   Cargando productos...
                 </h3>
-                <p className="text-sm text-slate-600">
-                  Por favor espera mientras cargamos el catálogo.
-                </p>
-              </motion.div>
+              </div>
             ) : error ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl border-2 border-red-200 bg-gradient-to-br from-red-50 to-white p-12 text-center"
-              >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-red-50">
-                  <Package className="h-10 w-10 text-red-500" />
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">
+              <div className="border border-red-200 bg-white p-12 text-center">
+                <Package className="mx-auto mb-4 h-10 w-10 text-red-500" />
+                <h3 className="mb-2 text-lg font-bold text-[#0c1427]">
                   Error al cargar productos
                 </h3>
-                <p className="mb-6 text-sm text-slate-600">
-                  {error}
-                </p>
-                <Button 
-                  onClick={() => window.location.reload()} 
-                  variant="outline"
-                  className="border-red-300 text-red-600 hover:bg-red-50"
+                <p className="mb-4 text-sm text-slate-600">{error}</p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="inline-flex h-10 items-center border border-red-300 px-4 text-xs font-bold uppercase text-red-600"
                 >
                   Reintentar
-                </Button>
-              </motion.div>
+                </button>
+              </div>
             ) : filteredProducts.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl border-2 border-dashed border-slate-300 bg-gradient-to-br from-white to-slate-50 p-12 text-center"
-              >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#00b5e2]/10 to-[#103a7b]/10">
-                  <Package className="h-10 w-10 text-slate-400" />
-                </div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">
+              <div className="border border-dashed border-slate-300 bg-white p-12 text-center">
+                <Package className="mx-auto mb-4 h-10 w-10 text-slate-400" />
+                <h3 className="mb-2 text-lg font-bold text-[#0c1427]">
                   No se encontraron productos
                 </h3>
-                <p className="mb-6 text-sm text-slate-600">
-                  Intenta ajustar tus filtros de búsqueda o limpiar los filtros activos.
+                <p className="mb-4 text-sm text-slate-500">
+                  Ajusta o limpia los filtros de búsqueda.
                 </p>
                 {hasActiveFilters && (
-                  <Button onClick={clearFilters} variant="outline">
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="inline-flex h-10 items-center bg-[#0b2d60] px-5 text-xs font-bold uppercase text-white"
+                  >
                     Limpiar filtros
-                  </Button>
+                  </button>
                 )}
-              </motion.div>
+              </div>
             ) : (
               <>
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mb-4 text-sm text-slate-500">
+                  Mostrando{' '}
+                  <span className="font-semibold text-[#0b2d60]">
+                    {filteredProducts.length}
+                  </span>{' '}
+                  productos
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                   {paginatedProducts.map((product, index) => (
                     <motion.div
                       key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      transition={{ duration: 0.35, delay: index * 0.04 }}
                     >
                       <ProductCard product={product} />
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Paginación */}
                 {totalPages > 1 && (
-                  <div className="mt-8 flex items-center justify-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={currentPage === 1}
-                      className="border-2 border-slate-300 hover:border-[#103a7b] hover:bg-[#103a7b] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
                     >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      <ChevronLeft className="h-4 w-4" />
                       Anterior
-                    </Button>
-                    
+                    </button>
+
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                        // Mostrar solo algunas páginas alrededor de la actual
-                        if (
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        ) {
-                          return (
-                            <Button
-                              key={page}
-                              variant={currentPage === page ? undefined : "outline"}
-                              size="sm"
-                              onClick={() => setCurrentPage(page)}
-                              className={`min-w-[40px] border-2 ${
-                                currentPage === page
-                                  ? "bg-gradient-to-r from-[#103a7b] to-[#00b5e2] text-white border-[#103a7b] shadow-md"
-                                  : "border-slate-300 hover:border-[#103a7b] hover:bg-[#103a7b] hover:text-white"
-                              }`}
-                            >
-                              {page}
-                            </Button>
-                          );
-                        } else if (page === currentPage - 2 || page === currentPage + 2) {
-                          return (
-                            <span key={page} className="px-2 text-slate-400">
-                              ...
-                            </span>
-                          );
-                        }
-                        return null;
-                      })}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => {
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                type="button"
+                                onClick={() => setCurrentPage(page)}
+                                className={`inline-flex h-10 min-w-[40px] items-center justify-center border text-xs font-bold ${
+                                  currentPage === page
+                                    ? 'border-[#0b2d60] bg-[#0b2d60] text-white'
+                                    : 'border-slate-200 bg-white text-[#0b2d60] hover:border-[#F5C400]'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          }
+                          if (
+                            page === currentPage - 2 ||
+                            page === currentPage + 2
+                          ) {
+                            return (
+                              <span key={page} className="px-1 text-slate-400">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        },
+                      )}
                     </div>
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(totalPages, prev + 1),
+                        )
+                      }
                       disabled={currentPage === totalPages}
-                      className="border-2 border-slate-300 hover:border-[#103a7b] hover:bg-[#103a7b] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
                     >
                       Siguiente
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
                   </div>
                 )}
 
-                {/* Información de paginación */}
-                <div className="mt-4 text-center text-sm text-slate-600">
-                  Mostrando {startIndex + 1} - {Math.min(endIndex, filteredProducts.length)} de {filteredProducts.length} productos
-                </div>
+                <p className="mt-4 text-center text-sm text-slate-500">
+                  Mostrando {startIndex + 1} –{' '}
+                  {Math.min(endIndex, filteredProducts.length)} de{' '}
+                  {filteredProducts.length} productos
+                </p>
               </>
             )}
           </div>
