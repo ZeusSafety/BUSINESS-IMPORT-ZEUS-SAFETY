@@ -39,7 +39,7 @@ export function Footer() {
     <footer className="relative bg-[#081b39] text-slate-100">
       <div className="h-1 bg-[#F5C400]" />
 
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+      <div className="mx-auto max-w-[1600px] px-6 py-14 lg:px-10 lg:py-16 xl:px-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:items-start">
           {/* Brand + contact */}
           <div className="space-y-5 sm:col-span-2 lg:col-span-1">
@@ -173,7 +173,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-slate-700/60">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 px-6 py-4 sm:flex-row lg:px-10 xl:px-12">
           <p className="text-xs text-slate-500">
             © {year} Zeus Safety. Todos los derechos reservados.
           </p>
