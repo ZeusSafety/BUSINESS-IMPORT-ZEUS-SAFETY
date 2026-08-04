@@ -15,6 +15,9 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useState, FormEvent } from 'react';
+import { HomeAbout } from '@/components/sections/home-about';
+import { HomeConfia } from '@/components/sections/home-confia';
+import { HomePeruCoverage } from '@/components/sections/home-peru-coverage';
 
 const DynamicMap = dynamic(
   () => import('@/components/ui/map').then((mod) => ({ default: mod.Map })),
@@ -118,7 +121,11 @@ export default function AboutPage() {
         </motion.h1>
       </section>
 
-      {/* 2. Países de donde importamos */}
+      <HomeAbout />
+      <HomeConfia />
+      <HomePeruCoverage />
+
+      {/* Países de donde importamos */}
       <section className="relative overflow-hidden bg-[#f3f5f8] py-16 lg:py-20">
         <div
           aria-hidden

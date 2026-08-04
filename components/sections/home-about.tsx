@@ -31,22 +31,14 @@ const featureCards = [
   },
 ];
 
-const stats = [
-  { value: '10+', label: 'Años de experiencia' },
-  { value: '500+', label: 'Clientes atendidos' },
-  { value: '1.2k+', label: 'Proyectos abastecidos' },
-  { value: '24h', label: 'Respuesta comercial' },
-];
-
 export function HomeAbout() {
   return (
     <section
       id="nosotros"
-      className="relative z-20 -mt-24 scroll-mt-24 bg-white pt-6 sm:-mt-32 sm:pt-8 lg:-mt-40 lg:pt-10"
+      className="relative z-10 scroll-mt-24 bg-white pt-10 sm:pt-12 lg:pt-14"
     >
       <div className="mx-auto max-w-[1600px] px-6 pb-16 lg:px-10 lg:pb-20 xl:px-12">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,640px)_minmax(0,1fr)] lg:gap-10 xl:gap-12">
-          {/* Media */}
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -95,7 +87,6 @@ export function HomeAbout() {
             </div>
           </motion.div>
 
-          {/* Contenido derecho mejorado */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -178,37 +169,16 @@ export function HomeAbout() {
 
             <div>
               <Link
-                href="/sobre-nosotros"
+                href="/productos"
                 className="group inline-flex h-12 items-center gap-2 bg-[#0b2d60] px-7 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
-                Conocer más
+                Ver catálogo
                 <span className="transition-transform group-hover:translate-x-0.5">
                   →
                 </span>
               </Link>
             </div>
           </motion.div>
-        </div>
-
-        <div className="mt-20 grid grid-cols-2 gap-8 border-t border-slate-200 pt-12 sm:grid-cols-4 lg:mt-24 lg:gap-6">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.06 }}
-              className="relative text-center"
-            >
-              <div className="pointer-events-none absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F5C400]/10" />
-              <p className="relative text-3xl font-black text-[#0b2d60] sm:text-4xl">
-                {stat.value}
-              </p>
-              <p className="relative mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
         </div>
       </div>
     </section>

@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 
 export function HeroSection() {
-  const scrollToAbout = () => {
-    document.getElementById('nosotros')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToCategories = () => {
+    document
+      .getElementById('categorias-inicio')
+      ?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -69,8 +71,8 @@ export function HeroSection() {
       <div className="absolute bottom-24 right-6 z-20 flex sm:bottom-32 sm:right-10 lg:bottom-40 lg:right-12">
         <button
           type="button"
-          onClick={scrollToAbout}
-          aria-label="Ver más sobre nosotros"
+          onClick={scrollToCategories}
+          aria-label="Ver categorías de productos"
           className="flex h-12 w-12 items-center justify-center bg-[#0b2d60] text-white transition-colors hover:bg-[#103a7b] sm:h-14 sm:w-14"
         >
           <ChevronDown className="h-6 w-6" strokeWidth={2.5} />
