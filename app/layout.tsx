@@ -4,6 +4,7 @@ import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { WhatsAppButton } from '@/components/layout/whatsapp-button';
+import { SideCurrencyDock } from '@/components/layout/side-currency-dock';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({
           <div className="flex-1">{children}</div>
           <Footer />
         </div>
+        <SideCurrencyDock />
         <WhatsAppButton />
       </body>
     </html>

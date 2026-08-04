@@ -25,6 +25,7 @@ const ADDRESS = 'Av. Industrial 123, Lima';
 const mainLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/sobre-nosotros', label: 'Nosotros' },
+  { href: '/productos', label: 'Catálogo' },
   { href: '/cotizacion', label: 'Arma tu cotización' },
 ];
 
@@ -303,14 +304,6 @@ export function Navbar() {
                 </a>
               </div>
             )}
-
-            <Link
-              href="/productos"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="border-b border-slate-100 py-3.5 text-sm font-bold uppercase tracking-wide text-[#0c1427]"
-            >
-              Catálogo
-            </Link>
 
             <Link
               href="/cotizacion"

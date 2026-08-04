@@ -4,8 +4,8 @@ import { HomeFeaturedCategories } from '@/components/sections/home-featured-cate
 import { HomeDistributorBanner } from '@/components/sections/home-distributor-banner';
 import { HomeParaTi } from '@/components/sections/home-para-ti';
 import { HomeBestsellers } from '@/components/sections/home-bestsellers';
+import { HomeCoverageMap } from '@/components/sections/home-coverage-map';
 import { TrustSection } from '@/components/sections/trust';
-import { B2BCtaSection } from '@/components/sections/b2b-cta';
 import { ImportanteModal } from '@/components/sections/importante-modal';
 
 export default function Home() {
@@ -17,9 +17,8 @@ export default function Home() {
       <HomeDistributorBanner />
       <HomeParaTi />
       <HomeBestsellers />
+      <HomeCoverageMap />
       <TrustSection />
-      <B2BCtaSection />
-      <ImportanteModal />
-    </main>
+      <ImportanteModal />    </main>
   );
 }
