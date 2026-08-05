@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  Loader2,
   Plus,
   ShieldCheck,
   Flame,
 } from 'lucide-react';
 import { useQuoteStore } from '@/store/quoteStore';
 import type { Product } from '@/lib/mockData';
+import { Spinner } from '@/components/ui/spinner';
 
 type ApiProduct = {
   ID: number;
@@ -164,9 +164,8 @@ export function HomeBestsellers() {
         </div>
 
         {loading ? (
-          <div className="flex min-h-[280px] items-center justify-center gap-2 text-[#0b2d60]">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span className="text-sm font-semibold">Cargando más vendidos…</span>
+          <div className="flex min-h-[280px] items-center justify-center">
+            <Spinner size="md" />
           </div>
         ) : (
           <>

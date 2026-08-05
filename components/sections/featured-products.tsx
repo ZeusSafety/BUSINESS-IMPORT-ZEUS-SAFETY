@@ -10,11 +10,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  Loader2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Spinner } from '@/components/ui/spinner';
 
 type ApiProduct = {
   ID: number;
@@ -188,11 +188,8 @@ export function FeaturedProducts() {
         </div>
 
         {loading ? (
-          <div className="mt-14 flex flex-col items-center justify-center gap-3 py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-[#0b2d60]" />
-            <p className="text-sm font-medium text-slate-500">
-              Cargando productos...
-            </p>
+          <div className="mt-14 flex items-center justify-center py-16">
+            <Spinner size="lg" />
           </div>
         ) : starProducts.length > 0 ? (
           <div className="mt-12">

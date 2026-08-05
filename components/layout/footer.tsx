@@ -22,8 +22,9 @@ const menuLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/productos', label: 'Catálogo' },
   { href: '/cotizacion', label: 'Cotizador' },
+  { href: '/blog', label: 'Blog' },
   { href: '/sobre-nosotros', label: 'Nosotros' },
-  { href: '/asesores', label: 'Asesores' },
+  { href: '/asesores', label: 'Contáctanos' },
   { href: '/libro-de-reclamaciones', label: 'Libro de reclamaciones' },
 ];
 

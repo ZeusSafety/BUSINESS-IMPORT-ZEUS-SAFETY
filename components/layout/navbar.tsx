@@ -4,7 +4,6 @@ import { useQuoteStore } from '@/store/quoteStore';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ChevronDown,
   Clock,
   Facebook,
   Instagram,
@@ -16,26 +15,25 @@ import {
   ShoppingCart,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 const EMAIL = 'ventas@zeussafety.com';
 const ADDRESS = 'Av. Industrial 123, Lima';
 
-const mainLinks = [
+const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/sobre-nosotros', label: 'Nosotros' },
   { href: '/productos', label: 'Catálogo' },
   { href: '/cotizacion', label: 'Arma tu cotización' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/asesores', label: 'Contáctanos' },
 ];
 
 export function Navbar() {
   const items = useQuoteStore((state) => state.items);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [mobileContactOpen, setMobileContactOpen] = useState(false);
   const pathname = usePathname();
-  const contactRef = useRef<HTMLDivElement>(null);
 
   const total = useMemo(
     () => items.reduce((acc, item) => acc + item.quantity, 0),
@@ -47,30 +45,12 @@ export function Navbar() {
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
-  const contactActive = isActive('/asesores');
-
-  useEffect(() => {
-    const onClickOutside = (e: MouseEvent) => {
-      if (
-        contactRef.current &&
-        !contactRef.current.contains(e.target as Node)
-      ) {
-        setContactOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
-
   useEffect(() => {
     setIsMobileMenuOpen(false);
-    setContactOpen(false);
-    setMobileContactOpen(false);
   }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white">
-      {/* Top bar suave — sin cortes negros */}
       <div className="hidden border-b border-[#0b2d60]/10 bg-[#0b2d60] lg:block">
         <div className="mx-auto flex h-9 max-w-[1600px] items-center justify-between gap-4 px-6 xl:px-10">
           <div className="flex items-center gap-4 text-white/90">
@@ -123,7 +103,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Nav principal — logo sin fondo ni raya */}
       <div className="border-b border-slate-200/80 bg-white">
         <div className="mx-auto flex h-[72px] max-w-[1600px] items-center gap-6 px-6 xl:px-10">
           <Link
@@ -141,7 +120,7 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden flex-1 items-center gap-1 lg:flex xl:gap-2">
-            {mainLinks.map((link) => {
+            {navLinks.map((link) => {
               const active = isActive(link.href);
               return (
                 <Link
@@ -157,54 +136,6 @@ export function Navbar() {
                 </Link>
               );
             })}
-
-            <div className="relative" ref={contactRef}>
-              <button
-                type="button"
-                onClick={() => setContactOpen((o) => !o)}
-                className={`inline-flex items-center gap-1 px-3 py-2 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4 ${
-                  contactActive || contactOpen
-                    ? 'text-[#F5C400]'
-                    : 'text-[#0c1427] hover:text-[#F5C400]'
-                }`}
-                aria-expanded={contactOpen}
-              >
-                Contáctanos
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${
-                    contactOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {contactOpen && (
-                <div className="absolute left-0 top-full z-[200] mt-1 min-w-[210px] border border-slate-200 bg-white py-2 shadow-lg">
-                  <Link
-                    href="/asesores"
-                    onClick={() => setContactOpen(false)}
-                    className={`block px-4 py-2.5 text-sm font-semibold transition-colors ${
-                      isActive('/asesores')
-                        ? 'bg-[#fff8db] text-[#0b2d60]'
-                        : 'text-[#0c1427] hover:bg-slate-50 hover:text-[#F5C400]'
-                    }`}
-                  >
-                    Asesores
-                  </Link>
-                  <a
-                    href={`mailto:${EMAIL}`}
-                    className="block px-4 py-2.5 text-sm font-semibold text-[#0c1427] transition-colors hover:bg-slate-50 hover:text-[#F5C400]"
-                  >
-                    Escribirnos
-                  </a>
-                  <a
-                    href="tel:+5115555555"
-                    className="block px-4 py-2.5 text-sm font-semibold text-[#0c1427] transition-colors hover:bg-slate-50 hover:text-[#F5C400]"
-                  >
-                    Llamar ahora
-                  </a>
-                </div>
-              )}
-            </div>
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
@@ -253,7 +184,7 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="border-b border-slate-200 bg-white lg:hidden">
           <nav className="mx-auto flex max-w-[1600px] flex-col px-6 py-3">
-            {mainLinks.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -265,45 +196,6 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-
-            <button
-              type="button"
-              onClick={() => setMobileContactOpen((o) => !o)}
-              className={`flex items-center justify-between border-b border-slate-100 py-3.5 text-left text-sm font-bold uppercase tracking-wide ${
-                contactActive ? 'text-[#F5C400]' : 'text-[#0c1427]'
-              }`}
-            >
-              Contáctanos
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${
-                  mobileContactOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-
-            {mobileContactOpen && (
-              <div className="border-b border-slate-100 bg-slate-50 px-3 py-2">
-                <Link
-                  href="/asesores"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block py-2.5 text-sm font-semibold text-[#0c1427]"
-                >
-                  Asesores
-                </Link>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="block py-2.5 text-sm font-semibold text-[#0c1427]"
-                >
-                  Escribirnos
-                </a>
-                <a
-                  href="tel:+5115555555"
-                  className="block py-2.5 text-sm font-semibold text-[#0c1427]"
-                >
-                  Llamar ahora
-                </a>
-              </div>
-            )}
 
             <Link
               href="/cotizacion"

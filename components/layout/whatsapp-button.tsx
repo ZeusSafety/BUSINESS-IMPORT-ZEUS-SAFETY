@@ -1,13 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Send, X } from 'lucide-react';
 
 const WA_NUMBER = '51999999999';
@@ -36,38 +30,8 @@ function openWhatsApp(text: string) {
 export function WhatsAppButton() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('Hola');
-  /** Solo la primera vez el hover abre el chat; tras cerrar, solo click */
-  const allowHoverOpenRef = useRef(true);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearHoverClose = () => {
-    if (hoverCloseTimer.current) {
-      clearTimeout(hoverCloseTimer.current);
-      hoverCloseTimer.current = null;
-    }
-  };
-
-  const closeAndLockHover = useCallback(() => {
-    clearHoverClose();
-    allowHoverOpenRef.current = false;
-    setOpen(false);
-  }, []);
-
-  const onHoverEnter = useCallback(() => {
-    clearHoverClose();
-    if (allowHoverOpenRef.current) {
-      setOpen(true);
-    }
-  }, []);
-
-  const onHoverLeave = useCallback(() => {
-    clearHoverClose();
-    hoverCloseTimer.current = setTimeout(() => {
-      setOpen(false);
-    }, 280);
-  }, []);
 
   useEffect(() => {
     if (open) {
@@ -78,7 +42,7 @@ export function WhatsAppButton() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) closeAndLockHover();
+      if (e.key === 'Escape' && open) setOpen(false);
     };
     const onClickOutside = (e: MouseEvent) => {
       if (
@@ -86,7 +50,7 @@ export function WhatsAppButton() {
         rootRef.current &&
         !rootRef.current.contains(e.target as Node)
       ) {
-        closeAndLockHover();
+        setOpen(false);
       }
     };
     document.addEventListener('keydown', onKey);
@@ -94,39 +58,26 @@ export function WhatsAppButton() {
     return () => {
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('mousedown', onClickOutside);
-      clearHoverClose();
     };
-  }, [open, closeAndLockHover]);
+  }, [open]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     openWhatsApp(message.trim() ? message.trim() : DEFAULT_MESSAGE);
-    closeAndLockHover();
-  };
-
-  const toggleByClick = () => {
-    clearHoverClose();
-    setOpen((prev) => {
-      if (prev) {
-        allowHoverOpenRef.current = false;
-        return false;
-      }
-      return true;
-    });
+    setOpen(false);
   };
 
   return (
     <div
       ref={rootRef}
-      className="fixed bottom-5 right-5 z-[70]"
-      onMouseEnter={onHoverEnter}
-      onMouseLeave={onHoverLeave}
+      className="pointer-events-none fixed bottom-5 right-5 z-[85] flex flex-col items-end"
     >
+      {/* absolute: no ocupa espacio ni tapa el carrito cuando está cerrado */}
       <div
-        className={`mb-3 w-[min(340px,calc(100vw-2.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[#0b2d60]/10 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.28)] transition-all duration-200 ${
+        className={`pointer-events-auto absolute bottom-[4.25rem] right-0 w-[min(340px,calc(100vw-2.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[#0b2d60]/10 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.28)] transition-all duration-200 ${
           open
-            ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
-            : 'pointer-events-none translate-y-3 scale-95 opacity-0'
+            ? 'translate-y-0 scale-100 opacity-100'
+            : 'pointer-events-none invisible translate-y-3 scale-95 opacity-0'
         }`}
         role="dialog"
         aria-label="Chat Zeus Safety"
@@ -152,7 +103,7 @@ export function WhatsAppButton() {
           <button
             type="button"
             aria-label="Cerrar chat"
-            onClick={closeAndLockHover}
+            onClick={() => setOpen(false)}
             className="flex h-8 w-8 items-center justify-center text-white/80 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-4 w-4" strokeWidth={2.5} />
@@ -198,8 +149,8 @@ export function WhatsAppButton() {
         type="button"
         aria-label={open ? 'Cerrar WhatsApp' : 'Abrir WhatsApp'}
         aria-expanded={open}
-        onClick={toggleByClick}
-        className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)] transition-transform hover:scale-105 hover:bg-[#20BA5A]"
+        onClick={() => setOpen((prev) => !prev)}
+        className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)] transition-transform hover:scale-105 hover:bg-[#20BA5A]"
       >
         {open ? (
           <X className="h-6 w-6" strokeWidth={2.5} />

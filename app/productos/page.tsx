@@ -3,11 +3,14 @@
 import { ProductCard } from '@/components/products/product-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { SortSelect, type SortOption } from '@/components/ui/sort-select';
+import { PageLoader } from '@/components/ui/spinner';
+import { ProductGridSkeleton } from '@/components/ui/skeleton';
 import { Product, certifications } from '@/lib/mockData';
-import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Loader2, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Star, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 // Tipo para los datos de la API
@@ -85,13 +88,7 @@ function transformApiProduct(apiProduct: ApiProduct): Product {
 
 export default function ProductsPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#0b2d60]" />
-        </div>
-      }
-    >
+    <Suspense fallback={<PageLoader />}>
       <ProductsPageContent />
     </Suspense>
   );
@@ -108,7 +105,10 @@ function ProductsPageContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCertifications, setSelectedCertifications] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<string>('');
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(500);
+  const [priceFilterOpen, setPriceFilterOpen] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showTopProducts, setShowTopProducts] = useState(false);
   const [starProductIds, setStarProductIds] = useState<string[]>([]);
@@ -116,6 +116,21 @@ function ProductsPageContent() {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [gridCols, setGridCols] = useState<2 | 3 | 4 | 5>(4);
   const productsPerPage = 12;
+
+  const priceBounds = useMemo(() => {
+    const prices = allProducts
+      .map((p) => p.price)
+      .filter((p) => Number.isFinite(p) && p >= 0);
+    if (prices.length === 0) return { min: 0, max: 500 };
+    const min = Math.floor(Math.min(...prices));
+    const max = Math.ceil(Math.max(...prices));
+    return { min, max: max <= min ? min + 1 : max };
+  }, [allProducts]);
+
+  useEffect(() => {
+    setPriceMin(priceBounds.min);
+    setPriceMax(priceBounds.max);
+  }, [priceBounds.min, priceBounds.max]);
 
   // Filtro desde URL (?categoria=...)
   useEffect(() => {
@@ -219,13 +234,22 @@ function ProductsPageContent() {
   const clearFilters = () => {
     setSelectedCategories([]);
     setSelectedCertifications([]);
-    setPriceRange('');
+    setPriceMin(priceBounds.min);
+    setPriceMax(priceBounds.max);
     setSearchQuery('');
     setShowTopProducts(false);
-    setCurrentPage(1); // Resetear a la primera página al limpiar filtros
+    setSortBy('default');
+    setCurrentPage(1);
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedCertifications.length > 0 || priceRange !== '' || showTopProducts;
+  const priceFilterActive =
+    priceMin > priceBounds.min || priceMax < priceBounds.max;
+
+  const hasActiveFilters =
+    selectedCategories.length > 0 ||
+    selectedCertifications.length > 0 ||
+    priceFilterActive ||
+    showTopProducts;
 
   // Debug: Log cuando cambia el filtro de productos top
   useEffect(() => {
@@ -262,46 +286,84 @@ function ProductsPageContent() {
   }, [showTopProducts, starProducts, starProductIds, allProducts]);
 
   // Filter products based on search and filters
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = searchQuery === '' || 
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      searchQuery === '' ||
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
-    const matchesCertification = selectedCertifications.length === 0 || 
-      product.certification.some(cert => selectedCertifications.includes(cert));
-    
-    const matchesPrice = priceRange === '' || (
-      priceRange === 'low' && product.price < 20 ||
-      priceRange === 'medium' && product.price >= 20 && product.price <= 80 ||
-      priceRange === 'high' && product.price > 80
+      (product.description &&
+        product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(product.category);
+    const matchesCertification =
+      selectedCertifications.length === 0 ||
+      product.certification.some((cert) =>
+        selectedCertifications.includes(cert),
+      );
+
+    const matchesPrice =
+      product.price >= priceMin && product.price <= priceMax;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesCertification &&
+      matchesPrice
     );
-
-    // El filtro de productos top ya se maneja cambiando el array de productos,
-    // así que aquí no necesitamos filtrar por matchesTopProducts
-    const matchesTopProducts = true;
-
-    return matchesSearch && matchesCategory && matchesCertification && matchesPrice && matchesTopProducts;
   });
 
+  const sortedProducts = useMemo(() => {
+    const list = [...filteredProducts];
+    switch (sortBy) {
+      case 'popularity':
+        return list.sort((a, b) => {
+          const aStar = starProductIds.includes(a.id) ? 1 : 0;
+          const bStar = starProductIds.includes(b.id) ? 1 : 0;
+          if (bStar !== aStar) return bStar - aStar;
+          return a.name.localeCompare(b.name, 'es');
+        });
+      case 'newest':
+        return list.sort((a, b) => {
+          const aId = parseInt(a.id.replace(/\D/g, ''), 10) || 0;
+          const bId = parseInt(b.id.replace(/\D/g, ''), 10) || 0;
+          return bId - aId;
+        });
+      case 'price-asc':
+        return list.sort((a, b) => a.price - b.price);
+      case 'price-desc':
+        return list.sort((a, b) => b.price - a.price);
+      default:
+        return list;
+    }
+  }, [filteredProducts, sortBy, starProductIds]);
+
   // Paginación
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+  const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
 
   // Resetear a la primera página cuando cambian los filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategories, selectedCertifications, priceRange, showTopProducts]);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedCertifications,
+    priceMin,
+    priceMax,
+    showTopProducts,
+    sortBy,
+  ]);
 
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
       {/* Hero */}
       <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[280px]">
         <Image
-          src="/zeus2.jpg"
+          src="/inventario.jpg"
           alt=""
           fill
           priority
@@ -327,14 +389,24 @@ function ProductsPageContent() {
         {/* Search + columnas */}
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative min-w-0 flex-1">
-            <div className="flex items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#F5C400]">
-              <Search className="mr-3 h-4 w-4 shrink-0 text-slate-400" />
+            <div className="flex h-12 items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
+              <Search className="mr-3 h-4 w-4 shrink-0 text-[#0b2d60]" />
               <Input
                 placeholder="Buscar por nombre, marca o código..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 border-0 bg-transparent px-0 text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-0"
+                className="h-full border-0 bg-transparent px-0 text-sm text-[#0c1427] shadow-none placeholder:text-slate-400 focus-visible:ring-0"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Limpiar búsqueda"
+                  className="ml-2 flex h-7 w-7 items-center justify-center text-slate-400 transition-colors hover:text-[#0b2d60]"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -511,36 +583,78 @@ function ProductsPageContent() {
               </div>
             </div>
 
-            {/* Price */}
+            {/* Precio — slider S/ */}
             <div className="mb-5 border border-slate-100 p-3">
-              <div className="mb-3 flex items-center gap-2">
-                <DollarSign className="h-3.5 w-3.5 text-[#0b2d60]" />
-                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
-                  Rango de precio
-                </h3>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { value: 'low', label: 'Menos de $20' },
-                  { value: 'medium', label: '$20 - $80' },
-                  { value: 'high', label: 'Más de $80' },
-                ].map((range) => (
-                  <label
-                    key={range.value}
-                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
-                  >
-                    <input
-                      type="radio"
-                      name="price"
-                      value={range.value}
-                      checked={priceRange === range.value}
-                      onChange={(e) => setPriceRange(e.target.value)}
-                      className="h-4 w-4 accent-[#F5C400]"
+              <button
+                type="button"
+                onClick={() => setPriceFilterOpen((v) => !v)}
+                className="mb-1 flex w-full items-center justify-between gap-2"
+              >
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-3.5 w-3.5 text-[#0b2d60]" />
+                  <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                    Precio
+                  </h3>
+                </div>
+                {priceFilterOpen ? (
+                  <Minus className="h-3.5 w-3.5 text-slate-400" />
+                ) : (
+                  <Plus className="h-3.5 w-3.5 text-slate-400" />
+                )}
+              </button>
+
+              {priceFilterOpen && (
+                <div className="pt-3">
+                  <div className="relative h-6">
+                    <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200" />
+                    <div
+                      className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-[#0b2d60]"
+                      style={{
+                        left: `${
+                          ((priceMin - priceBounds.min) /
+                            (priceBounds.max - priceBounds.min || 1)) *
+                          100
+                        }%`,
+                        right: `${
+                          100 -
+                          ((priceMax - priceBounds.min) /
+                            (priceBounds.max - priceBounds.min || 1)) *
+                            100
+                        }%`,
+                      }}
                     />
-                    {range.label}
-                  </label>
-                ))}
-              </div>
+                    <input
+                      type="range"
+                      min={priceBounds.min}
+                      max={priceBounds.max}
+                      step={1}
+                      value={priceMin}
+                      onChange={(e) => {
+                        const next = Number(e.target.value);
+                        setPriceMin(Math.min(next, priceMax));
+                      }}
+                      className="price-range-thumb absolute inset-0 z-20 w-full appearance-none bg-transparent"
+                      aria-label="Precio mínimo"
+                    />
+                    <input
+                      type="range"
+                      min={priceBounds.min}
+                      max={priceBounds.max}
+                      step={1}
+                      value={priceMax}
+                      onChange={(e) => {
+                        const next = Number(e.target.value);
+                        setPriceMax(Math.max(next, priceMin));
+                      }}
+                      className="price-range-thumb absolute inset-0 z-30 w-full appearance-none bg-transparent"
+                      aria-label="Precio máximo"
+                    />
+                  </div>
+                  <p className="mt-2 text-center text-sm text-slate-500">
+                    S/ {priceMin.toFixed(2)} – S/ {priceMax.toFixed(2)}
+                  </p>
+                </div>
+              )}
             </div>
 
             {hasActiveFilters && (
@@ -558,12 +672,7 @@ function ProductsPageContent() {
           {/* Grid */}
           <div>
             {loading ? (
-              <div className="border border-slate-200 bg-white p-12 text-center">
-                <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-[#0b2d60]" />
-                <h3 className="text-lg font-bold text-[#0c1427]">
-                  Cargando productos...
-                </h3>
-              </div>
+              <ProductGridSkeleton count={8} columns={4} />
             ) : error ? (
               <div className="border border-red-200 bg-white p-12 text-center">
                 <Package className="mx-auto mb-4 h-10 w-10 text-red-500" />
@@ -600,23 +709,27 @@ function ProductsPageContent() {
               </div>
             ) : (
               <>
-                <div className="mb-4 text-sm text-slate-500">
-                  Mostrando{' '}
-                  <span className="font-semibold text-[#0b2d60]">
-                    {filteredProducts.length}
-                  </span>{' '}
-                  productos
+                <div className="relative z-40 mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm text-slate-500">
+                    Mostrando{' '}
+                    <span className="font-semibold text-[#0b2d60]">
+                      {sortedProducts.length}
+                    </span>{' '}
+                    productos
+                  </p>
+
+                  <SortSelect value={sortBy} onChange={setSortBy} />
                 </div>
 
                 <div
-                  className={
+                  className={`relative z-0 ${
                     {
                       2: 'grid grid-cols-1 gap-5 sm:grid-cols-2',
                       3: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3',
                       4: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
                       5: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
                     }[gridCols]
-                  }
+                  }`}
                 >
                   {paginatedProducts.map((product, index) => (
                     <motion.div
@@ -697,12 +810,6 @@ function ProductsPageContent() {
                     </button>
                   </div>
                 )}
-
-                <p className="mt-4 text-center text-sm text-slate-500">
-                  Mostrando {startIndex + 1} –{' '}
-                  {Math.min(endIndex, filteredProducts.length)} de{' '}
-                  {filteredProducts.length} productos
-                </p>
               </>
             )}
           </div>

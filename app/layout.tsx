@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
-import { WhatsAppButton } from '@/components/layout/whatsapp-button';
-import { SideCurrencyDock } from '@/components/layout/side-currency-dock';
+import { SiteChrome } from '@/components/layout/site-chrome';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,14 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}>
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <div className="flex-1">{children}</div>
-          <Footer />
-        </div>
-        <SideCurrencyDock />
-        <WhatsAppButton />
+      <body
+        className={`${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
+      >
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

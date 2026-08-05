@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
 import {
-  Loader2,
   ArrowLeft,
   FileText,
   ExternalLink,
@@ -17,6 +16,7 @@ import {
 import { useState, useEffect, use, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ProductDetailSkeleton } from '@/components/ui/skeleton';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -399,16 +399,7 @@ export default function ProductDetailPage({ params }: Props) {
   }, [product]);
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-[1600px] px-6 py-20 lg:px-10 xl:px-12">
-        <div className="flex min-h-[400px] flex-col items-center justify-center">
-          <Loader2 className="mb-4 h-10 w-10 animate-spin text-[#0b2d60]" />
-          <p className="text-sm font-semibold text-slate-600">
-            Cargando producto...
-          </p>
-        </div>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (error || !product) {

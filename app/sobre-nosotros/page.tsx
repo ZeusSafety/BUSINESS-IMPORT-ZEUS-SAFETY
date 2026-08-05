@@ -100,8 +100,8 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. Page hero */}
-      <section className="relative flex h-[280px] items-center justify-center overflow-hidden sm:h-[320px]">
+      {/* 1. Page hero — estilo Blog */}
+      <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[300px] lg:h-[340px]">
         <Image
           src="/zeus2.jpg"
           alt=""
@@ -110,15 +110,19 @@ export default function AboutPage() {
           className="object-cover object-center"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-[#0b2d60]/75" />
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
-          className="relative z-10 text-4xl font-black uppercase tracking-wide text-white sm:text-5xl lg:text-6xl"
-        >
-          Sobre nosotros
-        </motion.h1>
+        <div className="absolute inset-0 bg-[#0b2d60]/72" />
+        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
+          <p className="mb-2 text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+            Empresa
+          </p>
+          <h1 className="text-4xl font-black uppercase tracking-wide text-white sm:text-5xl">
+            Sobre <span className="text-[#F5C400]">nosotros</span>
+          </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-white/85 sm:text-base">
+            Conoce a Zeus Safety: importadores y especialistas en EPP industrial
+            para operaciones seguras en todo el Perú.
+          </p>
+        </div>
       </section>
 
       <HomeAbout />

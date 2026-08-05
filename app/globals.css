@@ -188,3 +188,58 @@
   background: transparent !important;
   border: none !important;
 }
+
+/* Dual price range thumbs (catálogo) */
+.price-range-thumb {
+  pointer-events: none;
+  height: 100%;
+}
+
+.price-range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #0b2d60;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(11, 45, 96, 0.35);
+  cursor: pointer;
+  margin-top: -6px;
+}
+
+.price-range-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #0b2d60;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(11, 45, 96, 0.35);
+  cursor: pointer;
+}
+
+.price-range-thumb::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 4px;
+}
+
+.price-range-thumb::-moz-range-track {
+  background: transparent;
+  height: 4px;
+}
+
+@keyframes zeus-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.zeus-shimmer {
+  animation: zeus-shimmer 1.4s ease-in-out infinite;
+}
+
