@@ -7,7 +7,7 @@ export type QuoteItem = Product & { quantity: number };
 
 type QuoteState = {
   items: QuoteItem[];
-  addItem: (product: Product) => void;
+  addItem: (product: Product, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
@@ -16,16 +16,17 @@ type QuoteState = {
 
 export const useQuoteStore = create<QuoteState>((set, get) => ({
   items: [],
-  addItem: (product) =>
+  addItem: (product, quantity = 1) =>
     set((state) => {
+      const qty = Math.max(1, quantity);
       const exists = state.items.find((item) => item.id === product.id);
       const nextItems = exists
         ? state.items.map((item) =>
             item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
+              ? { ...item, quantity: item.quantity + qty }
               : item,
           )
-        : [...state.items, { ...product, quantity: 1 }];
+        : [...state.items, { ...product, quantity: qty }];
 
       return {
         items: nextItems,

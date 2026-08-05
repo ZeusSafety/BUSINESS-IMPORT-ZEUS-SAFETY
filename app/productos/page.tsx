@@ -7,7 +7,8 @@ import { Product, certifications } from '@/lib/mockData';
 import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Loader2, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 // Tipo para los datos de la API
 type ApiProduct = {
@@ -37,12 +38,18 @@ function generateSlug(name: string): string {
 // Función para mapear categorías de la API a categorías del sistema
 function mapCategory(apiCategory: string): string {
   const categoryMap: Record<string, string> = {
-    'Corporal': 'Protección de Cabeza',
-    'Manual': 'Protección Manual',
-    'Visual': 'Protección Visual',
-    'Respiratoria': 'Protección Respiratoria',
-    'Auditiva': 'Protección Auditiva',
-    'Calzado': 'Calzado de Seguridad',
+    Corporal: 'Protección Corporal',
+    Guantes: 'Protección Manual',
+    Manual: 'Protección Manual',
+    Visual: 'Protección Visual',
+    Lentes: 'Protección Visual',
+    Respiradores: 'Protección Respiratoria',
+    Respiratoria: 'Protección Respiratoria',
+    Auditiva: 'Protección Auditiva',
+    Auditivo: 'Protección Auditiva',
+    Calzado: 'Calzado de Seguridad',
+    Vial: 'Seguridad Vial',
+    Laboral: 'Equipo Laboral',
   };
   return categoryMap[apiCategory] || apiCategory;
 }
@@ -72,11 +79,26 @@ function transformApiProduct(apiProduct: ApiProduct): Product {
     certification: [],
     description: apiProduct.DESCRIPCION || `Producto de seguridad industrial ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
     specs: specs,
-    image: apiProduct.IMG_URL,
+    image: (apiProduct.IMG_URL || '').trim(),
   };
 }
 
 export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#0b2d60]" />
+        </div>
+      }
+    >
+      <ProductsPageContent />
+    </Suspense>
+  );
+}
+
+function ProductsPageContent() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]); // Todos los productos del catálogo completo
   const [starProducts, setStarProducts] = useState<Product[]>([]); // Productos estrella cargados directamente
@@ -92,7 +114,22 @@ export default function ProductsPage() {
   const [starProductIds, setStarProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [gridCols, setGridCols] = useState<2 | 3 | 4 | 5>(4);
   const productsPerPage = 12;
+
+  // Filtro desde URL (?categoria=...)
+  useEffect(() => {
+    const cat = searchParams.get('categoria');
+    if (!cat?.trim()) return;
+    const decoded = cat.trim();
+    const match =
+      categories.find(
+        (c) => c.toLowerCase() === decoded.toLowerCase(),
+      ) || decoded;
+    setSelectedCategories([match]);
+    setShowTopProducts(false);
+    setCurrentPage(1);
+  }, [searchParams, categories]);
 
   // Cargar IDs de productos estrella (TODOS los productos estrella, no solo uno por categoría)
   useEffect(() => {
@@ -287,9 +324,9 @@ export default function ProductsPage() {
       </section>
 
       <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
-        {/* Search */}
+        {/* Search + columnas */}
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full max-w-2xl">
+          <div className="relative min-w-0 flex-1">
             <div className="flex items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#F5C400]">
               <Search className="mr-3 h-4 w-4 shrink-0 text-slate-400" />
               <Input
@@ -300,14 +337,50 @@ export default function ProductsPage() {
               />
             </div>
           </div>
-          <Button
-            variant="outline"
-            className="h-12 rounded-none border-slate-200 lg:hidden"
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-          >
-            <SlidersHorizontal className="mr-2 h-4 w-4" />
-            Filtros
-          </Button>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <div
+              className="inline-flex items-center gap-0.5 rounded-md border border-slate-200 bg-white p-1"
+              role="group"
+              aria-label="Columnas del catálogo"
+            >
+              {([2, 3, 4, 5] as const).map((cols) => (
+                <button
+                  key={cols}
+                  type="button"
+                  onClick={() => setGridCols(cols)}
+                  title={`${cols} columnas`}
+                  aria-label={`Mostrar ${cols} columnas`}
+                  aria-pressed={gridCols === cols}
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded transition-colors ${
+                    gridCols === cols
+                      ? 'bg-[#0b2d60] text-white'
+                      : 'text-slate-400 hover:bg-slate-100 hover:text-[#0b2d60]'
+                  }`}
+                >
+                  <span className="flex h-3.5 items-stretch gap-[2px]">
+                    {Array.from({ length: cols }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`w-[2.5px] flex-1 rounded-[0.5px] ${
+                          gridCols === cols ? 'bg-white' : 'bg-current'
+                        }`}
+                      />
+                    ))}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              className="h-12 rounded-none border-slate-200 lg:hidden"
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+            >
+              <SlidersHorizontal className="mr-2 h-4 w-4" />
+              Filtros
+            </Button>
+          </div>
         </div>
 
         {hasActiveFilters && (
@@ -535,7 +608,16 @@ export default function ProductsPage() {
                   productos
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                <div
+                  className={
+                    {
+                      2: 'grid grid-cols-1 gap-5 sm:grid-cols-2',
+                      3: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3',
+                      4: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+                      5: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
+                    }[gridCols]
+                  }
+                >
                   {paginatedProducts.map((product, index) => (
                     <motion.div
                       key={product.id}

@@ -36,6 +36,8 @@ function openWhatsApp(text: string) {
 export function WhatsAppButton() {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('Hola');
+  /** Solo la primera vez el hover abre el chat; tras cerrar, solo click */
+  const allowHoverOpenRef = useRef(true);
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,14 +49,24 @@ export function WhatsAppButton() {
     }
   };
 
-  const openPanel = useCallback(() => {
+  const closeAndLockHover = useCallback(() => {
     clearHoverClose();
-    setOpen(true);
+    allowHoverOpenRef.current = false;
+    setOpen(false);
   }, []);
 
-  const scheduleClose = useCallback(() => {
+  const onHoverEnter = useCallback(() => {
     clearHoverClose();
-    hoverCloseTimer.current = setTimeout(() => setOpen(false), 280);
+    if (allowHoverOpenRef.current) {
+      setOpen(true);
+    }
+  }, []);
+
+  const onHoverLeave = useCallback(() => {
+    clearHoverClose();
+    hoverCloseTimer.current = setTimeout(() => {
+      setOpen(false);
+    }, 280);
   }, []);
 
   useEffect(() => {
@@ -66,7 +78,7 @@ export function WhatsAppButton() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && open) closeAndLockHover();
     };
     const onClickOutside = (e: MouseEvent) => {
       if (
@@ -74,7 +86,7 @@ export function WhatsAppButton() {
         rootRef.current &&
         !rootRef.current.contains(e.target as Node)
       ) {
-        setOpen(false);
+        closeAndLockHover();
       }
     };
     document.addEventListener('keydown', onKey);
@@ -84,26 +96,32 @@ export function WhatsAppButton() {
       document.removeEventListener('mousedown', onClickOutside);
       clearHoverClose();
     };
-  }, [open]);
+  }, [open, closeAndLockHover]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    openWhatsApp(
-      message.trim()
-        ? message.trim()
-        : DEFAULT_MESSAGE,
-    );
-    setOpen(false);
+    openWhatsApp(message.trim() ? message.trim() : DEFAULT_MESSAGE);
+    closeAndLockHover();
+  };
+
+  const toggleByClick = () => {
+    clearHoverClose();
+    setOpen((prev) => {
+      if (prev) {
+        allowHoverOpenRef.current = false;
+        return false;
+      }
+      return true;
+    });
   };
 
   return (
     <div
       ref={rootRef}
       className="fixed bottom-5 right-5 z-[70]"
-      onMouseEnter={openPanel}
-      onMouseLeave={scheduleClose}
+      onMouseEnter={onHoverEnter}
+      onMouseLeave={onHoverLeave}
     >
-      {/* Chat panel */}
       <div
         className={`mb-3 w-[min(340px,calc(100vw-2.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[#0b2d60]/10 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.28)] transition-all duration-200 ${
           open
@@ -114,7 +132,6 @@ export function WhatsAppButton() {
         aria-label="Chat Zeus Safety"
         aria-hidden={!open}
       >
-        {/* Header */}
         <div className="flex items-center gap-3 bg-[#0b2d60] px-4 py-3.5">
           <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-[#F5C400] bg-white">
             <Image
@@ -135,14 +152,13 @@ export function WhatsAppButton() {
           <button
             type="button"
             aria-label="Cerrar chat"
-            onClick={() => setOpen(false)}
+            onClick={closeAndLockHover}
             className="flex h-8 w-8 items-center justify-center text-white/80 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-4 w-4" strokeWidth={2.5} />
           </button>
         </div>
 
-        {/* Messages */}
         <div className="space-y-3 bg-[#eef2f7] px-4 py-4">
           <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-3.5 py-2.5 text-sm leading-relaxed text-[#0c1427] shadow-sm">
             Hola 👋 ¿Cómo podemos ayudarte?
@@ -155,7 +171,6 @@ export function WhatsAppButton() {
           </p>
         </div>
 
-        {/* Composer */}
         <form
           onSubmit={handleSubmit}
           className="flex items-center gap-2 border-t border-slate-200 bg-white px-3 py-3"
@@ -179,12 +194,11 @@ export function WhatsAppButton() {
         </form>
       </div>
 
-      {/* FAB */}
       <button
         type="button"
         aria-label={open ? 'Cerrar WhatsApp' : 'Abrir WhatsApp'}
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggleByClick}
         className="ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)] transition-transform hover:scale-105 hover:bg-[#20BA5A]"
       >
         {open ? (

@@ -13,14 +13,13 @@ export function AddToQuoteButton({ product }: Props) {
   const addItem = useQuoteStore((state) => state.addItem);
 
   return (
-    <Button 
-      size="lg" 
-      className="w-full h-12 bg-gradient-to-r from-[#103a7b] to-[#00b5e2] text-white hover:from-[#0b2d60] hover:to-[#0099cc] shadow-lg hover:shadow-xl font-bold transition-all"
+    <Button
+      size="lg"
+      className="h-12 w-full rounded-none bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] shadow-none transition-colors hover:bg-[#ffd233]"
       onClick={() => addItem(product)}
     >
-      <Plus className="h-5 w-5 mr-2" />
+      <Plus className="mr-2 h-5 w-5" strokeWidth={2.5} />
       Agregar a cotización
     </Button>
   );
 }
-
