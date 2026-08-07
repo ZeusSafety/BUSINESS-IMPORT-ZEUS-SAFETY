@@ -67,17 +67,17 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative mt-20 text-slate-100 sm:mt-24">
+    <footer className="relative bg-white pt-16 text-slate-100 sm:pt-20">
       {/* Cinta CTA centrada en el borde blanco / navy */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex -translate-y-1/2 justify-center px-4">
+      <div className="pointer-events-none absolute inset-x-0 top-16 z-20 flex -translate-y-1/2 justify-center px-4 sm:top-20">
         <div
-          className="pointer-events-auto flex w-full max-w-[1100px] items-center justify-between gap-4 bg-[#F5C400] py-3.5 pl-6 pr-5 shadow-[0_14px_40px_rgba(11,45,96,0.3)] sm:gap-6 sm:py-4 sm:pl-8 sm:pr-6 lg:pl-10 lg:pr-7"
+          className="pointer-events-auto flex w-full max-w-[1100px] items-center justify-between gap-4 bg-[#F5C400] py-5 pl-6 pr-5 shadow-[0_14px_40px_rgba(11,45,96,0.3)] sm:gap-6 sm:py-6 sm:pl-8 sm:pr-6 lg:pl-10 lg:pr-7"
           style={{
             clipPath:
               'polygon(0 0, calc(100% - 52px) 0, 100% 50%, calc(100% - 52px) 100%, 0 100%)',
           }}
         >
-          <p className="min-w-0 flex-1 whitespace-nowrap text-[12px] font-semibold text-[#0b2d60] sm:text-[15px] lg:text-base">
+          <p className="min-w-0 flex-1 text-[13px] font-semibold leading-snug text-[#0b2d60] sm:text-[15px] lg:text-base">
             ¿Tienes alguna consulta?{' '}
             <span className="font-black">
               Comunícate con un asesor especializado
@@ -87,7 +87,7 @@ export function Footer() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noreferrer"
-            className="mr-6 inline-flex h-10 shrink-0 items-center gap-2 bg-[#25D366] px-4 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:mr-8 sm:h-11 sm:gap-2.5 sm:px-5 sm:text-xs"
+            className="mr-6 inline-flex h-11 shrink-0 items-center gap-2 bg-[#25D366] px-4 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:mr-8 sm:h-12 sm:gap-2.5 sm:px-5 sm:text-xs"
           >
             <WhatsAppIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             Atención en línea

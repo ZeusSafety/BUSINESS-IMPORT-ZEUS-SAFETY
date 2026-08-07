@@ -77,7 +77,7 @@ export function ImportanteModal() {
             role="dialog"
             aria-modal="true"
             aria-label="¿Necesitas algo más?"
-            className="relative z-10 w-full max-w-[min(920px,96vw)] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+            className="relative z-10 w-full max-w-[min(560px,92vw)] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
             initial={{ opacity: 0, scale: 0.72, y: 28 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 16 }}
@@ -87,9 +87,9 @@ export function ImportanteModal() {
               type="button"
               onClick={close}
               aria-label="Cerrar"
-              className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-white shadow-lg transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+              className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-white shadow-lg transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60] sm:right-3 sm:top-3 sm:h-9 sm:w-9"
             >
-              <X className="h-5 w-5" strokeWidth={2.5} />
+              <X className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
             </button>
 
             <div className="relative w-full bg-[#0b2d60]">
@@ -99,8 +99,8 @@ export function ImportanteModal() {
                 width={1401}
                 height={1123}
                 priority
-                quality={95}
-                sizes="(max-width: 920px) 96vw, 920px"
+                quality={90}
+                sizes="(max-width: 560px) 92vw, 560px"
                 className="h-auto w-full"
               />
 
@@ -127,9 +127,9 @@ export function ImportanteModal() {
               />
 
               <Link
-                href="/cotizacion"
+                href="/asesores"
                 onClick={close}
-                className="absolute bottom-[6%] left-[5%] h-[10%] min-h-[36px] w-[38%] max-w-[240px]"
+                className="absolute bottom-[6%] left-[5%] h-[10%] min-h-[32px] w-[38%] max-w-[200px]"
                 aria-label="Contáctanos"
               />
             </div>

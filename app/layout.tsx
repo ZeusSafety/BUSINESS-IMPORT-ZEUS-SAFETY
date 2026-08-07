@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${inter.variable} min-h-screen bg-slate-50 text-slate-900 antialiased`}
+        className={`${inter.variable} min-h-screen bg-white text-slate-900 antialiased`}
       >
         <SiteChrome>{children}</SiteChrome>
       </body>
