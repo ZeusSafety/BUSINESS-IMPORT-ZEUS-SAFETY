@@ -10,8 +10,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Zeus Safety Next',
+  title: 'Zeus Safety',
   description: 'EPP y seguridad industrial para operaciones críticas.',
+  icons: {
+    icon: [{ url: '/Logo de Zeus.png', type: 'image/png' }],
+    apple: [{ url: '/Logo de Zeus.png', type: 'image/png' }],
+    shortcut: '/Logo de Zeus.png',
+  },
 };
 
 export default function RootLayout({
