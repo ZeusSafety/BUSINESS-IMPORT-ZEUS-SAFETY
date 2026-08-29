@@ -72,12 +72,12 @@ export function HomeAbout() {
           >
             <div className="mb-3 inline-flex items-center gap-2.5">
               <span className="h-4 w-1.5 bg-[#F5C400]" />
-              <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-                Nosotros
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+                Sobre la empresa
               </p>
             </div>
 
-            <h2 className="mb-4 text-2xl font-black leading-[1.15] tracking-tight text-[#0b2d60] sm:text-3xl">
+            <h2 className="mb-4 text-xl font-black leading-[1.15] tracking-tight text-[#0b2d60] sm:text-2xl">
               Protección industrial confiable para tu operación
             </h2>
 

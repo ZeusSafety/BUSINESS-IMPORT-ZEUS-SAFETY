@@ -3,13 +3,9 @@
 import { useQuoteStore } from '@/store/quoteStore';
 import Link from 'next/link';
 import Image from 'next/image';
+import { NavbarTopBar } from '@/components/layout/navbar-top-bar';
 import {
-  Clock,
-  Facebook,
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
+  ChevronDown,
   Menu,
   Search,
   ShoppingCart,
@@ -18,21 +14,109 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
-const EMAIL = 'ventas@zeussafety.com';
-const ADDRESS = 'Av. Industrial 123, Lima';
+type NavChild = { href: string; label: string };
 
-const navLinks = [
+type NavLink = {
+  href: string;
+  label: string;
+  children?: NavChild[];
+};
+
+const navLinks: NavLink[] = [
   { href: '/', label: 'Inicio' },
-  { href: '/sobre-nosotros', label: 'Nosotros' },
+  {
+    href: '/sobre-nosotros',
+    label: 'Nosotros',
+    children: [
+      { href: '/sobre-nosotros#nosotros', label: 'La empresa' },
+      { href: '/sobre-nosotros#empresa', label: 'Quiénes somos' },
+      { href: '/sobre-nosotros#confia', label: 'Confía en Zeus' },
+      { href: '/sobre-nosotros#cobertura-envios', label: 'Cobertura y envíos' },
+      { href: '/sobre-nosotros#import-asia', label: 'Importación Asia' },
+    ],
+  },
   { href: '/productos', label: 'Catálogo' },
   { href: '/cotizacion', label: 'Arma tu cotización' },
   { href: '/blog', label: 'Blog' },
-  { href: '/asesores', label: 'Contáctanos' },
+  {
+    href: '/asesores',
+    label: 'Contáctanos',
+    children: [
+      { href: '/asesores#asesores', label: 'Nuestros asesores' },
+      { href: '/asesores#contacto', label: 'Contacto' },
+      { href: '/libro-de-reclamaciones', label: 'Libro de reclamaciones' },
+      { href: '/cotizacion', label: 'Arma tu cotización' },
+    ],
+  },
 ];
+
+const navItemClass =
+  'group relative inline-flex h-[72px] shrink-0 items-center gap-1 whitespace-nowrap px-3 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4';
+
+function NavDropdown({
+  link,
+  active,
+}: {
+  link: NavLink & { children: NavChild[] };
+  active: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="relative shrink-0"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <Link
+        href={link.href}
+        className={`${navItemClass} ${
+          active ? 'text-[#F5C400]' : 'text-[#0c1427] hover:text-[#F5C400]'
+        }`}
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        {link.label}
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          strokeWidth={2.5}
+        />
+        <span
+          aria-hidden
+          className={`absolute bottom-0 left-3 right-3 h-[2px] origin-left bg-[#F5C400] transition-transform duration-200 xl:left-4 xl:right-4 ${
+            active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+          }`}
+        />
+      </Link>
+
+      <div
+        className={`absolute left-0 top-full z-50 min-w-[220px] transition-all duration-200 ${
+          open
+            ? 'pointer-events-auto translate-y-0 opacity-100'
+            : 'pointer-events-none -translate-y-1 opacity-0'
+        }`}
+      >
+        <div className="absolute -top-1 left-0 right-0 h-1" aria-hidden />
+        <div className="flex flex-col gap-2 border-t-2 border-[#F5C400] bg-[#0b2d60] p-3 shadow-[0_16px_40px_rgba(11,45,96,0.35)]">
+          {link.children.map((child) => (
+            <Link
+              key={child.href}
+              href={child.href}
+              className="border border-white/90 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+            >
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function Navbar() {
   const items = useQuoteStore((state) => state.items);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
@@ -41,13 +125,20 @@ export function Navbar() {
     [items],
   );
 
-  const isActive = (href: string) => {
+  const isActive = (href: string, children?: NavChild[]) => {
     if (href === '/') return pathname === '/';
-    return pathname === href || pathname.startsWith(`${href}/`);
+    const baseActive = pathname === href || pathname.startsWith(`${href}/`);
+    if (baseActive) return true;
+    if (children) {
+      const base = href.split('#')[0];
+      return pathname === base || pathname.startsWith(`${base}/`);
+    }
+    return false;
   };
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setMobileExpanded(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -63,57 +154,7 @@ export function Navbar() {
         scrolled ? 'shadow-[0_8px_28px_rgba(11,45,96,0.1)]' : 'shadow-none'
       }`}
     >
-      <div className="hidden border-b border-[#0b2d60]/10 bg-[#0b2d60] lg:block">
-        <div className="mx-auto flex h-9 max-w-[1600px] items-center justify-between gap-4 px-6 xl:px-10">
-          <div className="flex items-center gap-4 text-white/90">
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-              className="transition-colors hover:text-[#F5C400]"
-            >
-              <Facebook className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="transition-colors hover:text-[#F5C400]"
-            >
-              <Instagram className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="LinkedIn"
-              className="transition-colors hover:text-[#F5C400]"
-            >
-              <Linkedin className="h-3.5 w-3.5" />
-            </a>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-[12px] text-white/85">
-            <a
-              href={`mailto:${EMAIL}`}
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-[#F5C400]"
-            >
-              <Mail className="h-3.5 w-3.5 text-[#F5C400]" />
-              {EMAIL}
-            </a>
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#F5C400]" />
-              {ADDRESS}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-[#F5C400]" />
-              Lun – Sáb: 9:00 – 17:30
-            </span>
-          </div>
-        </div>
-      </div>
+      <NavbarTopBar />
 
       <div className="border-b border-slate-200/80 bg-white">
         <div className="mx-auto flex h-[72px] max-w-[1600px] items-center gap-6 px-6 xl:px-10">
@@ -131,14 +172,23 @@ export function Navbar() {
             />
           </Link>
 
-          <nav className="hidden flex-1 items-center gap-1 lg:flex xl:gap-2">
+          <nav className="hidden min-w-0 flex-1 items-center gap-1 lg:flex xl:gap-2">
             {navLinks.map((link) => {
-              const active = isActive(link.href);
+              const active = isActive(link.href, link.children);
+              if (link.children?.length) {
+                return (
+                  <NavDropdown
+                    key={link.href}
+                    link={link as NavLink & { children: NavChild[] }}
+                    active={active}
+                  />
+                );
+              }
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`group relative px-3 py-2 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4 ${
+                  className={`${navItemClass} ${
                     active
                       ? 'text-[#F5C400]'
                       : 'text-[#0c1427] hover:text-[#F5C400]'
@@ -147,7 +197,7 @@ export function Navbar() {
                   {link.label}
                   <span
                     aria-hidden
-                    className={`absolute bottom-0.5 left-3 right-3 h-[2px] origin-left bg-[#F5C400] transition-transform duration-200 xl:left-4 xl:right-4 ${
+                    className={`absolute bottom-0 left-3 right-3 h-[2px] origin-left bg-[#F5C400] transition-transform duration-200 xl:left-4 xl:right-4 ${
                       active
                         ? 'scale-x-100'
                         : 'scale-x-0 group-hover:scale-x-100'
@@ -205,7 +255,42 @@ export function Navbar() {
         <div className="border-b border-slate-200 bg-white lg:hidden">
           <nav className="mx-auto flex max-w-[1600px] flex-col px-6 py-3">
             {navLinks.map((link) => {
-              const active = isActive(link.href);
+              const active = isActive(link.href, link.children);
+              if (link.children?.length) {
+                const expanded = mobileExpanded === link.href;
+                return (
+                  <div key={link.href} className="border-b border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMobileExpanded(expanded ? null : link.href)
+                      }
+                      className={`flex w-full items-center justify-between py-3.5 pl-3 text-sm font-bold uppercase tracking-wide transition-colors ${
+                        active ? 'text-[#F5C400]' : 'text-[#0c1427]'
+                      }`}
+                    >
+                      {link.label}
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {expanded && (
+                      <div className="mb-3 flex flex-col gap-2 bg-[#0b2d60] p-3">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="border border-white/80 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
               return (
                 <Link
                   key={link.href}

@@ -83,9 +83,14 @@
   animation: zeus-brands-scroll-reverse 45s linear infinite;
 }
 
+.zeus-marquee-shipping {
+  animation: zeus-brands-scroll 22s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .zeus-marquee,
   .zeus-marquee-reverse,
+  .zeus-marquee-shipping,
   .zeus-brands-track {
     animation: none;
   }

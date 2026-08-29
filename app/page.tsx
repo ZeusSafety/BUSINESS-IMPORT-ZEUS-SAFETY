@@ -1,8 +1,9 @@
 import { HeroSection } from '@/components/sections/hero';
 import { HomeCategoryStrip } from '@/components/sections/home-category-strip';
-import { HomeFeaturedCategories } from '@/components/sections/home-featured-categories';
+import { HomeWholesaleIntro } from '@/components/sections/home-wholesale-intro';
+import { HomeShippingMarquee } from '@/components/sections/home-shipping-marquee';
+import { HomeFeaturedProducts } from '@/components/sections/home-featured-products';
 import { HomeDistributorBanner } from '@/components/sections/home-distributor-banner';
-import { HomeParaTi } from '@/components/sections/home-para-ti';
 import { HomeBestsellers } from '@/components/sections/home-bestsellers';
 import { HomeCoverageMap } from '@/components/sections/home-coverage-map';
 import { TrustSection } from '@/components/sections/trust';
@@ -13,9 +14,10 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-white text-slate-900">
       <HeroSection />
       <HomeCategoryStrip />
-      <HomeFeaturedCategories />
+      <HomeWholesaleIntro />
+      <HomeShippingMarquee />
+      <HomeFeaturedProducts />
       <HomeDistributorBanner />
-      <HomeParaTi />
       <HomeBestsellers />
       <HomeCoverageMap />
       <TrustSection />

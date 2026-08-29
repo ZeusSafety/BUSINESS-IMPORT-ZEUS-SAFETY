@@ -1,89 +1,113 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const SLIDES = [
+  {
+    src: '/home-hero-guantes.png',
+    alt: 'Guantes de poliuretano Pufflex — Zeus Safety. Protección de alto nivel.',
+    href: '/productos?categoria=Protecci%C3%B3n%20Manual',
+  },
+  {
+    src: '/home-hero-buffalo.png',
+    alt: 'Botas Buffalo de cuero con puntas de acero — Zeus Safety.',
+    href: '/productos?categoria=Calzado%20de%20Seguridad',
+  },
+] as const;
+
+const AUTO_MS = 6000;
+/** Misma proporción que el banner de guantes (1935×813) */
+const HERO_ASPECT = '1935 / 813';
 
 export function HeroSection() {
-  const scrollToCategories = () => {
-    document
-      .getElementById('categorias-inicio')
-      ?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  const goTo = useCallback((next: number, dir: number) => {
+    setDirection(dir);
+    setIndex((next + SLIDES.length) % SLIDES.length);
+  }, []);
+
+  const prev = useCallback(() => goTo(index - 1, -1), [goTo, index]);
+  const next = useCallback(() => goTo(index + 1, 1), [goTo, index]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setDirection(1);
+      setIndex((i) => (i + 1) % SLIDES.length);
+    }, AUTO_MS);
+    return () => window.clearInterval(timer);
+  }, [index]);
+
+  const slide = SLIDES[index];
 
   return (
-    <section className="relative h-[760px] overflow-hidden bg-white sm:h-[860px] lg:h-[980px]">
-      <Image
-        src="/hero.png"
-        alt="Zeus Safety — EPP industrial certificado"
-        fill
-        priority
-        quality={95}
-        sizes="100vw"
-        className="object-cover object-[center_35%]"
-      />
-
-      <div className="absolute inset-0 z-10 flex items-start pt-16 sm:pt-20 lg:pt-24">
-        <div className="mx-auto w-full max-w-[1600px] px-6 lg:px-10 xl:px-12">
+    <section className="relative w-full overflow-hidden bg-[#ececec]">
+      <div
+        className="relative w-full"
+        style={{ aspectRatio: HERO_ASPECT }}
+      >
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: 'easeOut' }}
-            className="max-w-xl space-y-5 lg:max-w-2xl"
+            key={slide.src}
+            custom={direction}
+            initial={{ opacity: 0, x: direction > 0 ? 48 : -48 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction > 0 ? -48 : 48 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
           >
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400] drop-shadow-sm">
-              Zeus Safety
-            </p>
-
-            <h1 className="text-3xl font-black leading-[1.05] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-4xl lg:text-[2.75rem]">
-              Protegemos a tu equipo
-              <span className="mt-1 block text-[#F5C400]">
-                en campo y en planta
-              </span>
-            </h1>
-
-            <p className="max-w-md text-sm leading-relaxed text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] sm:text-base">
-              EPP certificado y asesoría especializada para minería, energía,
-              construcción y oil & gas en todo el Perú.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <Link
-                href="/productos"
-                className="group inline-flex h-11 items-center gap-2 bg-[#F5C400] px-6 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-              >
-                Ver catálogo
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                href="/cotizacion"
-                className="inline-flex h-11 items-center border-2 border-white bg-white/10 px-6 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
-              >
-                Contáctanos
-              </Link>
-            </div>
+            <Link href={slide.href} className="block h-full w-full">
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                priority={index === 0}
+                quality={100}
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </Link>
           </motion.div>
-        </div>
-      </div>
+        </AnimatePresence>
 
-      {/* Acciones (ya no carrusel): bajar / catálogo */}
-      <div className="absolute bottom-24 right-6 z-20 flex sm:bottom-32 sm:right-10 lg:bottom-40 lg:right-12">
         <button
           type="button"
-          onClick={scrollToCategories}
-          aria-label="Ver categorías de productos"
-          className="flex h-12 w-12 items-center justify-center bg-[#0b2d60] text-white transition-colors hover:bg-[#103a7b] sm:h-14 sm:w-14"
+          onClick={prev}
+          aria-label="Banner anterior"
+          className="absolute left-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-[#0b2d60] text-white shadow-[0_4px_16px_rgba(11,45,96,0.35)] transition-colors hover:bg-[#103a7b] sm:left-5 sm:h-12 sm:w-12 lg:left-8"
         >
-          <ChevronDown className="h-6 w-6" strokeWidth={2.5} />
+          <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
         </button>
-        <Link
-          href="/productos"
-          aria-label="Ir al catálogo"
-          className="flex h-12 w-12 items-center justify-center bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#ffd233] sm:h-14 sm:w-14"
+
+        <button
+          type="button"
+          onClick={next}
+          aria-label="Siguiente banner"
+          className="absolute right-3 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center bg-[#F5C400] text-[#0b2d60] shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-colors hover:bg-[#ffd233] sm:right-5 sm:h-12 sm:w-12 lg:right-8"
         >
           <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
-        </Link>
+        </button>
+
+        <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-5">
+          {SLIDES.map((s, i) => (
+            <button
+              key={s.src}
+              type="button"
+              onClick={() => goTo(i, i > index ? 1 : -1)}
+              aria-label={`Ir al banner ${i + 1}`}
+              className={`h-1.5 transition-all duration-300 ${
+                i === index
+                  ? 'w-8 bg-[#F5C400]'
+                  : 'w-3 bg-[#0b2d60]/35 hover:bg-[#0b2d60]/55'
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

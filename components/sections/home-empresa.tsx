@@ -14,7 +14,7 @@ import {
   Target,
 } from 'lucide-react';
 
-const pillars = [
+const missionVision = [
   {
     num: '01',
     title: 'Misión',
@@ -29,6 +29,9 @@ const pillars = [
       'Ser el referente en seguridad industrial en Latinoamérica por excelencia operativa e innovación.',
     icon: Eye,
   },
+];
+
+const values = [
   {
     num: '03',
     title: 'Seguridad',
@@ -130,22 +133,86 @@ function StatCard({
   );
 }
 
+function PillarCard({
+  item,
+  index,
+}: {
+  item: (typeof missionVision)[number];
+  index: number;
+}) {
+  const Icon = item.icon;
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.06 }}
+      className="group flex flex-col border border-slate-200/80 bg-white p-5 shadow-[0_6px_20px_rgba(11,45,96,0.04)] transition-shadow hover:border-[#F5C400]/50 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)] sm:p-6"
+    >
+      <div className="mb-5 flex items-center justify-between">
+        <span className="flex h-10 w-10 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
+          <Icon className="h-5 w-5" strokeWidth={2.25} />
+        </span>
+        <span className="text-[11px] font-bold tracking-widest text-slate-300">
+          {item.num}
+        </span>
+      </div>
+      <h3 className="text-sm font-black uppercase tracking-wide text-[#0b2d60]">
+        {item.title}
+      </h3>
+      <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-500">
+        {item.description}
+      </p>
+      <div className="mt-5 h-0.5 w-8 bg-[#F5C400] transition-all group-hover:w-14" />
+    </motion.article>
+  );
+}
+
+function SectionHeading({
+  label,
+  title,
+  subtitle,
+}: {
+  label: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="mb-6 flex items-center gap-3 sm:mb-7">
+      <span className="hidden h-9 w-1.5 bg-[#F5C400] sm:block" />
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+          {label}
+        </p>
+        <h3 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="mt-0.5 hidden text-xs text-slate-500 sm:block">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function HomeEmpresa() {
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.4 });
 
   return (
-    <section className="overflow-hidden bg-white">
+    <section id="empresa" className="scroll-mt-28 overflow-hidden bg-white">
       <div className="bg-[#F5C400]">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:py-12 xl:px-12">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10 lg:flex-row lg:items-end lg:justify-between lg:px-10 xl:px-12">
           <div className="max-w-xl">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#0b2d60]/70">
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#0b2d60]/70">
               Quiénes somos
             </p>
-            <h2 className="text-3xl font-black uppercase leading-[1.05] tracking-tight text-[#0b2d60] sm:text-4xl lg:text-5xl">
+            <h2 className="text-2xl font-black uppercase leading-[1.05] tracking-tight text-[#0b2d60] sm:text-3xl">
               Nuestra empresa
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-[#0b2d60]/85 sm:text-base">
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#0b2d60]/85">
               Combinamos distribución de EPP certificado, asesoría consultiva y
               logística para proyectos de gran escala. Nuestro compromiso:{' '}
               <span className="font-bold text-[#0b2d60]">
@@ -173,56 +240,44 @@ export function HomeEmpresa() {
         </div>
       </div>
 
-      <div className="bg-white">
-        <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-10 lg:py-14 xl:px-12">
-          <div
-            ref={statsRef}
-            className="mb-10 grid gap-3 sm:mb-12 sm:grid-cols-3 sm:gap-4"
-          >
-            {stats.map((stat, i) => (
-              <StatCard
-                key={stat.label}
-                value={stat.value}
-                suffix={stat.suffix}
-                label={stat.label}
-                icon={stat.icon}
-                active={statsInView}
-                delay={i * 0.08}
-              />
-            ))}
-          </div>
+      <div className="mx-auto max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-12 xl:px-12">
+        <div
+          ref={statsRef}
+          className="mb-12 grid gap-3 sm:grid-cols-3 sm:gap-4 lg:mb-14"
+        >
+          {stats.map((stat, i) => (
+            <StatCard
+              key={stat.label}
+              value={stat.value}
+              suffix={stat.suffix}
+              label={stat.label}
+              icon={stat.icon}
+              active={statsInView}
+              delay={i * 0.08}
+            />
+          ))}
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-            {pillars.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.article
-                  key={item.title}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group flex flex-col border border-slate-200/80 bg-white p-5 shadow-[0_6px_20px_rgba(11,45,96,0.04)] transition-shadow hover:border-[#F5C400]/50 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)] sm:p-6"
-                >
-                  <div className="mb-5 flex items-center justify-between">
-                    <span className="flex h-10 w-10 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
-                      <Icon className="h-5 w-5" strokeWidth={2.25} />
-                    </span>
-                    <span className="text-[11px] font-bold tracking-widest text-slate-300">
-                      {item.num}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-black uppercase tracking-wide text-[#0b2d60]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-500">
-                    {item.description}
-                  </p>
-                  <div className="mt-5 h-0.5 w-8 bg-[#F5C400] transition-all group-hover:w-14" />
-                </motion.article>
-              );
-            })}
-          </div>
+        <SectionHeading
+          label="Propósito"
+          title="Misión y visión"
+          subtitle="El norte que guía cada decisión en Zeus Safety"
+        />
+        <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-14 lg:gap-5">
+          {missionVision.map((item, index) => (
+            <PillarCard key={item.title} item={item} index={index} />
+          ))}
+        </div>
+
+        <SectionHeading
+          label="Cultura Zeus"
+          title="Valores"
+          subtitle="Los principios que sostienen nuestra operación diaria"
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:gap-5">
+          {values.map((item, index) => (
+            <PillarCard key={item.title} item={item} index={index} />
+          ))}
         </div>
       </div>
     </section>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useQuoteStore } from '@/store/quoteStore';
 import type { Product } from '@/lib/mockData';
+import { getDisplayPrice } from '@/lib/display-price';
 import { Spinner } from '@/components/ui/spinner';
 
 type ApiProduct = {
@@ -56,14 +57,14 @@ function mapCategory(apiCategory: string): string {
 }
 
 function transformApiProduct(apiProduct: ApiProduct): Product {
-  const price = parseFloat(apiProduct.PRECIO) || 0;
-  return {
+  const apiPrice = parseFloat(apiProduct.PRECIO) || 0;
+  const base: Product = {
     id: `prd-${apiProduct.ID}`,
     name: apiProduct.NOMBRE,
     slug: generateSlug(apiProduct.NOMBRE),
     category: mapCategory(apiProduct.CATEGORIA) as Product['category'],
     brand: 'Zeus Safety',
-    price,
+    price: apiPrice,
     certification: [],
     description:
       apiProduct.DESCRIPCION ||
@@ -71,6 +72,7 @@ function transformApiProduct(apiProduct: ApiProduct): Product {
     specs: [],
     image: apiProduct.IMG_URL?.trim() || '',
   };
+  return { ...base, price: getDisplayPrice(base) };
 }
 
 function hasImage(url?: string) {

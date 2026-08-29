@@ -286,19 +286,28 @@ export function HomePeruCoverage() {
   const currentPath = spokePath(dest);
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-white">
-      <div className="relative mx-auto w-full max-w-[1600px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
-        <div className="mb-8 text-center sm:mb-10">
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-            Cobertura
-          </p>
-          <h3 className="text-2xl font-black tracking-tight text-[#0b2d60] sm:text-3xl lg:text-4xl">
-            Llegamos a todo el Perú
-          </h3>
-          <p className="mx-auto mt-2 max-w-lg text-sm text-slate-500">
-            El avión sale de Lima, llega a un departamento y regresa — uno por
-            uno. Haz clic en una ciudad para volar directo.
-          </p>
+    <section
+      id="cobertura-envios"
+      ref={ref}
+      className="relative scroll-mt-24 overflow-hidden bg-[#f4f6f9]"
+    >
+      <div className="relative mx-auto w-full max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-12 xl:px-12">
+        <div className="mb-7 sm:mb-8">
+          <div className="flex items-center gap-3">
+            <span className="hidden h-9 w-1.5 bg-[#F5C400] sm:block" />
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+                Entrega a tiempo
+              </p>
+              <h3 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
+                Cobertura nacional de envíos
+              </h3>
+              <p className="mt-1 max-w-2xl text-xs text-slate-500 sm:text-sm">
+                Desde nuestro hub en Lima despachamos a todo el Perú. Selecciona
+                una ciudad en el mapa y cotiza tu envío de EPP.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mx-auto flex w-full max-w-[1100px] flex-col items-stretch gap-5 lg:flex-row lg:gap-5">

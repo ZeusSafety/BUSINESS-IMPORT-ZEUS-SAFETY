@@ -86,7 +86,7 @@ const headerItems = [
 
 export function HomeImportAsia() {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section id="import-asia" className="scroll-mt-28 relative overflow-hidden bg-[#f4f6f9]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-[#f4f7fb] to-white"
@@ -100,25 +100,25 @@ export function HomeImportAsia() {
         className="pointer-events-none absolute -left-16 bottom-40 h-64 w-64 rounded-full bg-[#0b2d60]/5 blur-3xl"
       />
 
-      <div className="relative mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-10 lg:py-16 xl:px-12">
+      <div className="relative mx-auto max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-12 xl:px-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.45 }}
-          className="mb-10 lg:mb-12"
+          className="mb-8 lg:mb-10"
         >
           <div className="flex max-w-2xl gap-4">
             <span className="mt-1 hidden w-[5px] shrink-0 bg-[#F5C400] sm:block sm:self-stretch" />
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
                 Cadena de suministro
               </p>
-              <h2 className="text-2xl font-black uppercase italic leading-tight tracking-tight text-[#0b2d60] sm:text-3xl lg:text-4xl">
-                Importamos directamente
-                <span className="mt-1 block text-[#F5C400]">desde Asia</span>
+              <h2 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
+                Importamos directamente{' '}
+                <span className="text-[#F5C400]">desde Asia</span>
               </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              <p className="mt-2 max-w-xl text-xs text-slate-500 sm:text-sm">
                 Trabajamos con fabricantes internacionales para ofrecer EPP y
                 soluciones industriales con estándares de calidad mundial.
               </p>

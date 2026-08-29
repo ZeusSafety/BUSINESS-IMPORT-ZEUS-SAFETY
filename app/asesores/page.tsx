@@ -227,7 +227,7 @@ export default function AdvisorsPage() {
       </section>
 
       {/* Asesores — 4 en fila */}
-      <section className="w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
+      <section id="asesores" className="scroll-mt-28 w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
         <div className="mx-auto max-w-[1400px]">
           <div className="mb-10 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">
