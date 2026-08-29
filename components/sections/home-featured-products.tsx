@@ -1,96 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  ShoppingCart,
-  Star,
-} from 'lucide-react';
-import { useQuoteStore } from '@/store/quoteStore';
-import type { Product } from '@/lib/mockData';
-import { formatSoles, getDisplayPrice } from '@/lib/display-price';
-import { Spinner } from '@/components/ui/spinner';
-
-type ApiProduct = {
-  ID: number;
-  NOMBRE: string;
-  CATEGORIA: string;
-  TIPO_PRODUCTO: string;
-  COLOR_TIPO: string;
-  PARES_POR_CAJA: number;
-  FICHA_TECNICA_ENLACE: string;
-  IMG_URL: string;
-  DESCRIPCION: string | null;
-  PRECIO: string;
-};
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function mapCategory(apiCategory: string): string {
-  const categoryMap: Record<string, string> = {
-    Corporal: 'Protección Corporal',
-    Guantes: 'Guantes',
-    Lentes: 'Lentes',
-    Visual: 'Lentes',
-    Respiradores: 'Respiradores',
-    Respiratoria: 'Respiradores',
-    Auditiva: 'Auditivo',
-    Auditivo: 'Auditivo',
-    Calzado: 'Calzado',
-    Vial: 'Seguridad Vial',
-    Laboral: 'Equipo Laboral',
-    Manual: 'Guantes',
-  };
-  return categoryMap[apiCategory] || apiCategory;
-}
-
-function transformApiProduct(apiProduct: ApiProduct): Product {
-  const apiPrice = parseFloat(apiProduct.PRECIO) || 0;
-  const specs: { label: string; value: string }[] = [];
-
-  if (apiProduct.PARES_POR_CAJA) {
-    specs.push({
-      label: 'Pares por caja',
-      value: apiProduct.PARES_POR_CAJA.toString(),
-    });
-  }
-  if (apiProduct.COLOR_TIPO) {
-    specs.push({ label: 'Color / Tipo', value: apiProduct.COLOR_TIPO });
-  }
-  if (apiProduct.TIPO_PRODUCTO) {
-    specs.push({ label: 'Tipo', value: apiProduct.TIPO_PRODUCTO });
-  }
-
-  const base: Product = {
-    id: `prd-${apiProduct.ID}`,
-    name: apiProduct.NOMBRE,
-    slug: generateSlug(apiProduct.NOMBRE),
-    category: mapCategory(apiProduct.CATEGORIA) as Product['category'],
-    brand: 'Zeus Safety',
-    price: apiPrice,
-    certification: [],
-    description:
-      apiProduct.DESCRIPCION ||
-      `EPP certificado — ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
-    specs,
-    image: apiProduct.IMG_URL?.trim() || '',
-  };
-
-  return { ...base, price: getDisplayPrice(base) };
-}
+  buildCatalogFromApi,
+  type ApiProduct,
+  type CatalogProduct,
+} from '@/lib/product-catalog';
+import { ProductCard } from '@/components/products/product-card';
+import { BrandLoader } from '@/components/ui/spinner';
 
 function hasImage(url?: string) {
   return Boolean(url && url.trim());
@@ -118,112 +38,11 @@ function useVisibleCount() {
 const AUTO_PLAY_MS = 5000;
 const GAP_PX = 20;
 
-type FeaturedCardProps = {
-  product: Product;
-  onQuote: (product: Product) => void;
-  added: boolean;
-};
-
-function FeaturedCard({ product, onQuote, added }: FeaturedCardProps) {
-  return (
-    <article className="group relative flex h-full min-w-0 flex-col overflow-hidden bg-white shadow-[0_10px_32px_rgba(11,45,96,0.12)] ring-1 ring-[#0b2d60]/10 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_22px_48px_rgba(11,45,96,0.18)] hover:ring-[#0b2d60]/25">
-      {/* Barra superior Zeus */}
-      <div className="h-1 w-full bg-[#F5C400]" />
-
-      {/* Zona imagen — pedestal */}
-      <div className="relative mx-3 mt-3 overflow-hidden bg-gradient-to-b from-[#eef2f7] via-[#f6f8fb] to-white ring-1 ring-inset ring-slate-200/80 sm:mx-4 sm:mt-4">
-        {/* Esquinas decorativas */}
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 z-10 h-7 w-9 bg-[#0b2d60]"
-          style={{ clipPath: 'polygon(28% 0, 100% 0, 100% 100%, 0 100%)' }}
-        />
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 z-10 h-4 w-6 bg-[#F5C400]"
-          style={{ clipPath: 'polygon(32% 0, 100% 0, 100% 100%, 0 100%)' }}
-        />
-
-        <span className="absolute left-3 top-3 z-20 inline-flex items-center gap-1 bg-[#0b2d60] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white shadow-md">
-          <Star className="h-2.5 w-2.5 text-[#F5C400]" fill="currentColor" />
-          Destacado
-        </span>
-
-        <div className="relative aspect-[4/3]">
-          {/* Sombra pedestal */}
-          <div className="pointer-events-none absolute inset-x-8 bottom-3 h-4 rounded-[100%] bg-[#0b2d60]/15 blur-md transition-all duration-300 group-hover:bg-[#0b2d60]/25 group-hover:blur-lg" />
-
-          <Link
-            href={`/productos/${encodeURIComponent(product.slug)}`}
-            className="absolute inset-0 z-10 block"
-          >
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
-              className="object-contain p-6 pb-8 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.06]"
-              unoptimized
-            />
-          </Link>
-        </div>
-      </div>
-
-      {/* Contenido */}
-      <div className="flex flex-1 flex-col px-4 pb-0 pt-4 sm:px-5 sm:pt-5">
-        <span className="inline-flex w-fit bg-[#0b2d60]/[0.07] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#0b2d60]">
-          {product.category}
-        </span>
-
-        <Link
-          href={`/productos/${encodeURIComponent(product.slug)}`}
-          className="mt-2 line-clamp-2 min-h-[2.5rem] text-[13px] font-black uppercase leading-snug text-[#0b2d60] transition-colors hover:text-[#F5C400] sm:text-sm"
-        >
-          {product.name}
-        </Link>
-
-        <p className="mt-2 line-clamp-2 flex-1 text-[11px] leading-relaxed text-slate-500 sm:text-xs">
-          {product.description}
-        </p>
-      </div>
-
-      {/* Pie con precio — ancla visual */}
-      <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 bg-gradient-to-r from-[#f8fafc] to-white px-4 py-3.5 sm:px-5">
-        <div>
-          <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-            Desde
-          </p>
-          <p className="text-lg font-black leading-none text-[#0b2d60] sm:text-xl">
-            {formatSoles(product.price)}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onQuote(product)}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 bg-[#F5C400] px-4 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] shadow-[0_4px_14px_rgba(245,196,0,0.45)] transition-all hover:bg-[#0b2d60] hover:text-[#F5C400] hover:shadow-[0_4px_14px_rgba(11,45,96,0.25)]"
-        >
-          <ShoppingCart className="h-3.5 w-3.5" />
-          Cotizar
-        </button>
-      </div>
-
-      {added && (
-        <div className="bg-emerald-50 px-4 py-2 text-center text-[10px] font-bold uppercase tracking-wide text-emerald-700">
-          ✓ Agregado a cotización
-        </div>
-      )}
-    </article>
-  );
-}
-
 export function HomeFeaturedProducts() {
-  const addItem = useQuoteStore((state) => state.addItem);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [addedId, setAddedId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const visibleCount = useVisibleCount();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -243,11 +62,10 @@ export function HomeFeaturedProducts() {
         const data = (await res.json()) as ApiProduct[];
         if (cancelled || !Array.isArray(data)) return;
 
-        const withImg = data
-          .map(transformApiProduct)
+        const grouped = buildCatalogFromApi(data)
           .filter((p) => hasImage(p.image))
           .slice(0, 12);
-        setProducts(withImg);
+        setProducts(grouped);
       } catch {
         if (!cancelled) setProducts([]);
       } finally {
@@ -323,12 +141,6 @@ export function HomeFeaturedProducts() {
     };
   }, [currentIndex, isPaused, next, products.length, visibleCount]);
 
-  const handleQuote = (product: Product) => {
-    addItem(product);
-    setAddedId(product.id);
-    window.setTimeout(() => setAddedId(null), 1800);
-  };
-
   return (
     <section
       id="productos-destacados"
@@ -338,17 +150,17 @@ export function HomeFeaturedProducts() {
     >
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10 xl:px-12">
         {loading ? (
-          <div className="bg-white shadow-[0_24px_65px_rgba(11,45,96,0.2)] ring-1 ring-[#0b2d60]/12">
+          <div className="border border-slate-200 bg-white">
             <div className="flex min-h-[360px] items-center justify-center px-5 py-10">
-              <Spinner size="lg" />
+              <BrandLoader label="Cargando destacados" />
             </div>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white p-12 text-center text-slate-400 shadow-[0_24px_65px_rgba(11,45,96,0.2)] ring-1 ring-[#0b2d60]/12">
+          <div className="border border-slate-200 bg-white p-12 text-center text-slate-400">
             No hay productos destacados disponibles.
           </div>
         ) : (
-          <div className="relative overflow-hidden bg-white shadow-[0_24px_65px_rgba(11,45,96,0.2)] ring-1 ring-[#0b2d60]/12">
+          <div className="relative overflow-hidden border border-slate-200 bg-white">
             {/* Encabezado — mismo estilo que categorías */}
             <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.03] to-transparent px-5 py-4 sm:px-8 lg:px-10">
               <div className="flex items-center gap-3">
@@ -421,17 +233,13 @@ export function HomeFeaturedProducts() {
                   >
                     {products.map((product) => (
                       <div
-                        key={product.id}
+                        key={product.groupSlug}
                         className="shrink-0 py-0.5"
                         style={{
                           width: `calc((100% - ${(visibleCount - 1) * GAP_PX}px) / ${visibleCount})`,
                         }}
                       >
-                        <FeaturedCard
-                          product={product}
-                          onQuote={handleQuote}
-                          added={addedId === product.id}
-                        />
+                        <ProductCard product={product} />
                       </div>
                     ))}
                   </motion.div>

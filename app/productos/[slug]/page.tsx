@@ -159,10 +159,10 @@ function RelatedCard({
         </Link>
 
         <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
-          <span className="inline-flex items-center rounded-full border border-emerald-300/80 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 sm:text-[10px]">
+          <span className="inline-flex items-center border border-emerald-300/80 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 sm:text-[10px]">
             Delivery en 24 horas
           </span>
-          <span className="inline-flex items-center rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-700 sm:text-[10px]">
+          <span className="inline-flex items-center border border-slate-300 bg-slate-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-700 sm:text-[10px]">
             Recojo en tienda
           </span>
         </div>

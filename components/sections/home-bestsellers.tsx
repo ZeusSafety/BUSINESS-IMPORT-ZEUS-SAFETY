@@ -4,84 +4,23 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ArrowRight, Flame, ShieldCheck } from 'lucide-react';
 import {
-  ArrowRight,
-  Plus,
-  ShieldCheck,
-  Flame,
-} from 'lucide-react';
-import { useQuoteStore } from '@/store/quoteStore';
-import type { Product } from '@/lib/mockData';
-import { getDisplayPrice } from '@/lib/display-price';
-import { Spinner } from '@/components/ui/spinner';
-
-type ApiProduct = {
-  ID: number;
-  NOMBRE: string;
-  CATEGORIA: string;
-  TIPO_PRODUCTO: string;
-  COLOR_TIPO: string;
-  PARES_POR_CAJA: number;
-  FICHA_TECNICA_ENLACE: string;
-  IMG_URL: string;
-  DESCRIPCION: string | null;
-  PRECIO: string;
-};
-
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function mapCategory(apiCategory: string): string {
-  const categoryMap: Record<string, string> = {
-    Corporal: 'Protección Corporal',
-    Guantes: 'Guantes',
-    Lentes: 'Lentes',
-    Visual: 'Lentes',
-    Respiradores: 'Respiradores',
-    Respiratoria: 'Respiradores',
-    Auditiva: 'Auditivo',
-    Auditivo: 'Auditivo',
-    Calzado: 'Calzado',
-    Vial: 'Seguridad Vial',
-    Laboral: 'Equipo Laboral',
-    Manual: 'Guantes',
-  };
-  return categoryMap[apiCategory] || apiCategory;
-}
-
-function transformApiProduct(apiProduct: ApiProduct): Product {
-  const apiPrice = parseFloat(apiProduct.PRECIO) || 0;
-  const base: Product = {
-    id: `prd-${apiProduct.ID}`,
-    name: apiProduct.NOMBRE,
-    slug: generateSlug(apiProduct.NOMBRE),
-    category: mapCategory(apiProduct.CATEGORIA) as Product['category'],
-    brand: 'Zeus Safety',
-    price: apiPrice,
-    certification: [],
-    description:
-      apiProduct.DESCRIPCION ||
-      `EPP certificado — ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
-    specs: [],
-    image: apiProduct.IMG_URL?.trim() || '',
-  };
-  return { ...base, price: getDisplayPrice(base) };
-}
+  PRODUCTS_API_URL,
+  buildCatalogFromApi,
+  type CatalogProduct,
+  type ApiProduct,
+} from '@/lib/product-catalog';
+import { ProductCard } from '@/components/products/product-card';
+import { BrandLoader } from '@/components/ui/spinner';
 
 function hasImage(url?: string) {
   return Boolean(url && url.trim());
 }
 
-/** Toma hasta 8 productos con imagen, priorizando variedad de categorías */
-function pickBestsellers(products: Product[], limit = 8): Product[] {
-  const byCat = new Map<string, Product[]>();
+/** Toma hasta 8 modelos con imagen, priorizando variedad de categorías */
+function pickBestsellers(products: CatalogProduct[], limit = 8): CatalogProduct[] {
+  const byCat = new Map<string, CatalogProduct[]>();
   for (const p of products) {
     if (!hasImage(p.image)) continue;
     const list = byCat.get(p.category) ?? [];
@@ -89,7 +28,7 @@ function pickBestsellers(products: Product[], limit = 8): Product[] {
     byCat.set(p.category, list);
   }
 
-  const picked: Product[] = [];
+  const picked: CatalogProduct[] = [];
   const cats = Array.from(byCat.keys());
   let i = 0;
   while (picked.length < limit && cats.length > 0) {
@@ -109,23 +48,19 @@ function pickBestsellers(products: Product[], limit = 8): Product[] {
 }
 
 export function HomeBestsellers() {
-  const addItem = useQuoteStore((state) => state.addItem);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [addedId, setAddedId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const res = await fetch(
-          'https://productoscrud-2946605267.us-central1.run.app?metodo=LISTADO_PRODUCTOS_ESTATICA',
-        );
+        const res = await fetch(PRODUCTS_API_URL);
         if (!res.ok) throw new Error('Error al cargar productos');
         const data = (await res.json()) as ApiProduct[];
         if (cancelled || !Array.isArray(data)) return;
-        setProducts(pickBestsellers(data.map(transformApiProduct), 8));
+        setProducts(pickBestsellers(buildCatalogFromApi(data), 8));
       } catch {
         if (!cancelled) setProducts([]);
       } finally {
@@ -138,12 +73,6 @@ export function HomeBestsellers() {
       cancelled = true;
     };
   }, []);
-
-  const handleAdd = (product: Product) => {
-    addItem(product);
-    setAddedId(product.id);
-    window.setTimeout(() => setAddedId(null), 1600);
-  };
 
   const promoProduct = useMemo(() => products[0], [products]);
 
@@ -167,88 +96,25 @@ export function HomeBestsellers() {
 
         {loading ? (
           <div className="flex min-h-[280px] items-center justify-center">
-            <Spinner size="md" />
+            <BrandLoader label="Cargando productos" />
           </div>
         ) : (
           <>
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(240px,280px)] lg:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(260px,300px)]">
-              {/* Grid de productos */}
               <div className="order-2 grid gap-4 sm:grid-cols-2 lg:order-1 lg:grid-cols-4 lg:gap-4">
                 {products.map((product, index) => (
-                  <motion.article
-                    key={product.id}
+                  <motion.div
+                    key={product.groupSlug}
                     initial={{ opacity: 0, y: 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.35, delay: index * 0.04 }}
-                    className="group flex flex-col overflow-hidden border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#0b2d60]/25 hover:shadow-[0_14px_32px_rgba(11,45,96,0.12)]"
                   >
-                    <div className="relative aspect-square overflow-hidden bg-[#f3f5f8]">
-                      {index < 3 && (
-                        <span className="absolute left-3 top-3 z-10 bg-[#F5C400] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
-                          Destacado
-                        </span>
-                      )}
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 20vw"
-                        className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
-                        unoptimized
-                      />
-                    </div>
-
-                    <div className="flex flex-1 flex-col px-3 py-3 sm:px-3.5 sm:py-3.5">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                        {product.brand} · {product.category}
-                      </p>
-                      <Link
-                        href={`/productos/${encodeURIComponent(product.slug)}`}
-                        className="mt-1 line-clamp-2 text-[13px] font-bold uppercase leading-snug text-[#0b2d60] transition-colors hover:text-[#F5C400]"
-                      >
-                        {product.name}
-                      </Link>
-
-                      <div className="mt-auto flex items-end justify-between gap-2 pt-3">
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                            Desde
-                          </p>
-                          <p className="text-base font-black text-[#0b2d60]">
-                            {product.price > 0
-                              ? `S/ ${product.price.toFixed(2)}`
-                              : 'Cotizar'}
-                          </p>
-                        </div>
-                        <div className="flex gap-1.5">
-                          <Link
-                            href={`/productos/${encodeURIComponent(product.slug)}`}
-                            className="inline-flex h-8 items-center justify-center border border-slate-200 px-2.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
-                          >
-                            Ver
-                          </Link>
-                          <button
-                            type="button"
-                            onClick={() => handleAdd(product)}
-                            aria-label={`Agregar ${product.name}`}
-                            className="inline-flex h-8 w-8 items-center justify-center bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-[#F5C400]"
-                          >
-                            <Plus className="h-4 w-4" strokeWidth={2.5} />
-                          </button>
-                        </div>
-                      </div>
-                      {addedId === product.id && (
-                        <p className="mt-1.5 text-[10px] font-bold uppercase text-emerald-600">
-                          Agregado
-                        </p>
-                      )}
-                    </div>
-                  </motion.article>
+                    <ProductCard product={product} />
+                  </motion.div>
                 ))}
               </div>
 
-              {/* Banner vertical — derecha, enriquecido */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
