@@ -1,6 +1,6 @@
 'use client';
 
-import { Truck } from 'lucide-react';
+import { Truck } from '@phosphor-icons/react';
 
 const PHRASES = [
   'Envíos a todo el Perú',
@@ -18,15 +18,17 @@ function MarqueeTrack() {
           className="mx-8 flex shrink-0 items-center gap-3 sm:mx-12"
         >
           <Truck
-            className="h-4 w-4 shrink-0 text-[#0b2d60]"
-            strokeWidth={2.25}
+            size={18}
+            weight="duotone"
+            className="shrink-0 text-[#F5C400]"
+            aria-hidden
           />
-          <span className="text-[11px] font-black uppercase tracking-[0.22em] text-[#0b2d60] sm:text-xs">
+          <span className="text-[11px] font-black uppercase tracking-[0.22em] text-white sm:text-xs">
             {text}
           </span>
           <span
             aria-hidden
-            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0b2d60]/40"
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/35"
           />
         </span>
       ))}
@@ -38,7 +40,7 @@ export function HomeShippingMarquee() {
   return (
     <section
       aria-label="Envíos a nivel nacional"
-      className="overflow-hidden border-y border-[#0b2d60]/10 bg-[#F5C400] py-2.5 sm:py-3"
+      className="overflow-hidden border-y border-[#0b2d60] bg-[#0b2d60] py-2.5 sm:py-3"
     >
       <div className="zeus-marquee-shipping flex w-max items-center">
         <MarqueeTrack />

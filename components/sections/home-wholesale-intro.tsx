@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Award, Package, Truck } from 'lucide-react';
+import { Medal, Package, Truck } from '@phosphor-icons/react';
 
 const highlights = [
   {
@@ -10,7 +10,7 @@ const highlights = [
     text: 'Inventario listo para obra, planta y distribución.',
   },
   {
-    icon: Award,
+    icon: Medal,
     label: 'Marcas certificadas',
     text: 'EPP con respaldo internacional y trazabilidad.',
   },
@@ -19,7 +19,7 @@ const highlights = [
     label: 'Cobertura nacional',
     text: 'Despachos desde Lima a todo el Perú.',
   },
-];
+] as const;
 
 export function HomeWholesaleIntro() {
   return (
@@ -62,8 +62,13 @@ export function HomeWholesaleIntro() {
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 className="flex flex-col items-center border border-slate-100 bg-[#f8fafc] px-4 py-5 text-center sm:px-5"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0b2d60] text-[#F5C400]">
-                  <Icon className="h-5 w-5" strokeWidth={1.75} />
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0b2d60] shadow-[0_4px_14px_rgba(11,45,96,0.22)]">
+                  <Icon
+                    size={26}
+                    weight="duotone"
+                    className="text-[#F5C400]"
+                    aria-hidden
+                  />
                 </span>
                 <p className="mt-3 text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                   {item.label}
