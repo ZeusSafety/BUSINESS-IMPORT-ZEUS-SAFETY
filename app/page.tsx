@@ -1,6 +1,5 @@
 import { HeroSection } from '@/components/sections/hero';
 import { HomeCategoryStrip } from '@/components/sections/home-category-strip';
-import { HomeWholesaleIntro } from '@/components/sections/home-wholesale-intro';
 import { HomeShippingMarquee } from '@/components/sections/home-shipping-marquee';
 import { HomeFeaturedCategories } from '@/components/sections/home-featured-categories';
 import { HomeFeaturedProducts } from '@/components/sections/home-featured-products';
@@ -15,7 +14,6 @@ export default function Home() {
     <main className="flex min-h-screen flex-col bg-white text-slate-900">
       <HeroSection />
       <HomeCategoryStrip />
-      <HomeWholesaleIntro />
       <HomeShippingMarquee />
       <HomeFeaturedCategories />
       <HomeFeaturedProducts />

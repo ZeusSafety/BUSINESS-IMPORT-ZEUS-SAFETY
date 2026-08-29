@@ -3,13 +3,20 @@
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { BlogCard } from '@/components/blog/blog-card';
+import {
+  BlogLayoutSwitcher,
+  blogViewGridClass,
+  type BlogViewMode,
+} from '@/components/blog/blog-layout-switcher';
 import { blogPosts } from '@/lib/blog-data';
 
 const PER_PAGE = 8;
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState<BlogViewMode>('grid-3');
   const totalPages = Math.max(1, Math.ceil(blogPosts.length / PER_PAGE));
 
   const pagePosts = useMemo(() => {
@@ -17,9 +24,11 @@ export default function BlogPage() {
     return blogPosts.slice(start, start + PER_PAGE);
   }, [page]);
 
+  const cardLayout = 'vertical' as const;
+  const cardCompact = true;
+
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
-      {/* Hero */}
       <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[300px] lg:h-[340px]">
         <Image
           src="/blog-hero.jpg"
@@ -45,28 +54,43 @@ export default function BlogPage() {
       </section>
 
       <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-[#0b2d60] sm:text-3xl">
+            <h2 className="text-xl font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-2xl">
               Artículos recientes
             </h2>
             <div className="mt-2 h-1.5 w-16 bg-[#F5C400]" />
+            <p className="mt-3 text-sm text-slate-500">
+              <span className="font-semibold text-[#0b2d60]">{blogPosts.length}</span>{' '}
+              artículos publicados
+            </p>
           </div>
-          <p className="text-sm text-slate-500">
-            {blogPosts.length} artículos publicados
-          </p>
+
+          <BlogLayoutSwitcher value={viewMode} onChange={setViewMode} />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:gap-6">
-          {pagePosts.map((post) => (
-            <BlogCard
+        <div className={blogViewGridClass(viewMode)}>
+          {pagePosts.map((post, index) => (
+            <motion.div
               key={post.slug}
-              slug={post.slug}
-              title={post.title}
-              date={post.date}
-              excerpt={post.excerpt}
-              cover={post.cover}
-            />
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.06,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <BlogCard
+                slug={post.slug}
+                title={post.title}
+                date={post.date}
+                excerpt={post.excerpt}
+                cover={post.cover}
+                layout={cardLayout}
+                compact={cardCompact}
+              />
+            </motion.div>
           ))}
         </div>
 

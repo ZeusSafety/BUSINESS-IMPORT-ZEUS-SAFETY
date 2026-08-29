@@ -55,8 +55,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <HomeAbout />
       <HomeEmpresa />
+      <HomeAbout />
 
       <div className="bg-[#f4f6f9]">
         <AdditionalInfoHeader />

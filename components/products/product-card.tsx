@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/lib/mockData';
+import type { CatalogProduct } from '@/lib/product-catalog';
 import { Minus, Package, Plus } from 'lucide-react';
 import { useQuoteStore } from '@/store/quoteStore';
 import { useCallback, useState } from 'react';
 import { Toast } from '@/components/ui/toast';
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | CatalogProduct;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -87,6 +88,11 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             {product.name}
           </Link>
+          {'variantCount' in product && product.variantCount > 1 && (
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              Varias tallas y colores
+            </p>
+          )}
 
           <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
             <span className="inline-flex items-center rounded-full border border-emerald-300/80 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 sm:text-[10px]">

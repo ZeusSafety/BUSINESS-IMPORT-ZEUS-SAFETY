@@ -28,8 +28,8 @@ const navLinks: NavLink[] = [
     href: '/sobre-nosotros',
     label: 'Nosotros',
     children: [
-      { href: '/sobre-nosotros#nosotros', label: 'La empresa' },
       { href: '/sobre-nosotros#empresa', label: 'Quiénes somos' },
+      { href: '/sobre-nosotros#nosotros', label: 'La empresa' },
       { href: '/sobre-nosotros#confia', label: 'Confía en Zeus' },
       { href: '/sobre-nosotros#cobertura-envios', label: 'Cobertura y envíos' },
       { href: '/sobre-nosotros#import-asia', label: 'Importación Asia' },
@@ -42,8 +42,8 @@ const navLinks: NavLink[] = [
     href: '/asesores',
     label: 'Contáctanos',
     children: [
-      { href: '/asesores#asesores', label: 'Nuestros asesores' },
-      { href: '/asesores#contacto', label: 'Contacto' },
+      { href: '/asesores#contacto', label: 'Escríbenos' },
+      { href: '/asesores#faq', label: 'Preguntas frecuentes' },
       { href: '/libro-de-reclamaciones', label: 'Libro de reclamaciones' },
       { href: '/cotizacion', label: 'Arma tu cotización' },
     ],
@@ -97,12 +97,12 @@ function NavDropdown({
         }`}
       >
         <div className="absolute -top-1 left-0 right-0 h-1" aria-hidden />
-        <div className="flex flex-col gap-2 border-t-2 border-[#F5C400] bg-[#0b2d60] p-3 shadow-[0_16px_40px_rgba(11,45,96,0.35)]">
+        <div className="flex flex-col gap-2 border border-slate-200 border-t-2 border-t-[#F5C400] bg-white p-3 shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
           {link.children.map((child) => (
             <Link
               key={child.href}
               href={child.href}
-              className="border border-white/90 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+              className="border border-slate-200 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
             >
               {child.label}
             </Link>
@@ -275,13 +275,13 @@ export function Navbar() {
                       />
                     </button>
                     {expanded && (
-                      <div className="mb-3 flex flex-col gap-2 bg-[#0b2d60] p-3">
+                      <div className="mb-3 flex flex-col gap-2 border border-slate-200 bg-white p-3">
                         {link.children.map((child) => (
                           <Link
                             key={child.href}
                             href={child.href}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="border border-white/80 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                            className="border border-slate-200 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
                           >
                             {child.label}
                           </Link>

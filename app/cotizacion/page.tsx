@@ -156,7 +156,12 @@ export default function QuotePage() {
         </div>
       </section>
 
-      <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
+      <motion.div
+        className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10"
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] xl:gap-8">
           <div className="space-y-4">
             {items.length === 0 ? (
@@ -480,7 +485,7 @@ export default function QuotePage() {
             </motion.form>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

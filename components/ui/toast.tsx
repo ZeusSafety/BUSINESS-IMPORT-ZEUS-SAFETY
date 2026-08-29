@@ -50,12 +50,12 @@ export function Toast({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="fixed top-28 right-4 z-[9999] flex max-w-sm items-start gap-3 rounded-xl border border-emerald-200 bg-white px-4 py-3.5 shadow-xl shadow-black/20 sm:top-32"
+          className="fixed top-28 right-4 z-[9999] flex max-w-sm items-start gap-3 border border-emerald-200 bg-white px-4 py-3.5 shadow-xl shadow-black/20 sm:top-32"
           style={{ pointerEvents: 'auto' }}
           role="status"
           aria-live="polite"
         >
-          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden border border-slate-100 bg-slate-50">
             {resolvedImage ? (
               <Image
                 src={resolvedImage}
@@ -83,7 +83,7 @@ export function Toast({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            className="p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
             aria-label="Cerrar"
           >
             <X className="h-4 w-4" />

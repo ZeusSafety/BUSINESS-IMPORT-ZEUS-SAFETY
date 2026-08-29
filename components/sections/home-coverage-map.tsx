@@ -1,9 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, MapPin, Minus, Navigation, Phone, Plus } from 'lucide-react';
+import {
+  ArrowRight,
+  MapPin,
+  Minus,
+  Package,
+  Phone,
+  Plus,
+  Truck,
+} from '@phosphor-icons/react';
 
 type City = {
   id: string;
@@ -12,7 +20,10 @@ type City = {
   lat: number;
   lng: number;
   note: string;
+  hub?: boolean;
 };
+
+const LIMA_HQ = { lat: -12.0464, lng: -77.0428 };
 
 const cities: City[] = [
   {
@@ -22,6 +33,7 @@ const cities: City[] = [
     lat: -12.0464,
     lng: -77.0428,
     note: 'Sede principal y centro de distribución',
+    hub: true,
   },
   {
     id: 'arequipa',
@@ -81,15 +93,56 @@ const cities: City[] = [
   },
 ];
 
+const MAP_TILES =
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
+
 type LeafletBundle = {
   MapContainer: ComponentType<any>;
   TileLayer: ComponentType<any>;
   Marker: ComponentType<any>;
   Popup: ComponentType<any>;
   CircleMarker: ComponentType<any>;
+  Polyline: ComponentType<any>;
   useMap: () => any;
   L: any;
 };
+
+function createPinIcon(
+  L: any,
+  opts: { active: boolean; hub?: boolean },
+) {
+  const { active, hub } = opts;
+  const size = active ? 44 : hub ? 38 : 32;
+  const pinClass = [
+    'zeus-map-pin',
+    active ? 'zeus-map-pin--active' : '',
+    hub ? 'zeus-map-pin--hub' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const fill = active || hub ? '#F5C400' : '#ffffff';
+  const stroke = '#0b2d60';
+  const inner = hub
+    ? `<circle cx="16" cy="13" r="4" fill="${stroke}"/>`
+    : `<circle cx="16" cy="13" r="3.5" fill="${stroke}" opacity="0.85"/>`;
+
+  return L.divIcon({
+    className: 'zeus-map-marker',
+    html: `
+      <div class="${pinClass}" style="width:${size}px;height:${size}px">
+        ${active ? '<span class="zeus-map-pin-pulse" aria-hidden="true"></span>' : ''}
+        <svg viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="zeus-map-pin-svg">
+          <path d="M16 1C9.925 1 5 5.925 5 12c0 8.25 11 27 11 27s11-18.75 11-27c0-6.075-4.925-11-11-11z" fill="${fill}" stroke="${stroke}" stroke-width="2.25"/>
+          ${inner}
+        </svg>
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+    popupAnchor: [0, -size + 4],
+  });
+}
 
 function MapFlyTo({
   city,
@@ -101,7 +154,7 @@ function MapFlyTo({
   const map = useMap();
   useEffect(() => {
     if (!map) return;
-    map.flyTo([city.lat, city.lng], 10, { duration: 1.1 });
+    map.flyTo([city.lat, city.lng], city.hub ? 11 : 10, { duration: 1.15 });
   }, [city, map]);
   return null;
 }
@@ -122,29 +175,50 @@ function MapReady({
 
 function CoverageLeafletMap({
   bundle,
+  activeId,
   activeCity,
   onSelect,
   onMapReady,
 }: {
   bundle: LeafletBundle;
+  activeId: string;
   activeCity: City;
   onSelect: (id: string) => void;
   onMapReady: (map: any) => void;
 }) {
-  const { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap, L } =
-    bundle;
+  const {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    CircleMarker,
+    Polyline,
+    useMap,
+    L,
+  } = bundle;
 
-  const markerIcon = useMemo(
-    () =>
-      L.divIcon({
-        className: 'zeus-map-marker',
-        html: `<div style="width:20px;height:20px;border-radius:9999px;background:#F5C400;border:3px solid #0b2d60;box-shadow:0 4px 14px rgba(11,45,96,.4)"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-        popupAnchor: [0, -12],
-      }),
-    [L],
+  const iconCache = useMemo(() => new Map<string, any>(), []);
+
+  const getIcon = useCallback(
+    (city: City) => {
+      const key = `${city.id}-${city.id === activeId}`;
+      if (!iconCache.has(key)) {
+        iconCache.set(
+          key,
+          createPinIcon(L, {
+            active: city.id === activeId,
+            hub: city.hub,
+          }),
+        );
+      }
+      return iconCache.get(key)!;
+    },
+    [L, activeId, iconCache],
   );
+
+  useEffect(() => {
+    iconCache.clear();
+  }, [activeId, iconCache]);
 
   return (
     <MapContainer
@@ -158,41 +232,64 @@ function CoverageLeafletMap({
       style={{ height: '100%', width: '100%', zIndex: 0 }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.esri.com/">Esri</a> &copy; OpenStreetMap'
+        url={MAP_TILES}
+        maxZoom={18}
       />
       <MapFlyTo city={activeCity} useMap={useMap} />
       <MapReady useMap={useMap} onReady={onMapReady} />
+
+      {cities
+        .filter((c) => !c.hub)
+        .map((city) => (
+          <Polyline
+            key={`route-${city.id}`}
+            positions={[
+              [LIMA_HQ.lat, LIMA_HQ.lng],
+              [city.lat, city.lng],
+            ]}
+            pathOptions={{
+              color: city.id === activeId ? '#F5C400' : '#0b2d60',
+              weight: city.id === activeId ? 2.5 : 1.25,
+              opacity: city.id === activeId ? 0.75 : 0.22,
+              dashArray: '7 9',
+              lineCap: 'round',
+            }}
+          />
+        ))}
+
       {cities.map((city) => (
         <Marker
           key={city.id}
           position={[city.lat, city.lng]}
-          icon={markerIcon}
+          icon={getIcon(city)}
+          zIndexOffset={city.id === activeId ? 1000 : city.hub ? 500 : 0}
           eventHandlers={{
             click: () => onSelect(city.id),
           }}
         >
-          <Popup>
-            <div className="min-w-[160px] p-1">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
-                {city.name}
-              </p>
-              <p className="mt-0.5 text-[11px] text-slate-500">{city.region}</p>
-              <p className="mt-1.5 text-xs leading-snug text-slate-700">
-                {city.note}
-              </p>
+          <Popup className="zeus-map-popup" closeButton={false}>
+            <div className="zeus-map-popup-inner">
+              {city.hub && (
+                <span className="zeus-map-popup-badge">Sede principal</span>
+              )}
+              <p className="zeus-map-popup-title">{city.name}</p>
+              <p className="zeus-map-popup-region">{city.region}</p>
+              <p className="zeus-map-popup-note">{city.note}</p>
             </div>
           </Popup>
         </Marker>
       ))}
+
       <CircleMarker
         center={[activeCity.lat, activeCity.lng]}
-        radius={22}
+        radius={activeCity.hub ? 28 : 24}
         pathOptions={{
           color: '#0b2d60',
           fillColor: '#F5C400',
-          fillOpacity: 0.25,
+          fillOpacity: 0.12,
           weight: 2,
+          opacity: 0.55,
         }}
       />
     </MapContainer>
@@ -224,23 +321,13 @@ export function HomeCoverageMap() {
     Promise.all([import('react-leaflet'), import('leaflet')])
       .then(([rl, LMod]) => {
         const L = (LMod as any).default || LMod;
-        if (L.Icon?.Default) {
-          delete (L.Icon.Default.prototype as any)._getIconUrl;
-          L.Icon.Default.mergeOptions({
-            iconUrl:
-              'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-            iconRetinaUrl:
-              'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-            shadowUrl:
-              'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-          });
-        }
         setBundle({
           MapContainer: rl.MapContainer,
           TileLayer: rl.TileLayer,
           Marker: rl.Marker,
           Popup: rl.Popup,
           CircleMarker: rl.CircleMarker,
+          Polyline: rl.Polyline,
           useMap: rl.useMap,
           L,
         });
@@ -249,35 +336,87 @@ export function HomeCoverageMap() {
   }, []);
 
   return (
-    <section className="relative w-full overflow-hidden bg-white">
+    <section
+      id="cobertura-envios"
+      className="relative w-full scroll-mt-20 overflow-hidden bg-white"
+    >
       <div className="relative z-20 w-full bg-[#0b2d60]">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-4 py-6 sm:px-6 lg:px-10 xl:px-12">
-          <div>
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[#F5C400]">
-              Cobertura nacional
-            </p>
-            <h2 className="text-xl font-black uppercase tracking-[0.04em] text-white sm:text-2xl">
-              Llegamos a todo el Perú
-            </h2>
-            <p className="mt-1 max-w-xl text-sm text-white/70">
-              Mapa interactivo de presencia Zeus Safety. Explora ciudades y
-              regiones con despacho y soporte.
-            </p>
+        <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-10 xl:px-12">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+            <div className="min-w-0 flex-1">
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.24em] text-[#F5C400]">
+                Cobertura nacional
+              </p>
+              <h2 className="text-xl font-black uppercase tracking-[0.04em] text-white sm:text-2xl">
+                Llegamos a todo el Perú
+              </h2>
+              <p className="mt-1 max-w-xl text-sm text-white/70">
+                Red logística Zeus Safety desde Lima hacia las principales
+                ciudades del país. Selecciona un punto en el mapa o en el panel.
+              </p>
+            </div>
+
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:gap-3 lg:flex-col lg:gap-2.5 xl:flex-row xl:gap-3">
+              <div className="flex items-center gap-3 border border-white/15 bg-white/5 px-4 py-2.5 min-w-[200px]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F5C400]/20">
+                  <MapPin size={20} weight="duotone" className="text-[#F5C400]" />
+                </span>
+                <span>
+                  <span className="block text-lg font-black leading-none text-white">
+                    {cities.length}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-white/60">
+                    Ciudades
+                  </span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3 border border-white/15 bg-white/5 px-4 py-2.5 min-w-[200px]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F5C400]/20">
+                  <Truck size={20} weight="duotone" className="text-[#F5C400]" />
+                </span>
+                <span>
+                  <span className="block text-lg font-black leading-none text-white">
+                    24–48 h
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-white/60">
+                    Despacho
+                  </span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3 border border-white/15 bg-white/5 px-4 py-2.5 min-w-[200px]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F5C400]/20">
+                  <Package size={20} weight="duotone" className="text-[#F5C400]" />
+                </span>
+                <span>
+                  <span className="block text-lg font-black leading-none text-white">
+                    Lima
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-white/60">
+                    Stock central
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <Link
+              href="/cotizacion"
+              className="group inline-flex h-11 shrink-0 items-center gap-2 self-start bg-[#F5C400] px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] lg:self-center"
+            >
+              Cotizar envío
+              <ArrowRight
+                size={16}
+                weight="bold"
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
           </div>
-          <Link
-            href="/cotizacion"
-            className="group inline-flex h-11 items-center gap-2 bg-[#F5C400] px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-          >
-            Cotizar envío
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </Link>
         </div>
       </div>
 
-      <div className="relative grid w-full lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="relative grid w-full lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="relative h-[520px] w-full overflow-hidden sm:h-[600px] lg:h-[680px]">
           {!bundle ? (
-            <div className="flex h-full w-full items-center justify-center bg-[#e8eef6] text-[#0b2d60]">
+            <div className="flex h-full w-full items-center justify-center bg-[#dce6f2] text-[#0b2d60]">
               <div className="text-center">
                 <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-[#0b2d60]/20 border-t-[#F5C400]" />
                 <p className="text-sm font-semibold">Cargando mapa…</p>
@@ -286,22 +425,31 @@ export function HomeCoverageMap() {
           ) : (
             <CoverageLeafletMap
               bundle={bundle}
+              activeId={activeId}
               activeCity={activeCity}
               onSelect={setActiveId}
               onMapReady={setMapInstance}
             />
           )}
 
-          {/* Zoom solo dentro del mapa — z bajo para no tapar el header sticky */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-r from-[#0b2d60]/10 via-transparent to-[#0b2d60]/20"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-24 bg-gradient-to-t from-[#0b2d60]/25 to-transparent"
+          />
+
           <div className="pointer-events-none absolute inset-0 z-10">
-            <div className="pointer-events-auto absolute bottom-5 left-4 flex flex-col overflow-hidden border border-[#0b2d60]/15 bg-white shadow-[0_10px_28px_rgba(11,45,96,0.2)] sm:bottom-6 sm:left-6">
+            <div className="pointer-events-auto absolute bottom-5 left-4 flex flex-col overflow-hidden border border-[#0b2d60]/20 bg-white shadow-[0_10px_28px_rgba(11,45,96,0.22)] sm:bottom-6 sm:left-6">
               <button
                 type="button"
                 aria-label="Acercar"
                 onClick={() => mapInstance?.zoomIn()}
                 className="flex h-10 w-10 items-center justify-center border-b border-slate-200 text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
               >
-                <Plus className="h-4 w-4" strokeWidth={2.5} />
+                <Plus size={18} weight="bold" />
               </button>
               <button
                 type="button"
@@ -309,8 +457,22 @@ export function HomeCoverageMap() {
                 onClick={() => mapInstance?.zoomOut()}
                 className="flex h-10 w-10 items-center justify-center text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
               >
-                <Minus className="h-4 w-4" strokeWidth={2.5} />
+                <Minus size={18} weight="bold" />
               </button>
+            </div>
+
+            <div className="absolute right-4 top-4 hidden rounded-sm border border-white/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur-sm sm:block">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#0b2d60]/60">
+                Leyenda
+              </p>
+              <div className="mt-1.5 flex items-center gap-2 text-[10px] font-semibold text-[#0b2d60]">
+                <span className="h-3 w-3 rounded-full border-2 border-[#0b2d60] bg-[#F5C400]" />
+                Sede / activo
+              </div>
+              <div className="mt-1 flex items-center gap-2 text-[10px] font-semibold text-[#0b2d60]">
+                <span className="h-3 w-3 rounded-full border-2 border-[#0b2d60] bg-white" />
+                Punto de cobertura
+              </div>
             </div>
           </div>
         </div>
@@ -320,49 +482,83 @@ export function HomeCoverageMap() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="flex h-[320px] flex-col bg-[#0b2d60] sm:h-[360px] lg:h-[680px]"
+          className="flex h-[320px] flex-col bg-[#071a3a] sm:h-[360px] lg:h-[680px]"
         >
-          <div className="shrink-0 border-b border-white/10 px-4 py-4">
+          <div className="shrink-0 border-b border-white/10 bg-[#0b2d60] px-4 py-4">
             <div className="flex items-center gap-2">
-              <Navigation className="h-4 w-4 text-[#F5C400]" />
-              <p className="text-xs font-bold uppercase tracking-wide text-white">
-                Ciudades con cobertura
-              </p>
+              <span className="flex h-8 w-8 items-center justify-center bg-[#F5C400]/20">
+                <MapPin size={18} weight="duotone" className="text-[#F5C400]" />
+              </span>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wide text-white">
+                  Ciudades con cobertura
+                </p>
+                <p className="text-[11px] text-white/55">
+                  Haz clic para centrar el mapa
+                </p>
+              </div>
             </div>
-            <p className="mt-1 text-[11px] text-white/60">
-              Haz clic para centrar el mapa
-            </p>
           </div>
 
           <div className="zeus-map-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            {cities.map((city) => {
+            {cities.map((city, index) => {
               const active = city.id === activeId;
               return (
                 <button
                   key={city.id}
                   type="button"
                   onClick={() => setActiveId(city.id)}
-                  className={`flex w-full items-start gap-3 border-b border-white/5 px-4 py-3.5 text-left transition-colors ${
-                    active ? 'bg-[#F5C400]/18' : 'hover:bg-white/5'
+                  className={`relative flex w-full items-start gap-3 border-b border-white/5 px-4 py-3.5 text-left transition-all ${
+                    active
+                      ? 'bg-[#0b2d60]'
+                      : 'hover:bg-white/[0.04]'
                   }`}
                 >
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="absolute inset-y-0 left-0 w-1 bg-[#F5C400]"
+                    />
+                  )}
                   <span
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center ${
+                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center transition-colors ${
                       active
                         ? 'bg-[#F5C400] text-[#0b2d60]'
                         : 'bg-white/10 text-[#F5C400]'
                     }`}
                   >
-                    <MapPin className="h-3.5 w-3.5" />
+                    {city.hub ? (
+                      <Package size={18} weight="duotone" />
+                    ) : (
+                      <MapPin size={18} weight="duotone" />
+                    )}
                   </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold text-white">
-                      {city.name}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2">
+                      <span
+                        className={`text-sm font-bold ${
+                          active ? 'text-white' : 'text-white/90'
+                        }`}
+                      >
+                        {city.name}
+                      </span>
+                      {city.hub && (
+                        <span className="bg-[#F5C400]/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#F5C400]">
+                          HQ
+                        </span>
+                      )}
+                      <span className="ml-auto text-[10px] font-bold text-white/30">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
                     </span>
-                    <span className="block text-[11px] text-white/55">
+                    <span className="block text-[11px] text-white/50">
                       {city.region}
                     </span>
-                    <span className="mt-1 block text-[11px] leading-snug text-white/75">
+                    <span
+                      className={`mt-1 block text-[11px] leading-snug ${
+                        active ? 'text-white/80' : 'text-white/60'
+                      }`}
+                    >
                       {city.note}
                     </span>
                   </span>
@@ -371,12 +567,12 @@ export function HomeCoverageMap() {
             })}
           </div>
 
-          <div className="shrink-0 border-t border-white/10 px-4 py-3">
+          <div className="shrink-0 border-t border-white/10 bg-[#0b2d60] px-4 py-3.5">
             <a
               href="tel:+5115555555"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-[#F5C400] hover:underline"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#F5C400] transition-colors hover:text-[#ffd233]"
             >
-              <Phone className="h-3.5 w-3.5" />
+              <Phone size={16} weight="duotone" />
               Coordinar despacho
             </a>
           </div>

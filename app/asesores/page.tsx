@@ -1,15 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import {
-  Award,
   CheckCircle2,
   ChevronDown,
   Clock,
   Headphones,
   MapPin,
-  Phone,
   Send,
   Shield,
   Truck,
@@ -17,7 +14,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { FormSelect } from '@/components/ui/form-select';
 
@@ -31,33 +27,6 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
   </svg>
 );
-
-type ApiAdvisor = {
-  NOMBRE: string;
-  SEGUNDO_NOMBRE: string | null;
-  APELLIDO: string;
-  SEGUNDO_APELLIDO: string | null;
-  IMAGE_URL: string | null;
-  DATOS: string;
-};
-
-type ContactData = {
-  TIPO: string;
-  MEDIO: string;
-  NOMBRE: string;
-  CONTENIDO: string;
-};
-
-type Advisor = {
-  id: string;
-  name: string;
-  specialty: string;
-  avatar?: string | null;
-  phone?: string | null;
-};
-
-const API_URL =
-  'https://productoscrud-2946605267.us-central1.run.app?metodo=ASESORES_PAGINA_ESTATICA';
 
 const DEFAULT_WA_MESSAGE = encodeURIComponent(
   'Hola 👋, me gustaría recibir información y cotizar productos de seguridad industrial de Zeus Safety.',
@@ -80,15 +49,15 @@ const contactFieldClass =
 const FAQS = [
   {
     q: '¿Dónde está ubicada su tienda física?',
-    a: `Nuestra tienda y showroom están en ${ADDRESS}. Horario de atención: lunes a sábado de 9:00 a 17:30. También puedes coordinar visita con un asesor.`,
+    a: `Nuestra tienda y showroom están en ${ADDRESS}. Horario de atención: lunes a sábado de 9:00 a 17:30. También puedes coordinar visita con nuestro equipo.`,
   },
   {
     q: '¿Ofrecen opciones de pago contra entrega?',
-    a: 'Sí. Según zona y tipo de pedido podemos coordinar pago contra entrega u otras formas de pago empresariales. Un asesor te confirma las opciones disponibles para tu caso.',
+    a: 'Sí. Según zona y tipo de pedido podemos coordinar pago contra entrega u otras formas de pago empresariales. Te confirmamos las opciones disponibles para tu caso.',
   },
   {
     q: '¿Está disponible el producto que busco?',
-    a: 'Revisa el stock en nuestro catálogo online o consulta directamente con un asesor. Si el ítem no figura, te ayudamos a validar disponibilidad y alternativas equivalentes certificadas.',
+    a: 'Revisa el stock en nuestro catálogo online o escríbenos directamente. Si el ítem no figura, te ayudamos a validar disponibilidad y alternativas equivalentes certificadas.',
   },
   {
     q: '¿Realizan envíos y delivery?',
@@ -105,9 +74,6 @@ const FAQS = [
 ];
 
 export default function AdvisorsPage() {
-  const [advisors, setAdvisors] = useState<Advisor[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
@@ -115,69 +81,6 @@ export default function AdvisorsPage() {
   const [contactMotivo, setContactMotivo] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactSent, setContactSent] = useState(false);
-
-  useEffect(() => {
-    const fetchAdvisors = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch(API_URL);
-        if (!response.ok) {
-          throw new Error(`Error al cargar asesores (${response.status})`);
-        }
-
-        const data: ApiAdvisor[] = await response.json();
-
-        const mapped: Advisor[] = data.map((item, index) => {
-          let contacts: ContactData[] = [];
-          try {
-            contacts = JSON.parse(item.DATOS || '[]') as ContactData[];
-          } catch {
-            contacts = [];
-          }
-
-          const phoneContact =
-            contacts.find((c) => c.MEDIO.toUpperCase() === 'TELEFONO') ?? null;
-
-          const rawPhone = phoneContact?.CONTENIDO?.trim() ?? null;
-
-          let waPhone: string | null = rawPhone;
-          if (rawPhone && /^[0-9]{9}$/.test(rawPhone)) {
-            waPhone = `51${rawPhone}`;
-          }
-
-          const fullName = [
-            item.NOMBRE,
-            item.SEGUNDO_NOMBRE,
-            item.APELLIDO,
-            item.SEGUNDO_APELLIDO,
-          ]
-            .filter(Boolean)
-            .join(' ');
-
-          return {
-            id: `${index}-${fullName}`,
-            name: fullName,
-            specialty: phoneContact?.NOMBRE || 'Asesor corporativo',
-            avatar: item.IMAGE_URL,
-            phone: waPhone,
-          };
-        });
-
-        setAdvisors(mapped);
-      } catch (err) {
-        console.error(err);
-        setError(
-          'No se pudieron cargar los asesores. Intenta nuevamente más tarde.',
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAdvisors();
-  }, []);
 
   const handleContactSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -197,11 +100,8 @@ export default function AdvisorsPage() {
     setContactSent(true);
   };
 
-  const displayedAdvisors = advisors.slice(0, 4);
-
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero — solo texto, estilo Blog */}
       <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[300px] lg:h-[340px]">
         <Image
           src="/inventario.jpg"
@@ -226,252 +126,21 @@ export default function AdvisorsPage() {
         </div>
       </section>
 
-      {/* Asesores — 4 en fila */}
-      <section id="asesores" className="scroll-mt-28 w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
-        <div className="mx-auto max-w-[1400px]">
-          <div className="mb-10 text-center">
-            <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">
-              Equipo
-            </p>
-            <h2 className="text-2xl font-black text-[#0c1427] sm:text-3xl">
-              Nuestros asesores
-            </h2>
-            <div className="mx-auto mt-3 h-[3px] w-14 bg-[#F5C400]" />
-            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-500">
-              Especialistas listos para cotizar y orientarte en EPP industrial.
-            </p>
-          </div>
-
-          {loading && (
-            <div className="flex justify-center py-12">
-              <Spinner size="md" />
-            </div>
-          )}
-
-          {error && !loading && (
-            <p className="text-center text-sm text-red-600">{error}</p>
-          )}
-
-          {!loading && !error && advisors.length === 0 && (
-            <p className="text-center text-slate-500">
-              No hay asesores disponibles en este momento.
-            </p>
-          )}
-
-          {!loading && !error && displayedAdvisors.length > 0 && (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-              {displayedAdvisors.map((advisor, index) => (
-                <motion.article
-                  key={advisor.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group flex flex-col overflow-hidden bg-white shadow-[0_8px_28px_rgba(11,45,96,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(11,45,96,0.16)]"
-                >
-                  <div className="relative aspect-[3/4] min-h-[300px] overflow-hidden bg-slate-200 sm:min-h-[340px]">
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute right-0 top-0 z-10 h-9 w-11 bg-[#0b2d60]"
-                      style={{
-                        clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
-                      }}
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute right-0 top-0 z-10 h-5 w-7 bg-[#F5C400]"
-                      style={{
-                        clipPath: 'polygon(35% 0, 100% 0, 100% 100%, 0 100%)',
-                      }}
-                    />
-                    {advisor.avatar ? (
-                      <img
-                        src={advisor.avatar}
-                        alt={advisor.name}
-                        className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center bg-[#0b2d60] text-5xl font-black text-white">
-                        {advisor.name.charAt(0)}
-                      </div>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2d60] via-[#0b2d60]/75 to-transparent px-4 pb-4 pt-20">
-                      <p className="mb-1 inline-flex items-center gap-1 rounded-sm bg-[#F5C400] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
-                        <Award className="h-3 w-3" />
-                        {advisor.specialty}
-                      </p>
-                      <h3 className="line-clamp-2 text-base font-black text-white">
-                        {advisor.name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-1 flex-col border-t border-slate-100 p-4">
-                    <ul className="mb-4 space-y-2 text-xs text-slate-600">
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-[#0b2d60]/8 text-[#0b2d60]">
-                          <Clock className="h-3.5 w-3.5" />
-                        </span>
-                        Respuesta inmediata
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-emerald-50 text-emerald-600">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                        </span>
-                        Asesoría técnica especializada
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-[#F5C400]/25 text-[#0b2d60]">
-                          <Shield className="h-3.5 w-3.5" />
-                        </span>
-                        Cotización de EPP certificado
-                      </li>
-                    </ul>
-
-                    {advisor.phone ? (
-                      <a
-                        href={`https://wa.me/${advisor.phone}?text=${DEFAULT_WA_MESSAGE}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-auto inline-flex h-11 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
-                      >
-                        <WhatsAppIcon className="h-4 w-4" />
-                        Escribir por WhatsApp
-                      </a>
-                    ) : (
-                      <p className="mt-auto flex h-11 items-center justify-center gap-1.5 border border-slate-200 bg-[#f8f9fb] text-xs text-slate-500">
-                        <Phone className="h-3.5 w-3.5" />
-                        No disponible
-                      </p>
-                    )}
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* CTA servicios — debajo de asesores */}
-      <section className="relative w-full overflow-hidden bg-[#0b2d60]">
-        <div className="relative w-full">
-          <Image
-            src="/asesores-cta-bg.png"
-            alt="Zeus Safety — consulta nuestros servicios"
-            width={1717}
-            height={916}
-            quality={95}
-            sizes="100vw"
-            priority={false}
-            className="h-auto w-full"
-          />
-
-          <div className="absolute inset-0 flex items-center">
-            <div className="ml-auto w-full max-w-md px-5 py-8 sm:max-w-lg sm:px-8 lg:mr-[8%] lg:max-w-xl lg:px-0 xl:mr-[12%] xl:max-w-[34rem]">
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-                  Zeus Safety
-                </p>
-                <h2 className="text-2xl font-black leading-[1.15] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-3xl lg:text-4xl xl:text-[2.75rem]">
-                  ¡Consulta ahora los servicios que{' '}
-                  <span className="text-[#F5C400]">necesitas!</span>
-                </h2>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:mt-4 sm:text-[15px]">
-                  Cotiza EPP certificado, recibe asesoría técnica y coordina
-                  despachos a nivel nacional con el equipo Zeus Safety.
-                </p>
-
-                <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3">
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <Truck className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Entrega rápida
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Despachos ágiles
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <CheckCircle2 className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Precios competitivos
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Mejor relación valor
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <MapPin className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Cobertura nacional
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Envíos a todo el Perú
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 sm:mt-5 sm:text-sm">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-[#F5C400]" />
-                    EPP certificado
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Headphones className="h-3.5 w-3.5 text-[#F5C400]" />
-                    Asesoría técnica
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-[#F5C400]" />
-                    Respuesta rápida
-                  </span>
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href="#contacto"
-                    className="inline-flex h-11 items-center bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] sm:h-12 sm:px-7 sm:text-sm"
-                  >
-                    Contáctanos
-                  </a>
-                  <Link
-                    href="/cotizacion"
-                    className="inline-flex h-11 items-center border-2 border-white bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-[#0b2d60] sm:h-12 sm:px-7 sm:text-sm"
-                  >
-                    Arma tu cotización
-                  </Link>
-                </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Formulario de contacto */}
-      <section id="contacto" className="scroll-mt-24 bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
+      <section
+        id="contacto"
+        className="scroll-mt-28 bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10"
+      >
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-[#F5C400]">
-              Contáctanos
+              Escríbenos
             </p>
             <h2 className="text-2xl font-black text-[#0c1427] sm:text-3xl">
               ¿En qué podemos ayudarte?
             </h2>
             <p className="mx-auto mt-2 max-w-lg text-sm text-slate-500">
-              Escríbenos para consultas generales. Si necesitas precios de
-              productos, usa el cotizador.
+              Completa el formulario para consultas generales. Si necesitas
+              precios de productos, usa el cotizador.
             </p>
           </div>
 
@@ -510,9 +179,7 @@ export default function AdvisorsPage() {
                 <WhatsAppIcon className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-sm font-bold text-[#0c1427]">
-                  Chat en línea
-                </p>
+                <p className="text-sm font-bold text-[#0c1427]">Chat en línea</p>
                 <p className="mt-0.5 text-sm text-slate-600">
                   Escríbenos por WhatsApp ahora
                 </p>
@@ -609,8 +276,113 @@ export default function AdvisorsPage() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="border-t border-slate-200 bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10">
+      <section className="relative w-full overflow-hidden bg-[#0b2d60]">
+        <div className="relative w-full">
+          <Image
+            src="/asesores-cta-bg.png"
+            alt="Zeus Safety — consulta nuestros servicios"
+            width={1717}
+            height={916}
+            quality={95}
+            sizes="100vw"
+            priority={false}
+            className="h-auto w-full"
+          />
+
+          <div className="absolute inset-0 flex items-center">
+            <div className="ml-auto w-full max-w-md px-5 py-8 sm:max-w-lg sm:px-8 lg:mr-[8%] lg:max-w-xl lg:px-0 xl:mr-[12%] xl:max-w-[34rem]">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+                Zeus Safety
+              </p>
+              <h2 className="text-2xl font-black leading-[1.15] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-3xl lg:text-4xl xl:text-[2.75rem]">
+                ¡Consulta ahora los servicios que{' '}
+                <span className="text-[#F5C400]">necesitas!</span>
+              </h2>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:mt-4 sm:text-[15px]">
+                Cotiza EPP certificado, recibe asesoría técnica y coordina
+                despachos a nivel nacional con Zeus Safety.
+              </p>
+
+              <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3">
+                <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                    <Truck className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold text-white sm:text-sm">
+                      Entrega rápida
+                    </p>
+                    <p className="hidden text-[11px] text-white/70 sm:block">
+                      Despachos ágiles
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold text-white sm:text-sm">
+                      Precios competitivos
+                    </p>
+                    <p className="hidden text-[11px] text-white/70 sm:block">
+                      Mejor relación valor
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                    <MapPin className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold text-white sm:text-sm">
+                      Cobertura nacional
+                    </p>
+                    <p className="hidden text-[11px] text-white/70 sm:block">
+                      Envíos a todo el Perú
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 sm:mt-5 sm:text-sm">
+                <span className="inline-flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-[#F5C400]" />
+                  EPP certificado
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Headphones className="h-3.5 w-3.5 text-[#F5C400]" />
+                  Asesoría técnica
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-[#F5C400]" />
+                  Respuesta rápida
+                </span>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="#contacto"
+                  className="inline-flex h-11 items-center bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] sm:h-12 sm:px-7 sm:text-sm"
+                >
+                  Contáctanos
+                </a>
+                <Link
+                  href="/cotizacion"
+                  className="inline-flex h-11 items-center border-2 border-white bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-[#0b2d60] sm:h-12 sm:px-7 sm:text-sm"
+                >
+                  Arma tu cotización
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="faq"
+        className="border-t border-slate-200 bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10"
+      >
         <div className="mx-auto max-w-3xl">
           <div className="mb-6 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">

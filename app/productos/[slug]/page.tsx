@@ -1,161 +1,52 @@
 'use client';
 
 import { Product } from '@/lib/mockData';
+import {
+  PRODUCTS_API_URL,
+  buildCatalogFromApi,
+  findVariantsBySlug,
+  getGroupDisplayName,
+  getProductGroupKey,
+  getVariantColor,
+  getVariantSize,
+  sortSizes,
+  transformDetailProduct,
+  type ApiProduct,
+  type CatalogProduct,
+  type DetailProduct,
+} from '@/lib/product-catalog';
+import {
+  getInitialVariantOptions,
+  ProductVariantSelectors,
+  resolveActiveVariant,
+} from '@/components/products/product-variant-selectors';
+import {
+  ProductImageZoom,
+  ProductTrustBadges,
+} from '@/components/products/product-image-zoom';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
-import { getDisplayPrice, formatSoles } from '@/lib/display-price';
 import {
   ArrowLeft,
   ChevronRight,
+  ClipboardList,
   FileText,
   ExternalLink,
   Minus,
   Package,
   Plus,
-  ShieldCheck,
-  Truck,
-  Warehouse,
+  ShoppingCart,
 } from 'lucide-react';
-import { useState, useEffect, use, useMemo, type ReactNode } from 'react';
+import { useState, useEffect, use, useMemo, useCallback, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProductDetailSkeleton } from '@/components/ui/skeleton';
-
-const PAYMENT_CARDS = [
-  { src: '/tarjetas/visa-removebg-preview.png', alt: 'Visa' },
-  { src: '/tarjetas/mastercard-removebg-preview.png', alt: 'Mastercard' },
-  { src: '/tarjetas/Dinners-removebg-preview.png', alt: 'Diners Club' },
-  { src: '/tarjetas/interbank-removebg-preview.png', alt: 'Interbank' },
-];
+import { Toast } from '@/components/ui/toast';
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
-
-type ApiProduct = {
-  ID: number;
-  CODIGO?: string;
-  NOMBRE: string;
-  CATEGORIA: string;
-  TIPO_PRODUCTO: string | null;
-  COLOR_TIPO: string | null;
-  TAMAÑO?: string | null;
-  PARES_POR_CAJA: number | null;
-  FICHA_TECNICA_ENLACE: string | null;
-  IMG_URL: string | null;
-  DESCRIPCION: string | null;
-  PRECIO: string;
-};
-
-type DetailProduct = Product & {
-  fichaTecnica?: string;
-  codigo?: string;
-  tamanio?: string | null;
-  apiData?: ApiProduct;
-};
-
-const WA_URL =
-  'https://wa.me/51999999999?text=' +
-  encodeURIComponent('Hola, deseo información sobre un producto Zeus Safety.');
-
-function WhatsAppIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-    </svg>
-  );
-}
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function normalizeSlug(slug: string): string {
-  return slug
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function mapCategory(apiCategory: string): string {
-  const categoryMap: Record<string, string> = {
-    Corporal: 'Protección Corporal',
-    Guantes: 'Protección Manual',
-    Manual: 'Protección Manual',
-    Visual: 'Protección Visual',
-    Lentes: 'Protección Visual',
-    Respiradores: 'Protección Respiratoria',
-    Respiratoria: 'Protección Respiratoria',
-    Auditiva: 'Protección Auditiva',
-    Auditivo: 'Protección Auditiva',
-    Calzado: 'Calzado de Seguridad',
-    Vial: 'Seguridad Vial',
-    Laboral: 'Equipo Laboral',
-    Electric: 'Electric',
-    'SEGURIDAD INDUSTRIAL': 'SEGURIDAD INDUSTRIAL',
-    Delivery: 'Delivery',
-  };
-  return categoryMap[apiCategory] || apiCategory;
-}
-
-function transformApiProduct(apiProduct: ApiProduct): DetailProduct {
-  const price = parseFloat(apiProduct.PRECIO) || 0;
-  const specs = [];
-
-  if (apiProduct.PARES_POR_CAJA) {
-    specs.push({
-      label: 'Pares por caja',
-      value: apiProduct.PARES_POR_CAJA.toString(),
-    });
-  }
-  if (apiProduct.COLOR_TIPO) {
-    specs.push({ label: 'Color/Tipo', value: apiProduct.COLOR_TIPO });
-  }
-  if (apiProduct.TIPO_PRODUCTO) {
-    specs.push({ label: 'Tipo de Producto', value: apiProduct.TIPO_PRODUCTO });
-  }
-  if (apiProduct.TAMAÑO) {
-    specs.push({ label: 'Tamaño', value: apiProduct.TAMAÑO });
-  }
-  if (apiProduct.CODIGO) {
-    specs.push({ label: 'Código', value: apiProduct.CODIGO });
-  }
-
-  const base = {
-    id: `prd-${apiProduct.ID}`,
-    name: apiProduct.NOMBRE,
-    slug: generateSlug(apiProduct.NOMBRE),
-    category: mapCategory(apiProduct.CATEGORIA) as Product['category'],
-    brand: 'Zeus Safety',
-    price,
-    certification: [],
-    description:
-      apiProduct.DESCRIPCION ||
-      `Producto de seguridad industrial ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
-    specs,
-    image: apiProduct.IMG_URL || '',
-    fichaTecnica: apiProduct.FICHA_TECNICA_ENLACE || undefined,
-    codigo: apiProduct.CODIGO,
-    tamanio: apiProduct.TAMAÑO,
-    apiData: apiProduct,
-  };
-  return { ...base, price: getDisplayPrice(base) };
-}
 
 function Accordion({
   title,
@@ -224,7 +115,7 @@ function FeatureList({ product }: { product: DetailProduct }) {
 function RelatedCard({
   product,
 }: {
-  product: DetailProduct;
+  product: CatalogProduct;
 }) {
   const addItem = useQuoteStore((s) => s.addItem);
   const [qty, setQty] = useState(1);
@@ -311,15 +202,40 @@ function RelatedCard({
 
 export default function ProductDetailPage({ params }: Props) {
   const { slug } = use(params);
-  const [product, setProduct] = useState<DetailProduct | null>(null);
-  const [related, setRelated] = useState<DetailProduct[]>([]);
+  const [variants, setVariants] = useState<DetailProduct[]>([]);
+  const [displayName, setDisplayName] = useState('');
+  const [related, setRelated] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
-  const [openSection, setOpenSection] = useState<'desc' | 'info' | 'ship' | null>('desc');
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [openSection, setOpenSection] = useState<'info' | 'ship' | null>(null);
+  const [showToast, setShowToast] = useState(false);
   const addItem = useQuoteStore((s) => s.addItem);
   const router = useRouter();
+
+  const product = useMemo(
+    () =>
+      variants.length > 0
+        ? resolveActiveVariant(variants, selectedColor, selectedSize)
+        : null,
+    [variants, selectedColor, selectedSize],
+  );
+
+  const handleCloseToast = useCallback(() => setShowToast(false), []);
+
+  const handleAddToCart = useCallback(() => {
+    if (!product) return;
+    addItem(product, quantity);
+    setShowToast(true);
+  }, [addItem, product, quantity]);
+
+  const handleQuoteNow = useCallback(() => {
+    if (!product) return;
+    addItem(product, quantity);
+    router.push('/cotizacion');
+  }, [addItem, product, quantity, router]);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -327,85 +243,41 @@ export default function ProductDetailPage({ params }: Props) {
         setLoading(true);
         setError(null);
         setQuantity(1);
-        setActiveImage(0);
-        setOpenSection('desc');
+        setOpenSection(null);
+        setSelectedColor(null);
+        setSelectedSize(null);
 
-        const decodedSlug = decodeURIComponent(slug);
-        const normalizedSearchSlug = normalizeSlug(decodedSlug);
-
-        const response = await fetch(
-          'https://productoscrud-2946605267.us-central1.run.app?metodo=LISTADO_PRODUCTOS_ESTATICA',
-        );
+        const response = await fetch(PRODUCTS_API_URL);
         if (!response.ok) throw new Error('Error al cargar el producto');
 
-        const data = await response.json();
-        const transformedProducts: DetailProduct[] = data.map(transformApiProduct);
+        const data = (await response.json()) as ApiProduct[];
+        const matched = findVariantsBySlug(slug, data);
 
-        let foundProduct = transformedProducts.find((p) => {
-          const productSlugNormalized = normalizeSlug(p.slug);
-          return (
-            productSlugNormalized === normalizedSearchSlug ||
-            p.slug === decodedSlug ||
-            normalizeSlug(generateSlug(p.name)) === normalizedSearchSlug
-          );
-        });
-
-        if (!foundProduct) {
-          const slugAsId = parseInt(decodedSlug, 10);
-          if (!isNaN(slugAsId)) {
-            foundProduct = transformedProducts.find(
-              (p) => p.id === `prd-${slugAsId}`,
-            );
-          }
-        }
-
-        if (!foundProduct) {
-          const searchTerms = normalizedSearchSlug
-            .split('-')
-            .filter((t) => t.length > 2);
-          if (searchTerms.length > 0) {
-            foundProduct = transformedProducts.find((p) => {
-              const name = normalizeSlug(p.name);
-              return searchTerms.every(
-                (term) => name.includes(term) || p.slug.includes(term),
-              );
-            });
-          }
-        }
-
-        if (!foundProduct) {
+        if (!matched || matched.length === 0) {
           setError('Producto no encontrado');
           return;
         }
 
-        setProduct(foundProduct);
+        const detailVariants = matched.map(transformDetailProduct);
+        const initial = getInitialVariantOptions(detailVariants);
 
-        const relatedList = transformedProducts
+        setVariants(detailVariants);
+        setDisplayName(getGroupDisplayName(matched[0]));
+        setSelectedColor(initial.color);
+        setSelectedSize(initial.size);
+
+        const catalog = buildCatalogFromApi(data);
+        const currentGroup = getProductGroupKey(matched[0]);
+        const relatedList = catalog
           .filter(
-            (p) =>
-              p.id !== foundProduct!.id &&
-              (p.apiData?.CATEGORIA === foundProduct!.apiData?.CATEGORIA ||
-                p.category === foundProduct!.category) &&
-              Boolean(p.image?.trim()),
+            (item) =>
+              item.groupSlug !== currentGroup &&
+              item.category === detailVariants[0].category &&
+              Boolean(item.image?.trim()),
           )
           .slice(0, 4);
 
-        const fallback =
-          relatedList.length >= 4
-            ? relatedList
-            : [
-                ...relatedList,
-                ...transformedProducts
-                  .filter(
-                    (p) =>
-                      p.id !== foundProduct!.id &&
-                      !relatedList.some((r) => r.id === p.id) &&
-                      Boolean(p.image?.trim()),
-                  )
-                  .slice(0, 4 - relatedList.length),
-              ];
-
-        setRelated(fallback.slice(0, 4));
+        setRelated(relatedList);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
@@ -433,12 +305,33 @@ export default function ProductDetailPage({ params }: Props) {
     const color = product.apiData?.COLOR_TIPO;
     const caja = product.apiData?.PARES_POR_CAJA;
 
-    return `El ${product.name} es un EPP de ${tipo.toLowerCase()} pensado para proteger a tu cuadrilla en operaciones exigentes.${
+    return `El ${displayName || product.name} es un EPP de ${tipo.toLowerCase()} pensado para proteger a tu cuadrilla en operaciones exigentes.${
       color ? ` Disponible en ${color.toLowerCase()}.` : ''
     }${
       caja ? ` Presentación de ${caja} unidades por caja.` : ''
     } Ideal para obra, planta y mantenimiento: combina desempeño, cumplimiento y facilidad de cotización.`;
-  }, [product]);
+  }, [product, displayName]);
+
+  const handleColorChange = (color: string | null) => {
+    setSelectedColor(color);
+    const sizes = sortSizes(
+      Array.from(
+        new Set(
+          variants
+            .filter(
+              (variant) =>
+                !color ||
+                (variant.apiData && getVariantColor(variant.apiData) === color),
+            )
+            .map((variant) =>
+              variant.apiData ? getVariantSize(variant.apiData) : null,
+            )
+            .filter((size): size is string => Boolean(size)),
+        ),
+      ),
+    );
+    setSelectedSize(sizes[0] ?? null);
+  };
 
   if (loading) {
     return <ProductDetailSkeleton />;
@@ -468,29 +361,16 @@ export default function ProductDetailPage({ params }: Props) {
     );
   }
 
-  const consultUrl = `${WA_URL.slice(0, WA_URL.indexOf('?'))}?text=${encodeURIComponent(
-    `Hola, quiero consultar sobre: ${product.name}`,
-  )}`;
+  const productImage = product.image?.trim() || '';
 
-  const galleryImages: string[] = [];
-  if (product.image?.trim()) galleryImages.push(product.image.trim());
-  related.forEach((r) => {
-    const url = r.image?.trim();
-    if (url && !galleryImages.includes(url)) galleryImages.push(url);
-  });
-
-  const displayPrice = product.price;
-  const referencePrice = Math.round(displayPrice * 1.35 * 2) / 2;
-  const savingsPct = Math.round((1 - displayPrice / referencePrice) * 100);
-  const savingsAmount = referencePrice - displayPrice;
-
-  const toggleSection = (section: 'desc' | 'info' | 'ship') => {
+  const toggleSection = (section: 'info' | 'ship') => {
     setOpenSection((prev) => (prev === section ? null : section));
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[1400px] px-5 py-6 sm:px-8 lg:px-10 lg:py-10">
+    <>
+      <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-[1500px] px-3 py-6 sm:px-4 lg:px-6 lg:py-10">
         <nav className="mb-6 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
           <Link href="/productos" className="transition-colors hover:text-[#0b2d60]">
             Catálogo
@@ -500,120 +380,46 @@ export default function ProductDetailPage({ params }: Props) {
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12 xl:gap-16">
-          {/* Galería */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
-            {galleryImages.length > 1 && (
-              <div className="order-2 flex gap-2 overflow-x-auto sm:order-1 sm:flex-col sm:overflow-visible">
-                {galleryImages.map((src, i) => (
-                  <button
-                    key={src}
-                    type="button"
-                    onClick={() => setActiveImage(i)}
-                    className={`relative h-16 w-16 shrink-0 overflow-hidden border bg-[#f4f5f7] transition sm:h-[72px] sm:w-[72px] ${
-                      activeImage === i
-                        ? 'border-[#0b2d60] ring-1 ring-[#0b2d60]'
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <Image
-                      src={src}
-                      alt=""
-                      fill
-                      unoptimized
-                      className="object-contain p-1.5"
-                      sizes="72px"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="relative order-1 min-h-[320px] flex-1 overflow-hidden bg-[#f4f5f7] sm:order-2 sm:min-h-[480px] lg:min-h-[560px]">
-              {galleryImages.length > 0 ? (
-                <Image
-                  src={galleryImages[activeImage] ?? galleryImages[0]}
-                  alt={product.name}
-                  fill
-                  priority
-                  unoptimized
-                  className="object-contain p-6 sm:p-10"
-                  sizes="(max-width: 1024px) 100vw, 55vw"
-                />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <Package className="mb-2 h-12 w-12 text-slate-300" />
-                  <p className="text-sm text-slate-400">Imagen no disponible</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <ProductImageZoom
+            key={productImage}
+            src={productImage}
+            alt={displayName || product.name}
+          />
 
           {/* Panel de compra */}
           <div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="bg-emerald-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                 En stock
               </span>
-              {savingsPct > 0 && (
-                <span className="rounded-full bg-[#F5C400] px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
-                  -{savingsPct}% off
-                </span>
-              )}
             </div>
 
             <p className="mt-4 text-sm font-semibold text-[#0b2d60]/70">{product.brand}</p>
 
             <h1 className="mt-1 text-2xl font-black uppercase leading-tight tracking-tight text-[#0b2d60] sm:text-3xl">
-              {product.name}
+              {displayName || product.name}
             </h1>
 
-            <div className="mt-5">
-              <p className="text-2xl font-black text-[#0b2d60] sm:text-[1.65rem]">
-                {formatSoles(displayPrice)}
-              </p>
-              {savingsPct > 0 && (
-                <div className="mt-1 flex flex-wrap items-baseline gap-2">
-                  <span className="text-sm text-slate-400 line-through">
-                    {formatSoles(referencePrice)}
-                  </span>
-                  <span className="text-sm font-semibold text-[#0b2d60]">
-                    Ahorras {savingsPct}% ({formatSoles(savingsAmount)})
-                  </span>
-                </div>
-              )}
-            </div>
+            <ProductVariantSelectors
+              variants={variants}
+              selectedColor={selectedColor}
+              selectedSize={selectedSize}
+              onColorChange={handleColorChange}
+              onSizeChange={setSelectedSize}
+            />
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {product.apiData?.COLOR_TIPO && (
-                <label className="block">
-                  <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                    Color
-                  </span>
-                  <select
-                    defaultValue={product.apiData.COLOR_TIPO}
-                    className="h-11 w-full border border-slate-300 bg-white px-3 text-sm font-medium text-[#0b2d60] outline-none focus:border-[#0b2d60]"
-                  >
-                    <option>{product.apiData.COLOR_TIPO}</option>
-                  </select>
-                </label>
-              )}
-              {product.tamanio && (
-                <label className="block">
-                  <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                    Tamaño
-                  </span>
-                  <select
-                    defaultValue={product.tamanio}
-                    className="h-11 w-full border border-slate-300 bg-white px-3 text-sm font-medium text-[#0b2d60] outline-none focus:border-[#0b2d60]"
-                  >
-                    <option>{product.tamanio}</option>
-                  </select>
-                </label>
-              )}
+            <div className="mt-5 border-b border-slate-200 pb-5">
+              <h2 className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
+                Descripción
+              </h2>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-slate-600">
+                {description}
+              </p>
+              <FeatureList product={product} />
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex h-12 w-full max-w-[140px] items-center border border-slate-300">
+              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center border border-slate-300">
                 <button
                   type="button"
                   aria-label="Disminuir cantidad"
@@ -637,61 +443,39 @@ export default function ProductDetailPage({ params }: Props) {
 
               <button
                 type="button"
-                onClick={() => addItem(product, quantity)}
-                className="inline-flex h-12 flex-1 items-center justify-center rounded-full bg-[#0b2d60] px-8 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                onClick={handleAddToCart}
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
-                Añadir a cotización
+                <ShoppingCart className="h-4 w-4 shrink-0" />
+                Agregar a carrito
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                addItem(product, quantity);
-                router.push('/cotizacion');
-              }}
-              className="mt-3 inline-flex h-12 w-full items-center justify-center border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-white"
-            >
-              Cotizar ahora
-            </button>
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleQuoteNow}
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-white"
+              >
+                <ClipboardList className="h-4 w-4 shrink-0" />
+                Cotizar ahora
+              </button>
 
-            <div className="mt-6 grid grid-cols-3 gap-3 border-y border-slate-200 py-5">
-              <div className="flex flex-col items-center gap-2 text-center">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50">
-                  <ShieldCheck className="h-5 w-5 text-[#0b2d60]" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase leading-tight text-slate-600">
-                  EPP certificado
-                </p>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50">
-                  <Truck className="h-5 w-5 text-[#0b2d60]" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase leading-tight text-slate-600">
-                  Envío nacional
-                </p>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50">
-                  <Warehouse className="h-5 w-5 text-[#0b2d60]" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase leading-tight text-slate-600">
-                  Stock mayorista
-                </p>
-              </div>
+              {product.fichaTecnica ? (
+                <a
+                  href={product.fichaTecnica}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
+                >
+                  <FileText className="h-4 w-4 shrink-0" />
+                  <span className="truncate">Ver ficha técnica</span>
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70" />
+                </a>
+              ) : null}
             </div>
 
             <div className="mt-5">
-              <Accordion
-                title="Descripción"
-                open={openSection === 'desc'}
-                onToggle={() => toggleSection('desc')}
-              >
-                <p className="whitespace-pre-line">{description}</p>
-                <FeatureList product={product} />
-              </Accordion>
-
               <Accordion
                 title="Especificaciones"
                 open={openSection === 'info'}
@@ -730,18 +514,6 @@ export default function ProductDetailPage({ params }: Props) {
                       </div>
                     ))}
                 </div>
-                {product.fichaTecnica && (
-                  <a
-                    href={product.fichaTecnica}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#0b2d60] underline-offset-2 hover:underline"
-                  >
-                    <FileText className="h-4 w-4" />
-                    Ver ficha técnica
-                    <ExternalLink className="h-3.5 w-3.5 opacity-60" />
-                  </a>
-                )}
               </Accordion>
 
               <Accordion
@@ -760,58 +532,41 @@ export default function ProductDetailPage({ params }: Props) {
               </Accordion>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              {PAYMENT_CARDS.map((card) => (
-                <div
-                  key={card.alt}
-                  className="relative h-8 w-12 overflow-hidden rounded border border-slate-100 bg-white sm:h-9 sm:w-14"
-                >
-                  <Image
-                    src={card.src}
-                    alt={card.alt}
-                    fill
-                    className="object-contain p-0.5"
-                    sizes="56px"
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <a
-                href={consultUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[#25D366] bg-[#25D366]/10 text-sm font-bold text-[#0b2d60] transition-colors hover:bg-[#25D366]/20"
-              >
-                <WhatsAppIcon className="h-5 w-5 text-[#25D366]" />
-                Habla con un asesor
-              </a>
-              <button
-                type="button"
-                onClick={() => router.push('/productos')}
-                className="inline-flex h-11 items-center justify-center gap-2 text-sm font-semibold text-[#0b2d60]/70 transition-colors hover:text-[#0b2d60]"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Volver al catálogo
-              </button>
-            </div>
+            <ProductTrustBadges />
           </div>
         </div>
+      </div>
 
-        {related.length > 0 && (
-          <section className="mt-14 border-t border-slate-200 pt-12 sm:mt-16">
-            <h2 className="text-xl font-black text-[#0c1427] sm:text-2xl">
-              Productos relacionados
-            </h2>
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+      {related.length > 0 && (
+        <section className="border-t border-slate-200 bg-[#f3f5f8] px-3 py-10 sm:px-4 lg:px-6 lg:py-12">
+          <div className="mx-auto max-w-[1500px]">
+            <div className="mb-6 sm:mb-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+                También te puede interesar
+              </p>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-2xl">
+                Productos relacionados
+              </h2>
+              <div className="mt-2 h-1.5 w-16 bg-[#F5C400]" />
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
               {related.map((item) => (
                 <RelatedCard key={item.id} product={item} />
               ))}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
+      )}
       </div>
-    </div>
+
+      <Toast
+        title="¡Agregado al carrito!"
+        message="Producto agregado correctamente a tu cotización."
+        imageSrc={productImage}
+        imageAlt={displayName || product.name}
+        isVisible={showToast}
+        onClose={handleCloseToast}
+      />
+    </>
   );
 }

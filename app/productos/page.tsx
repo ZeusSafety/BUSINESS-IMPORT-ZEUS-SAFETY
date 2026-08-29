@@ -3,6 +3,11 @@
 import { ProductCard } from '@/components/products/product-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  GridColumnSwitcher,
+  gridColsClass,
+  type CatalogGridCols,
+} from '@/components/ui/grid-column-switcher';
 import { SortSelect, type SortOption } from '@/components/ui/sort-select';
 import { PageLoader } from '@/components/ui/spinner';
 import { ProductGridSkeleton } from '@/components/ui/skeleton';
@@ -13,78 +18,13 @@ import Image from 'next/image';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-// Tipo para los datos de la API
-type ApiProduct = {
-  ID: number;
-  NOMBRE: string;
-  CATEGORIA: string;
-  TIPO_PRODUCTO: string;
-  COLOR_TIPO: string;
-  PARES_POR_CAJA: number;
-  FICHA_TECNICA_ENLACE: string;
-  IMG_URL: string;
-  DESCRIPCION: string | null;
-  PRECIO: string;
-};
-
-// Función para generar slug a partir del nombre
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-// Función para mapear categorías de la API a categorías del sistema
-function mapCategory(apiCategory: string): string {
-  const categoryMap: Record<string, string> = {
-    Corporal: 'Protección Corporal',
-    Guantes: 'Protección Manual',
-    Manual: 'Protección Manual',
-    Visual: 'Protección Visual',
-    Lentes: 'Protección Visual',
-    Respiradores: 'Protección Respiratoria',
-    Respiratoria: 'Protección Respiratoria',
-    Auditiva: 'Protección Auditiva',
-    Auditivo: 'Protección Auditiva',
-    Calzado: 'Calzado de Seguridad',
-    Vial: 'Seguridad Vial',
-    Laboral: 'Equipo Laboral',
-  };
-  return categoryMap[apiCategory] || apiCategory;
-}
-
-// Función para transformar datos de la API al formato Product
-function transformApiProduct(apiProduct: ApiProduct): Product {
-  const price = parseFloat(apiProduct.PRECIO) || 0;
-  const specs = [];
-  
-  if (apiProduct.PARES_POR_CAJA) {
-    specs.push({ label: 'Pares por caja', value: apiProduct.PARES_POR_CAJA.toString() });
-  }
-  if (apiProduct.COLOR_TIPO) {
-    specs.push({ label: 'Color/Tipo', value: apiProduct.COLOR_TIPO });
-  }
-  if (apiProduct.TIPO_PRODUCTO) {
-    specs.push({ label: 'Tipo', value: apiProduct.TIPO_PRODUCTO });
-  }
-
-  return {
-    id: `prd-${apiProduct.ID}`,
-    name: apiProduct.NOMBRE,
-    slug: generateSlug(apiProduct.NOMBRE),
-    category: mapCategory(apiProduct.CATEGORIA) as any,
-    brand: 'Zeus Safety',
-    price: price,
-    certification: [],
-    description: apiProduct.DESCRIPCION || `Producto de seguridad industrial ${apiProduct.TIPO_PRODUCTO || apiProduct.CATEGORIA}`,
-    specs: specs,
-    image: (apiProduct.IMG_URL || '').trim(),
-  };
-}
+import {
+  PRODUCTS_API_URL,
+  buildCatalogFromApi,
+  transformApiProduct,
+  type ApiProduct,
+  type CatalogProduct,
+} from '@/lib/product-catalog';
 
 export default function ProductsPage() {
   return (
@@ -96,8 +36,8 @@ export default function ProductsPage() {
 
 function ProductsPageContent() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]); // Todos los productos del catálogo completo
+  const [products, setProducts] = useState<CatalogProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<CatalogProduct[]>([]);
   const [starProducts, setStarProducts] = useState<Product[]>([]); // Productos estrella cargados directamente
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +54,7 @@ function ProductsPageContent() {
   const [starProductIds, setStarProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [gridCols, setGridCols] = useState<2 | 3 | 4 | 5>(4);
+  const [gridCols, setGridCols] = useState<CatalogGridCols>(4);
   const productsPerPage = 12;
 
   const priceBounds = useMemo(() => {
@@ -192,21 +132,21 @@ function ProductsPageContent() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('https://productoscrud-2946605267.us-central1.run.app?metodo=LISTADO_PRODUCTOS_ESTATICA');
+        const response = await fetch(PRODUCTS_API_URL);
         
         if (!response.ok) {
           throw new Error('Error al cargar los productos');
         }
         
-        const data = await response.json();
-        
-        // Transformar los productos de la API
-        const transformedProducts = data.map(transformApiProduct);
-        setAllProducts(transformedProducts);
-        setProducts(transformedProducts);
+        const data = (await response.json()) as ApiProduct[];
+        const catalogProducts = buildCatalogFromApi(data);
+        setAllProducts(catalogProducts);
+        setProducts(catalogProducts);
         
         // Extraer categorías únicas de los productos
-        const uniqueCategories = Array.from(new Set(transformedProducts.map((p: Product) => p.category))) as string[];
+        const uniqueCategories = Array.from(
+          new Set(catalogProducts.map((p) => p.category)),
+        ) as string[];
         setCategories(uniqueCategories);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -257,7 +197,9 @@ function ProductsPageContent() {
       console.log('🔍 Filtro Productos Top activado');
       console.log('📊 IDs de productos estrella disponibles:', starProductIds.length);
       console.log('📦 Productos totales en catálogo:', products.length);
-      const topProductsFound = products.filter(p => starProductIds.includes(p.id));
+      const topProductsFound = products.filter((p) =>
+        p.variantIds.some((id) => starProductIds.includes(id)),
+      );
       console.log('⭐ Productos estrella encontrados en catálogo:', topProductsFound.length);
       if (topProductsFound.length < starProductIds.length) {
         console.warn('⚠️ Algunos productos estrella no están en el catálogo completo');
@@ -269,28 +211,27 @@ function ProductsPageContent() {
 
   // Cuando se activa el filtro de productos top, usar los productos estrella directamente
   useEffect(() => {
-    if (showTopProducts && starProducts.length > 0) {
-      // Combinar productos estrella con productos del catálogo que coincidan
-      const combinedProducts = [...starProducts];
-      // Agregar productos del catálogo que sean estrella pero no estén en starProducts
-      allProducts.forEach(product => {
-        if (starProductIds.includes(product.id) && !combinedProducts.some(p => p.id === product.id)) {
-          combinedProducts.push(product);
-        }
-      });
-      setProducts(combinedProducts);
+    if (showTopProducts && starProductIds.length > 0) {
+      setProducts(
+        allProducts.filter((p) =>
+          p.variantIds.some((id) => starProductIds.includes(id)),
+        ),
+      );
     } else if (!showTopProducts) {
       // Si el filtro está desactivado, mostrar todos los productos del catálogo
       setProducts(allProducts);
     }
-  }, [showTopProducts, starProducts, starProductIds, allProducts]);
+  }, [showTopProducts, starProductIds, allProducts]);
 
-  // Filter products based on search and filters
   const filteredProducts = products.filter((product) => {
+    const catalogProduct = product as CatalogProduct;
     const matchesSearch =
       searchQuery === '' ||
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      catalogProduct.variantNames?.some((name) =>
+        name.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) ||
       (product.description &&
         product.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -304,7 +245,7 @@ function ProductsPageContent() {
       );
 
     const matchesPrice =
-      product.price >= priceMin && product.price <= priceMax;
+      catalogProduct.maxPrice >= priceMin && catalogProduct.minPrice <= priceMax;
 
     return (
       matchesSearch &&
@@ -319,8 +260,8 @@ function ProductsPageContent() {
     switch (sortBy) {
       case 'popularity':
         return list.sort((a, b) => {
-          const aStar = starProductIds.includes(a.id) ? 1 : 0;
-          const bStar = starProductIds.includes(b.id) ? 1 : 0;
+          const aStar = a.variantIds.some((id) => starProductIds.includes(id)) ? 1 : 0;
+          const bStar = b.variantIds.some((id) => starProductIds.includes(id)) ? 1 : 0;
           if (bStar !== aStar) return bStar - aStar;
           return a.name.localeCompare(b.name, 'es');
         });
@@ -411,38 +352,11 @@ function ProductsPageContent() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <div
-              className="inline-flex items-center gap-0.5 rounded-md border border-slate-200 bg-white p-1"
-              role="group"
-              aria-label="Columnas del catálogo"
-            >
-              {([2, 3, 4, 5] as const).map((cols) => (
-                <button
-                  key={cols}
-                  type="button"
-                  onClick={() => setGridCols(cols)}
-                  title={`${cols} columnas`}
-                  aria-label={`Mostrar ${cols} columnas`}
-                  aria-pressed={gridCols === cols}
-                  className={`inline-flex h-10 w-10 items-center justify-center rounded transition-colors ${
-                    gridCols === cols
-                      ? 'bg-[#0b2d60] text-white'
-                      : 'text-slate-400 hover:bg-slate-100 hover:text-[#0b2d60]'
-                  }`}
-                >
-                  <span className="flex h-3.5 items-stretch gap-[2px]">
-                    {Array.from({ length: cols }).map((_, i) => (
-                      <span
-                        key={i}
-                        className={`w-[2.5px] flex-1 rounded-[0.5px] ${
-                          gridCols === cols ? 'bg-white' : 'bg-current'
-                        }`}
-                      />
-                    ))}
-                  </span>
-                </button>
-              ))}
-            </div>
+            <GridColumnSwitcher
+              value={gridCols}
+              onChange={setGridCols}
+              ariaLabel="Columnas del catálogo"
+            />
 
             <Button
               variant="outline"
@@ -721,16 +635,7 @@ function ProductsPageContent() {
                   <SortSelect value={sortBy} onChange={setSortBy} />
                 </div>
 
-                <div
-                  className={`relative z-0 ${
-                    {
-                      2: 'grid grid-cols-1 gap-5 sm:grid-cols-2',
-                      3: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3',
-                      4: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-                      5: 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
-                    }[gridCols]
-                  }`}
-                >
+                <div className={`relative z-0 ${gridColsClass(gridCols)}`}>
                   {paginatedProducts.map((product, index) => (
                     <motion.div
                       key={product.id}
