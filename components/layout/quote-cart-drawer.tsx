@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import { useQuoteStore } from '@/store/quoteStore';
 
 const WA_NUMBER = '51999999999';
@@ -149,24 +150,10 @@ export function QuoteCartDrawer() {
 
               <div className="flex-1 overflow-y-auto px-4 py-4">
                 {items.length === 0 ? (
-                  <div className="flex h-full min-h-[220px] flex-col items-center justify-center px-4 text-center">
-                    <span className="mb-4 flex h-14 w-14 items-center justify-center bg-[#0b2d60] text-white">
-                      <Package className="h-6 w-6" />
-                    </span>
-                    <p className="text-base font-bold text-[#0c1427]">
-                      Tu cotización está vacía
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      Agrega productos desde el catálogo para armar tu pedido.
-                    </p>
-                    <Link
-                      href="/productos"
-                      onClick={() => setOpen(false)}
-                      className="mt-5 inline-flex h-10 items-center bg-[#F5C400] px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60]"
-                    >
-                      Ir al catálogo
-                    </Link>
-                  </div>
+                  <QuoteEmptyState
+                    variant="drawer"
+                    onCatalogClick={() => setOpen(false)}
+                  />
                 ) : (
                   <ul className="space-y-3">
                     {items.map((item) => {

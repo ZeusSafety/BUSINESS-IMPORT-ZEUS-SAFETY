@@ -16,6 +16,8 @@ import {
   User,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { IconBox } from '@/components/ui/icon-box';
+import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FormEvent, useMemo, useState } from 'react';
@@ -165,28 +167,7 @@ export default function QuotePage() {
         <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] xl:gap-8">
           <div className="space-y-4">
             {items.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="border border-dashed border-slate-300 bg-white px-6 py-16 text-center"
-              >
-                <span className="mx-auto mb-5 flex h-16 w-16 items-center justify-center bg-[#0b2d60] text-white">
-                  <ShoppingCart className="h-7 w-7" />
-                </span>
-                <h3 className="mb-2 text-2xl font-bold text-[#0c1427]">
-                  Tu cotización está vacía
-                </h3>
-                <p className="mb-8 text-sm text-slate-500">
-                  Explora el catálogo y agrega productos para armar tu pedido.
-                </p>
-                <Link
-                  href="/productos"
-                  className="inline-flex h-12 items-center gap-2 bg-[#F5C400] px-7 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-                >
-                  <Package className="h-4 w-4" />
-                  Explorar catálogo
-                </Link>
-              </motion.div>
+              <QuoteEmptyState variant="page" />
             ) : (
               <>
                 <div className="relative overflow-hidden border border-slate-200 bg-white">
@@ -337,19 +318,30 @@ export default function QuotePage() {
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="overflow-hidden border border-slate-200 bg-white shadow-sm"
+              className="relative overflow-hidden border border-[#0b2d60]/12 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.1)]"
               noValidate
             >
-              <div className="bg-[#0b2d60] px-5 py-4">
+              <span
+                aria-hidden
+                className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
+              />
+              <div className="relative bg-[#0b2d60] px-5 py-4 sm:px-6">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                    <FileText className="h-5 w-5" />
-                  </span>
+                  <IconBox
+                    icon={FileText}
+                    accent="yellow"
+                    size="md"
+                    rounded="lg"
+                    className="!rounded-none !bg-[#F5C400] !text-[#0b2d60]"
+                  />
                   <div>
-                    <h2 className="text-lg font-bold text-white">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+                      Zeus Safety
+                    </p>
+                    <h2 className="text-lg font-black text-white">
                       Datos para la cotización
                     </h2>
-                    <p className="text-xs text-white/70">
+                    <p className="text-xs text-white/65">
                       Completa los campos para enviar
                     </p>
                   </div>
@@ -357,10 +349,10 @@ export default function QuotePage() {
               </div>
               <div className="h-1 bg-[#F5C400]" />
 
-              <div className="space-y-3.5 p-5">
+              <div className="space-y-4 p-5 sm:p-6">
                 <div>
-                  <label className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                    <User className="h-3.5 w-3.5 text-[#F5C400]" />
+                  <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
+                    <User className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                     Nombre y apellido *
                   </label>
                   <Input
@@ -368,12 +360,12 @@ export default function QuotePage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej. Ana Pérez"
-                    className={`${fieldClass} ${fieldError(name.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(name.trim().length > 1)}`}
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                    <Building2 className="h-3.5 w-3.5 text-[#F5C400]" />
+                  <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
+                    <Building2 className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                     Empresa *
                   </label>
                   <Input
@@ -381,13 +373,13 @@ export default function QuotePage() {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Razón social"
-                    className={`${fieldClass} ${fieldError(company.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(company.trim().length > 1)}`}
                   />
                 </div>
-                <div className="grid gap-3.5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                      <FileText className="h-3.5 w-3.5 text-[#F5C400]" />
+                    <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
+                      <FileText className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                       RUC / ID fiscal *
                     </label>
                     <Input
@@ -395,12 +387,12 @@ export default function QuotePage() {
                       value={ruc}
                       onChange={(e) => setRuc(e.target.value)}
                       placeholder="12345678901"
-                      className={`${fieldClass} ${fieldError(ruc.trim().length >= 8)}`}
+                      className={`${fieldClass} bg-[#f7f8fa] ${fieldError(ruc.trim().length >= 8)}`}
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                      <Phone className="h-3.5 w-3.5 text-[#F5C400]" />
+                    <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
+                      <Phone className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                       Teléfono *
                     </label>
                     <Input
@@ -408,13 +400,13 @@ export default function QuotePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+51 999 999 999"
-                      className={`${fieldClass} ${fieldError(phone.trim().length >= 6)}`}
+                      className={`${fieldClass} bg-[#f7f8fa] ${fieldError(phone.trim().length >= 6)}`}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-600">
-                    <Mail className="h-3.5 w-3.5 text-[#F5C400]" />
+                  <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
+                    <Mail className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                     Correo electrónico *
                   </label>
                   <Input
@@ -423,15 +415,25 @@ export default function QuotePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="correo@empresa.com"
-                    className={`${fieldClass} ${fieldError(isValidEmail(email))}`}
+                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(isValidEmail(email))}`}
                   />
                 </div>
 
-                <div className="border border-slate-100 bg-slate-50 p-4">
-                  <div className="mb-2 flex items-center justify-between gap-3">
+                <div className="relative overflow-hidden border border-[#0b2d60]/12 bg-[#f4f7fb] p-4">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 h-full w-0.5 bg-[#F5C400]"
+                  />
+                  <div className="mb-2 flex items-center justify-between gap-3 pl-2">
                     <div className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5 text-[#0b2d60]" />
-                      <span className="text-sm font-semibold text-slate-700">
+                      <IconBox
+                        icon={Calculator}
+                        accent="brand"
+                        size="sm"
+                        rounded="lg"
+                        className="!rounded-none"
+                      />
+                      <span className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                         Total referencial
                       </span>
                     </div>
@@ -439,7 +441,7 @@ export default function QuotePage() {
                       S/ {total.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-[11px] leading-relaxed text-slate-500">
+                  <p className="pl-2 text-[11px] leading-relaxed text-slate-500">
                     Los montos finales se ajustan según volumen, disponibilidad
                     y condiciones comerciales.
                   </p>
@@ -459,7 +461,7 @@ export default function QuotePage() {
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Mail className="h-4 w-4" />
                   Cotizar por correo
@@ -469,7 +471,7 @@ export default function QuotePage() {
                   type="button"
                   onClick={openWhatsApp}
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   Cotizar por WhatsApp
@@ -477,7 +479,7 @@ export default function QuotePage() {
 
                 <Link
                   href="/productos"
-                  className="inline-flex h-11 w-full items-center justify-center border border-slate-200 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
+                  className="inline-flex h-11 w-full items-center justify-center border-2 border-[#0b2d60]/20 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-[#0b2d60] hover:text-white"
                 >
                   Seguir cotizando
                 </Link>

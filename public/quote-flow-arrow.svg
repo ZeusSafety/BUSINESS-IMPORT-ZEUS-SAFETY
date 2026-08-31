@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" fill="none" aria-hidden="true">
+  <defs>
+    <marker
+      id="quote-arrow-tip"
+      markerWidth="7"
+      markerHeight="7"
+      refX="0"
+      refY="3.5"
+      orient="auto"
+      markerUnits="userSpaceOnUse"
+    >
+      <path d="M0 0 L7 3.5 L0 7 Z" fill="#0b2d60" />
+    </marker>
+  </defs>
+  <path
+    d="M 34 22 Q 112 54 190 26"
+    stroke="#0b2d60"
+    stroke-width="2.25"
+    stroke-linecap="round"
+    fill="none"
+    marker-end="url(#quote-arrow-tip)"
+  />
+</svg>

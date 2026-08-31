@@ -3,20 +3,24 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import {
-  Award,
-  CheckCircle2,
+  ArrowRight,
+  BadgeCheck,
   ChevronDown,
   Clock,
   Headphones,
   MapPin,
+  MessageCircle,
   Phone,
   Send,
   Shield,
+  ShieldCheck,
   Truck,
+  Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { IconBox } from '@/components/ui/icon-box';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { FormSelect } from '@/components/ui/form-select';
@@ -72,6 +76,33 @@ const CONTACT_MOTIVOS = [
   { value: 'Soporte postventa', label: 'Soporte postventa' },
   { value: 'Alianzas comerciales', label: 'Alianzas comerciales' },
   { value: 'Otro', label: 'Otro' },
+];
+
+const ADVISOR_PERKS = [
+  { icon: Zap, label: 'Respuesta inmediata', accent: 'brand' as const },
+  { icon: Headphones, label: 'Asesoría técnica', accent: 'sky' as const },
+  { icon: ShieldCheck, label: 'EPP certificado', accent: 'yellow' as const },
+];
+
+const CTA_FEATURES = [
+  {
+    icon: Truck,
+    title: 'Entrega rápida',
+    text: 'Despachos ágiles',
+    accent: 'yellow' as const,
+  },
+  {
+    icon: BadgeCheck,
+    title: 'Precios competitivos',
+    text: 'Mejor relación valor',
+    accent: 'yellow' as const,
+  },
+  {
+    icon: MapPin,
+    title: 'Cobertura nacional',
+    text: 'Envíos a todo el Perú',
+    accent: 'yellow' as const,
+  },
 ];
 
 const contactFieldClass =
@@ -227,13 +258,16 @@ export default function AdvisorsPage() {
       </section>
 
       {/* Asesores — 4 en fila */}
-      <section id="asesores" className="scroll-mt-28 w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
+      <section
+        id="asesores"
+        className="scroll-mt-28 w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10"
+      >
         <div className="mx-auto max-w-[1400px]">
           <div className="mb-10 text-center">
-            <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">
-              Equipo
+            <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+              Equipo Zeus
             </p>
-            <h2 className="text-2xl font-black text-[#0c1427] sm:text-3xl">
+            <h2 className="text-2xl font-black tracking-tight text-[#0b2d60] sm:text-3xl">
               Nuestros asesores
             </h2>
             <div className="mx-auto mt-3 h-[3px] w-14 bg-[#F5C400]" />
@@ -259,16 +293,16 @@ export default function AdvisorsPage() {
           )}
 
           {!loading && !error && displayedAdvisors.length > 0 && (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
               {displayedAdvisors.map((advisor, index) => (
                 <motion.article
                   key={advisor.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group flex flex-col overflow-hidden bg-white shadow-[0_8px_28px_rgba(11,45,96,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(11,45,96,0.16)]"
+                  className="group flex flex-col overflow-hidden border border-[#0b2d60]/10 bg-white shadow-[0_8px_28px_rgba(11,45,96,0.08)] transition duration-300 hover:-translate-y-1 hover:border-[#F5C400]/40 hover:shadow-[0_18px_44px_rgba(11,45,96,0.14)]"
                 >
-                  <div className="relative aspect-[3/4] min-h-[300px] overflow-hidden bg-slate-200 sm:min-h-[340px]">
+                  <div className="relative aspect-[4/5] max-h-[300px] overflow-hidden bg-[#0b2d60] sm:max-h-[320px]">
                     <span
                       aria-hidden
                       className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
@@ -291,58 +325,58 @@ export default function AdvisorsPage() {
                       <img
                         src={advisor.avatar}
                         alt={advisor.name}
-                        className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-[#0b2d60] text-5xl font-black text-white">
+                      <div className="flex h-full items-center justify-center text-5xl font-black text-white">
                         {advisor.name.charAt(0)}
                       </div>
                     )}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2d60] via-[#0b2d60]/75 to-transparent px-4 pb-4 pt-20">
-                      <p className="mb-1 inline-flex items-center gap-1 rounded-sm bg-[#F5C400] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
-                        <Award className="h-3 w-3" />
-                        {advisor.specialty}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2d60] via-[#0b2d60]/90 to-transparent px-3.5 pb-3 pt-12">
+                      <p className="mb-1 inline-flex max-w-full items-center gap-1.5 border border-[#F5C400]/30 bg-[#F5C400] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                        <Phone className="h-3 w-3 shrink-0" strokeWidth={2.5} />
+                        <span className="truncate">{advisor.specialty}</span>
                       </p>
-                      <h3 className="line-clamp-2 text-base font-black text-white">
+                      <h3 className="line-clamp-2 text-sm font-black uppercase leading-tight tracking-wide text-white">
                         {advisor.name}
                       </h3>
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col border-t border-slate-100 p-4">
-                    <ul className="mb-4 space-y-2 text-xs text-slate-600">
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-[#0b2d60]/8 text-[#0b2d60]">
-                          <Clock className="h-3.5 w-3.5" />
-                        </span>
-                        Respuesta inmediata
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-emerald-50 text-emerald-600">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                        </span>
-                        Asesoría técnica especializada
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center bg-[#F5C400]/25 text-[#0b2d60]">
-                          <Shield className="h-3.5 w-3.5" />
-                        </span>
-                        Cotización de EPP certificado
-                      </li>
-                    </ul>
+                  <div className="flex flex-1 flex-col bg-white p-3.5">
+                    <div className="mb-3 grid grid-cols-3 gap-1.5">
+                      {ADVISOR_PERKS.map((perk) => (
+                        <div
+                          key={perk.label}
+                          className="flex flex-col items-center gap-1.5 border border-slate-100 bg-[#f8fafc] px-1 py-2 text-center transition-colors group-hover:border-[#0b2d60]/15"
+                        >
+                          <IconBox
+                            icon={perk.icon}
+                            accent={perk.accent}
+                            size="sm"
+                            rounded="lg"
+                            className="!rounded-none"
+                          />
+                          <span className="text-[9px] font-bold uppercase leading-tight tracking-wide text-[#0b2d60]/80">
+                            {perk.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
 
                     {advisor.phone ? (
                       <a
                         href={`https://wa.me/${advisor.phone}?text=${DEFAULT_WA_MESSAGE}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-auto inline-flex h-11 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
+                        className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 bg-[#25D366] text-[10px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
                       >
                         <WhatsAppIcon className="h-4 w-4" />
                         Escribir por WhatsApp
+                        <ArrowRight className="h-3.5 w-3.5 opacity-80" />
                       </a>
                     ) : (
-                      <p className="mt-auto flex h-11 items-center justify-center gap-1.5 border border-slate-200 bg-[#f8f9fb] text-xs text-slate-500">
+                      <p className="mt-auto flex h-10 items-center justify-center gap-1.5 border border-slate-200 bg-[#f8f9fb] text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                         <Phone className="h-3.5 w-3.5" />
                         No disponible
                       </p>
@@ -355,105 +389,91 @@ export default function AdvisorsPage() {
         </div>
       </section>
 
-      {/* CTA servicios — debajo de asesores */}
-      <section className="relative w-full overflow-hidden bg-[#0b2d60]">
-        <div className="relative w-full">
-          <Image
-            src="/asesores-cta-bg.png"
-            alt="Zeus Safety — consulta nuestros servicios"
-            width={1717}
-            height={916}
-            quality={95}
-            sizes="100vw"
-            priority={false}
-            className="h-auto w-full"
-          />
+      {/* CTA servicios — imagen superior recortada + panel contenido */}
+      <section className="relative overflow-hidden bg-[#071f45]">
+        <div className="absolute left-0 top-0 z-10 h-full w-1.5 bg-[#F5C400]" />
 
-          <div className="absolute inset-0 flex items-center">
-            <div className="ml-auto w-full max-w-md px-5 py-8 sm:max-w-lg sm:px-8 lg:mr-[8%] lg:max-w-xl lg:px-0 xl:mr-[12%] xl:max-w-[34rem]">
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-                  Zeus Safety
-                </p>
-                <h2 className="text-2xl font-black leading-[1.15] tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] sm:text-3xl lg:text-4xl xl:text-[2.75rem]">
-                  ¡Consulta ahora los servicios que{' '}
-                  <span className="text-[#F5C400]">necesitas!</span>
-                </h2>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:mt-4 sm:text-[15px]">
-                  Cotiza EPP certificado, recibe asesoría técnica y coordina
-                  despachos a nivel nacional con el equipo Zeus Safety.
-                </p>
+        <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+          <div className="relative h-[200px] overflow-hidden sm:h-[240px] lg:h-auto lg:min-h-[400px]">
+            <Image
+              src="/asesores-cta-bg.png"
+              alt="Zeus Safety — consulta nuestros servicios"
+              fill
+              quality={95}
+              sizes="(max-width: 1024px) 100vw, 55vw"
+              priority={false}
+              className="object-cover object-[center_top] lg:object-[left_top]"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-t from-[#071f45]/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#071f45]/90"
+            />
+          </div>
 
-                <div className="mt-5 grid gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-3">
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <Truck className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Entrega rápida
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Despachos ágiles
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <CheckCircle2 className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Precios competitivos
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Mejor relación valor
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2.5 border border-white/15 bg-[#0b2d60] px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2 sm:px-3.5 sm:py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                      <MapPin className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold text-white sm:text-sm">
-                        Cobertura nacional
-                      </p>
-                      <p className="hidden text-[11px] text-white/70 sm:block">
-                        Envíos a todo el Perú
-                      </p>
-                    </div>
+          <div className="relative px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12 xl:px-12">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+              Zeus Safety
+            </p>
+            <h2 className="max-w-lg text-2xl font-black uppercase leading-[1.1] tracking-tight text-white sm:text-3xl lg:text-[2rem]">
+              ¡Consulta ahora los servicios que{' '}
+              <span className="text-[#F5C400]">necesitas!</span>
+            </h2>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/75">
+              Cotiza EPP certificado, recibe asesoría técnica y coordina
+              despachos a nivel nacional con el equipo Zeus Safety.
+            </p>
+
+            <div className="mt-5 grid gap-2 sm:grid-cols-3">
+              {CTA_FEATURES.map((item) => (
+                <div
+                  key={item.title}
+                  className="flex items-center gap-2.5 border border-white/10 bg-[#0b2d60]/60 px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2"
+                >
+                  <IconBox
+                    icon={item.icon}
+                    accent={item.accent}
+                    size="sm"
+                    rounded="lg"
+                    className="!rounded-none !bg-[#F5C400] !text-[#0b2d60]"
+                  />
+                  <div>
+                    <p className="text-xs font-bold text-white">{item.title}</p>
+                    <p className="text-[10px] text-white/60">{item.text}</p>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/90 sm:mt-5 sm:text-sm">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-[#F5C400]" />
-                    EPP certificado
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Headphones className="h-3.5 w-3.5 text-[#F5C400]" />
-                    Asesoría técnica
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-[#F5C400]" />
-                    Respuesta rápida
-                  </span>
-                </div>
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/10 pt-4 text-xs font-semibold text-white/85">
+              <span className="inline-flex items-center gap-1.5">
+                <Shield className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
+                EPP certificado
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Headphones className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
+                Asesoría técnica
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
+                Respuesta rápida
+              </span>
+            </div>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href="#contacto"
-                    className="inline-flex h-11 items-center bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] sm:h-12 sm:px-7 sm:text-sm"
-                  >
-                    Contáctanos
-                  </a>
-                  <Link
-                    href="/cotizacion"
-                    className="inline-flex h-11 items-center border-2 border-white bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-white hover:text-[#0b2d60] sm:h-12 sm:px-7 sm:text-sm"
-                  >
-                    Arma tu cotización
-                  </Link>
-                </div>
+            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+              <a
+                href="#contacto"
+                className="group inline-flex h-11 items-center justify-center gap-2 bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+              >
+                Contáctanos
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+              <Link
+                href="/cotizacion"
+                className="inline-flex h-11 items-center justify-center gap-2 border border-white/35 bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Arma tu cotización
+              </Link>
             </div>
           </div>
         </div>
