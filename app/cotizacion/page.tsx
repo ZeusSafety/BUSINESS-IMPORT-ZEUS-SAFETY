@@ -7,8 +7,6 @@ import {
   Calculator,
   FileText,
   Mail,
-  Minus,
-  Package,
   Phone,
   Plus,
   ShoppingCart,
@@ -17,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { IconBox } from '@/components/ui/icon-box';
+import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -170,10 +169,14 @@ export default function QuotePage() {
               <QuoteEmptyState variant="page" />
             ) : (
               <>
-                <div className="relative overflow-hidden border border-slate-200 bg-white">
+                <div className="relative overflow-hidden border border-[#0b2d60]/12 bg-white shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 h-full w-1 bg-[#F5C400]"
+                  />
                   <div className="flex items-center justify-between gap-3 px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                      <span className="flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
                         <ShoppingCart className="h-5 w-5" strokeWidth={2.3} />
                       </span>
                       <div>
@@ -201,104 +204,22 @@ export default function QuotePage() {
                 </div>
 
                 <div className="space-y-3">
-                  {items.map((item, index) => {
-                    const imageSrc = item.image?.trim() || null;
-                    const lineTotal = item.price * item.quantity;
-                    return (
-                      <motion.article
-                        key={item.id}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35, delay: index * 0.04 }}
-                        className="border border-slate-200 bg-white p-3.5 transition hover:border-[#0b2d60]/25 hover:shadow-[0_10px_28px_rgba(11,45,96,0.08)] sm:p-4"
-                      >
-                        <div className="flex gap-3 sm:gap-4">
-                          <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden border border-slate-100 bg-slate-50 sm:h-20 sm:w-20">
-                            {imageSrc ? (
-                              <Image
-                                src={imageSrc}
-                                alt={item.name}
-                                fill
-                                className="object-contain p-1.5"
-                                sizes="80px"
-                                unoptimized
-                              />
-                            ) : (
-                              <div className="flex h-full items-center justify-center">
-                                <Package className="h-6 w-6 text-slate-300" />
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0">
-                                <Link
-                                  href={`/productos?categoria=${encodeURIComponent(item.category)}`}
-                                  className="mb-1 inline-block bg-[#0b2d60] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
-                                >
-                                  {item.category}
-                                </Link>
-                                <Link
-                                  href={`/productos/${item.slug}`}
-                                  className="block line-clamp-2 text-sm font-bold leading-snug text-[#0c1427] transition-colors hover:text-[#0b2d60] sm:text-[15px]"
-                                >
-                                  {item.name}
-                                </Link>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => removeItem(item.id)}
-                                className="flex h-8 w-8 shrink-0 items-center justify-center border border-slate-200 text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-                                aria-label="Eliminar producto"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-
-                            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
-                              <div className="inline-flex h-9 items-center border border-slate-200">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleQuantityChange(item.id, -1)
-                                  }
-                                  className="flex h-full w-9 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                                  aria-label="Disminuir cantidad"
-                                >
-                                  <Minus className="h-3.5 w-3.5" />
-                                </button>
-                                <span className="min-w-8 text-center text-sm font-bold text-[#0b2d60]">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleQuantityChange(item.id, 1)
-                                  }
-                                  className="flex h-full w-9 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                                  aria-label="Aumentar cantidad"
-                                >
-                                  <Plus className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-
-                              <div className="text-right">
-                                <p className="text-base font-black text-[#0b2d60] sm:text-lg">
-                                  S/ {lineTotal.toFixed(2)}
-                                </p>
-                                {item.quantity > 1 && (
-                                  <p className="text-[11px] text-slate-500">
-                                    S/ {item.price.toFixed(2)} c/u
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.article>
-                    );
-                  })}
+                  {items.map((item, index) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: index * 0.04 }}
+                    >
+                      <QuoteLineItem
+                        item={item}
+                        variant="page"
+                        onDecrease={() => handleQuantityChange(item.id, -1)}
+                        onIncrease={() => handleQuantityChange(item.id, 1)}
+                        onRemove={() => removeItem(item.id)}
+                      />
+                    </motion.div>
+                  ))}
                 </div>
 
                 <Link

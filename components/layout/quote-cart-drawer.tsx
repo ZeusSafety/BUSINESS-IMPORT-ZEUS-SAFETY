@@ -1,18 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  Minus,
-  Package,
-  Plus,
-  ShoppingCart,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { ShoppingCart, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import { useQuoteStore } from '@/store/quoteStore';
 
@@ -156,78 +149,21 @@ export function QuoteCartDrawer() {
                   />
                 ) : (
                   <ul className="space-y-3">
-                    {items.map((item) => {
-                      const imageSrc = item.image?.trim() || null;
-                      return (
-                        <li
-                          key={item.id}
-                          className="flex gap-3 border border-slate-200 bg-white p-3 shadow-sm"
-                        >
-                          <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-slate-100 bg-slate-50">
-                            {imageSrc ? (
-                              <Image
-                                src={imageSrc}
-                                alt={item.name}
-                                fill
-                                className="object-contain p-1"
-                                sizes="64px"
-                                unoptimized
-                              />
-                            ) : (
-                              <div className="flex h-full items-center justify-center">
-                                <Package className="h-6 w-6 text-slate-300" />
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <p className="line-clamp-2 text-sm font-bold leading-snug text-[#0c1427]">
-                              {item.name}
-                            </p>
-                            <p className="mt-0.5 text-xs font-semibold text-[#0b2d60]">
-                              S/ {item.price.toFixed(2)}
-                            </p>
-
-                            <div className="mt-2 flex items-center justify-between gap-2">
-                              <div className="inline-flex h-8 items-center border border-slate-200">
-                                <button
-                                  type="button"
-                                  aria-label="Menos"
-                                  onClick={() =>
-                                    updateQuantity(item.id, item.quantity - 1)
-                                  }
-                                  className="flex h-full w-8 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                                >
-                                  <Minus className="h-3.5 w-3.5" />
-                                </button>
-                                <span className="min-w-7 text-center text-sm font-bold text-[#0b2d60]">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  type="button"
-                                  aria-label="Más"
-                                  onClick={() =>
-                                    updateQuantity(item.id, item.quantity + 1)
-                                  }
-                                  className="flex h-full w-8 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                                >
-                                  <Plus className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-
-                              <button
-                                type="button"
-                                aria-label={`Quitar ${item.name}`}
-                                onClick={() => removeItem(item.id)}
-                                className="flex h-8 w-8 items-center justify-center border border-slate-200 text-slate-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
+                    {items.map((item) => (
+                      <li key={item.id}>
+                        <QuoteLineItem
+                          item={item}
+                          variant="drawer"
+                          onDecrease={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          onIncrease={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                          onRemove={() => removeItem(item.id)}
+                        />
+                      </li>
+                    ))}
                   </ul>
                 )}
               </div>

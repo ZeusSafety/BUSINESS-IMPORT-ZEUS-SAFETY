@@ -13,6 +13,11 @@ const SLIDES = [
     href: '/productos?categoria=Protecci%C3%B3n%20Manual',
   },
   {
+    src: '/home-hero-ponchos.png',
+    alt: 'Ponchos enjebados y capotín impermeables — Zeus Safety. Seguridad corporal.',
+    href: '/productos?categoria=Protecci%C3%B3n%20Corporal',
+  },
+  {
     src: '/home-hero-buffalo.png',
     alt: 'Botas Buffalo de cuero con puntas de acero — Zeus Safety.',
     href: '/productos?categoria=Calzado%20de%20Seguridad',
@@ -41,7 +46,7 @@ export function HeroSection() {
       setIndex((i) => (i + 1) % SLIDES.length);
     }, AUTO_MS);
     return () => window.clearInterval(timer);
-  }, [index]);
+  }, []);
 
   const slide = SLIDES[index];
 
