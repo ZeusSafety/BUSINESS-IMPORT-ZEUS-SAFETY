@@ -120,7 +120,7 @@ export function HomeBestsellers() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45 }}
-                className="relative order-1 flex min-h-[420px] flex-col overflow-hidden bg-[#0b2d60] lg:order-2 lg:min-h-full"
+                className="relative order-1 flex min-h-[420px] flex-col overflow-hidden rounded-xl bg-[#0b2d60] lg:order-2 lg:min-h-full"
               >
                 <Image
                   src="/zeus2.jpg"
@@ -137,7 +137,7 @@ export function HomeBestsellers() {
                 <div className="absolute right-0 top-0 h-full w-1.5 bg-[#F5C400]" />
 
                 <div className="relative z-10 flex h-full flex-col p-5 sm:p-6 lg:p-7">
-                  <span className="inline-flex w-fit items-center gap-1.5 bg-[#F5C400] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                  <span className="inline-flex w-fit items-center gap-1.5 rounded-md bg-[#F5C400] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
                     <Flame className="h-3 w-3" />
                     Más vendidos
                   </span>
@@ -155,7 +155,7 @@ export function HomeBestsellers() {
 
                   <div className="relative my-5 flex flex-1 items-center justify-center">
                     <div className="absolute inset-x-4 bottom-2 h-8 rounded-[100%] bg-black/30 blur-xl" />
-                    <div className="relative aspect-square w-[78%] max-w-[200px] overflow-hidden border border-white/15 bg-white/95 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+                    <div className="relative aspect-square w-[78%] max-w-[200px] overflow-hidden rounded-xl border border-white/15 bg-white/95 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
                       <div className="absolute left-0 top-0 h-1 w-full bg-[#F5C400]" />
                       <Image
                         src={promoProduct?.image || '/Guantes-1.jpg'}
@@ -168,7 +168,7 @@ export function HomeBestsellers() {
                     </div>
                   </div>
 
-                  <div className="mb-4 grid grid-cols-3 gap-2 border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm">
+                  <div className="mb-4 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm">
                     {[
                       { value: '10+', label: 'Años' },
                       { value: '200+', label: 'SKUs' },
@@ -203,7 +203,7 @@ export function HomeBestsellers() {
 
                   <Link
                     href="/productos"
-                    className="group inline-flex h-11 w-full items-center justify-center gap-2 bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+                    className="group zeus-btn-primary inline-flex h-11 w-full items-center justify-center gap-2 text-xs"
                   >
                     Compra ahora
                     <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -215,7 +215,7 @@ export function HomeBestsellers() {
             <div className="mt-8 flex justify-center sm:mt-10">
               <Link
                 href="/productos"
-                className="group inline-flex h-12 items-center gap-2 border-2 border-[#0b2d60] bg-white px-8 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
+                className="group zeus-btn-secondary inline-flex h-12 items-center gap-2 px-8 text-sm"
               >
                 Ver catálogo completo
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

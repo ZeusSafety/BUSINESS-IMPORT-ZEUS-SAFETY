@@ -83,7 +83,7 @@ export function BlogPostHero({
                     onClick={() => setActive(index)}
                     aria-label={`Ver imagen ${index + 1}`}
                     aria-pressed={selected}
-                    className={`relative aspect-[3/4] w-full overflow-hidden border-2 bg-[#f8fafc] transition-all duration-200 ${
+                    className={`relative aspect-[3/4] w-full overflow-hidden rounded-lg border-2 bg-[#f8fafc] transition-all duration-200 ${
                       selected
                         ? 'border-[#0b2d60] ring-2 ring-[#F5C400]/40 scale-[1.02]'
                         : 'border-slate-200 hover:border-[#0b2d60]/40'
@@ -102,7 +102,7 @@ export function BlogPostHero({
             </div>
           )}
 
-          <div className="relative mx-auto aspect-[3/4] w-full max-w-[360px] overflow-hidden border border-slate-200 bg-[#f8fafc] sm:max-w-[400px] lg:mx-0 lg:w-[440px] lg:max-w-none xl:w-[480px]">
+          <div className="relative mx-auto aspect-[3/4] w-full max-w-[360px] overflow-hidden rounded-xl border border-slate-200 bg-[#f8fafc] sm:max-w-[400px] lg:mx-0 lg:w-[440px] lg:max-w-none xl:w-[480px]">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={gallery[active]}
@@ -125,7 +125,7 @@ export function BlogPostHero({
 
             {gallery.length > 1 && (
               <>
-                <div className="absolute bottom-3 right-3 z-10 rounded-sm bg-[#0b2d60]/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                <div className="absolute bottom-3 right-3 z-10 rounded-md bg-[#0b2d60]/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                   {active + 1} / {gallery.length}
                 </div>
                 <div className="absolute bottom-3 left-3 z-10 hidden gap-1 sm:flex">
@@ -154,7 +154,7 @@ export function BlogPostHero({
                   key={`mobile-${src}-${index}`}
                   type="button"
                   onClick={() => setActive(index)}
-                  className={`relative h-[88px] w-[66px] shrink-0 overflow-hidden border-2 bg-[#f8fafc] transition-all duration-200 ${
+                  className={`relative h-[88px] w-[66px] shrink-0 overflow-hidden rounded-lg border-2 bg-[#f8fafc] transition-all duration-200 ${
                     selected
                       ? 'border-[#0b2d60] scale-105'
                       : 'border-slate-200'

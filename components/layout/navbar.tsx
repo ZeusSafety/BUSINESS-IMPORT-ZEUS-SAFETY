@@ -97,12 +97,12 @@ function NavDropdown({
         }`}
       >
         <div className="absolute -top-1 left-0 right-0 h-1" aria-hidden />
-        <div className="flex flex-col gap-2 border border-slate-200 border-t-2 border-t-[#F5C400] bg-white p-3 shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
+        <div className="flex flex-col gap-2 rounded-lg border border-slate-200 border-t-2 border-t-[#F5C400] bg-white p-3 shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
           {link.children.map((child) => (
             <Link
               key={child.href}
               href={child.href}
-              className="border border-slate-200 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+              className="rounded-lg border border-slate-200 px-4 py-2.5 text-center text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
             >
               {child.label}
             </Link>
@@ -211,7 +211,7 @@ export function Navbar() {
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <Link
               href="/cotizacion"
-              className="relative flex h-11 w-11 items-center justify-center text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400]"
+              className="relative flex h-11 w-11 items-center justify-center rounded-lg text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400]"
               aria-label="Carrito de cotización"
             >
               <ShoppingCart className="h-5 w-5" strokeWidth={2} />
@@ -222,7 +222,7 @@ export function Navbar() {
 
             <Link
               href="/productos"
-              className="hidden h-11 w-11 items-center justify-center text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400] sm:flex"
+              className="hidden h-11 w-11 items-center justify-center rounded-lg text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400] sm:flex"
               aria-label="Buscar / Catálogo"
             >
               <Search className="h-5 w-5" strokeWidth={2} />
@@ -230,7 +230,7 @@ export function Navbar() {
 
             <Link
               href="/cotizacion"
-              className="ml-1 hidden h-11 items-center bg-[#F5C400] px-5 text-[12px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:-translate-y-px hover:bg-[#ffd233] lg:inline-flex"
+              className="zeus-btn-primary ml-1 hidden h-11 px-5 text-[12px] lg:inline-flex"
             >
               Hablar con un asesor
             </Link>
@@ -238,7 +238,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((o) => !o)}
-              className="flex h-11 w-11 items-center justify-center bg-[#0b2d60] text-white lg:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#0b2d60] text-white lg:hidden"
               aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             >
               {isMobileMenuOpen ? (

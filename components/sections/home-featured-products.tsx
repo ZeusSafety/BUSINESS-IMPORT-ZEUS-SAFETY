@@ -160,7 +160,7 @@ export function HomeFeaturedProducts() {
             No hay productos destacados disponibles.
           </div>
         ) : (
-          <div className="relative overflow-hidden border border-slate-200 bg-white">
+          <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white">
             {/* Encabezado — mismo estilo que categorías */}
             <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.03] to-transparent px-5 py-4 sm:px-8 lg:px-10">
               <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export function HomeFeaturedProducts() {
                       type="button"
                       onClick={prev}
                       aria-label="Anterior"
-                      className="flex h-9 w-9 items-center justify-center bg-[#0b2d60] text-white shadow-lg transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                      className="zeus-arrow-btn h-9 w-9 bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
                     >
                       <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
                     </button>
@@ -193,7 +193,7 @@ export function HomeFeaturedProducts() {
                       type="button"
                       onClick={next}
                       aria-label="Siguiente"
-                      className="flex h-9 w-9 items-center justify-center bg-[#0b2d60] text-white shadow-lg transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                      className="zeus-arrow-btn h-9 w-9 bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
                     >
                       <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
                     </button>
@@ -261,7 +261,7 @@ export function HomeFeaturedProducts() {
                         type="button"
                         onClick={() => goTo(i)}
                         aria-label={`Página ${i + 1}`}
-                        className={`h-1.5 transition-all duration-300 ${
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
                           i === currentIndex
                             ? 'w-8 bg-[#0b2d60]'
                             : 'w-1.5 bg-slate-300 hover:bg-slate-400'

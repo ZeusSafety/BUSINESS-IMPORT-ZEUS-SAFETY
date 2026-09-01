@@ -67,7 +67,7 @@ export function QuoteEmptyState({
       className={
         compact
           ? 'flex flex-col items-center px-2 py-6 text-center'
-          : 'border border-dashed border-[#0b2d60]/20 bg-white px-6 py-14 text-center sm:px-10 sm:py-16'
+          : 'rounded-xl border border-dashed border-[#0b2d60]/20 bg-white px-6 py-14 text-center sm:px-10 sm:py-16'
       }
     >
       <div className="mx-auto mb-9 flex w-full justify-center">
@@ -80,7 +80,7 @@ export function QuoteEmptyState({
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, delay: 0.05 }}
-            className={`flex flex-col items-center justify-center border border-slate-200 bg-white shadow-[0_12px_36px_rgba(11,45,96,0.1)] ${CARD[size]}`}
+            className={`flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white shadow-[0_12px_36px_rgba(11,45,96,0.1)] ${CARD[size]}`}
           >
             <span
               className={`flex items-center justify-center rounded-full bg-[#eef2f8] text-[#0b2d60] ${ICON_WRAP[size]}`}
@@ -100,7 +100,7 @@ export function QuoteEmptyState({
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, delay: 0.15 }}
-            className={`group flex flex-col items-center justify-center border border-slate-200 bg-white shadow-[0_12px_36px_rgba(11,45,96,0.1)] transition-shadow hover:border-[#F5C400]/50 hover:shadow-[0_16px_40px_rgba(245,196,0,0.22)] ${CARD[size]}`}
+            className={`group flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white shadow-[0_12px_36px_rgba(11,45,96,0.1)] transition-shadow hover:border-[#F5C400]/50 hover:shadow-[0_16px_40px_rgba(245,196,0,0.22)] ${CARD[size]}`}
           >
             <motion.span
               className={`flex items-center justify-center rounded-full bg-[#eef2f8] text-[#0b2d60] transition-colors duration-300 group-hover:bg-[#F5C400] ${ICON_WRAP[size]}`}
@@ -158,7 +158,7 @@ export function QuoteEmptyState({
         <Link
           href="/productos"
           onClick={onCatalogClick}
-          className={`group inline-flex items-center gap-2 bg-[#F5C400] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] ${
+          className={`group inline-flex items-center gap-2 rounded-md bg-[#F5C400] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] ${
             compact ? 'h-10 px-5 text-[10px]' : 'h-12 px-7 text-sm'
           }`}
         >

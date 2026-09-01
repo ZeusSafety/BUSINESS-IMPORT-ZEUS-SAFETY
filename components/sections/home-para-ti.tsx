@@ -174,9 +174,9 @@ export function HomeParaTi() {
                   key={f}
                   type="button"
                   onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide transition-colors ${
+                  className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide transition-colors ${
                     filter === f
-                      ? 'bg-[#0b2d60] text-white'
+                      ? 'bg-[#0b2d60] text-white shadow-sm'
                       : 'bg-white text-[#0b2d60] ring-1 ring-slate-200 hover:ring-[#F5C400]'
                   }`}
                 >
@@ -200,7 +200,7 @@ export function HomeParaTi() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45 }}
-                className="relative flex min-h-[420px] flex-col overflow-hidden bg-[#0b2d60] sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:min-h-0"
+                className="relative flex min-h-[420px] flex-col overflow-hidden rounded-xl bg-[#0b2d60] sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:min-h-0"
               >
                 {/* Foto industrial de fondo */}
                 <Image
@@ -219,7 +219,7 @@ export function HomeParaTi() {
 
                 <div className="relative z-10 flex h-full flex-col p-5 sm:p-6 lg:p-7">
                   <div>
-                    <span className="inline-flex items-center gap-1.5 bg-[#F5C400] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-[#F5C400] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
                       <Star className="h-3 w-3" fill="currentColor" />
                       Oferta corporativa
                     </span>
@@ -240,7 +240,7 @@ export function HomeParaTi() {
                   {/* Producto destacado integrado */}
                   <div className="relative my-5 flex flex-1 items-center justify-center">
                     <div className="absolute inset-x-4 bottom-2 h-8 rounded-[100%] bg-black/30 blur-xl" />
-                    <div className="relative aspect-square w-[78%] max-w-[220px] overflow-hidden border border-white/15 bg-white/95 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
+                    <div className="relative aspect-square w-[78%] max-w-[220px] overflow-hidden rounded-xl border border-white/15 bg-white/95 shadow-[0_18px_40px_rgba(0,0,0,0.35)]">
                       <div className="absolute left-0 top-0 h-1 w-full bg-[#F5C400]" />
                       {visible[0]?.image ? (
                         <Image
@@ -264,7 +264,7 @@ export function HomeParaTi() {
                   </div>
 
                   {/* Stats */}
-                  <div className="mb-4 grid grid-cols-3 gap-2 border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm">
+                  <div className="mb-4 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm">
                     {[
                       { value: '10+', label: 'Años' },
                       { value: '200+', label: 'SKUs' },
@@ -299,7 +299,7 @@ export function HomeParaTi() {
 
                   <Link
                     href="/cotizacion"
-                    className="group inline-flex h-11 w-full items-center justify-center gap-2 bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+                    className="group zeus-btn-primary inline-flex h-11 w-full items-center justify-center gap-2 text-sm"
                   >
                     Cotizar ahora
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -319,11 +319,11 @@ export function HomeParaTi() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.05 + index * 0.04 }}
-                  className="group flex flex-col overflow-hidden bg-white shadow-[0_8px_24px_rgba(11,45,96,0.08)] ring-1 ring-slate-200/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(11,45,96,0.14)] hover:ring-[#0b2d60]/20"
+                  className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_8px_24px_rgba(11,45,96,0.08)] ring-1 ring-slate-200/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(11,45,96,0.14)] hover:ring-[#0b2d60]/20"
                 >
                   <div className="relative aspect-square overflow-hidden bg-[#f0f3f7]">
                     {index < 2 && (
-                      <span className="absolute left-3 top-3 z-10 bg-[#F5C400] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                      <span className="absolute left-3 top-3 z-10 rounded-md bg-[#F5C400] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
                         Destacado
                       </span>
                     )}
@@ -367,7 +367,7 @@ export function HomeParaTi() {
                       <div className="flex gap-1.5">
                         <Link
                           href={`/productos/${encodeURIComponent(product.slug)}`}
-                          className="inline-flex h-9 items-center justify-center border border-slate-200 px-2.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
+                          className="inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 px-2.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
                         >
                           Ver
                         </Link>
@@ -375,7 +375,7 @@ export function HomeParaTi() {
                           type="button"
                           onClick={() => handleAdd(product)}
                           aria-label={`Agregar ${product.name} a cotización`}
-                          className="inline-flex h-9 w-9 items-center justify-center bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-[#F5C400]"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-[#F5C400]"
                         >
                           <Plus className="h-4 w-4" strokeWidth={2.5} />
                         </button>
@@ -395,7 +395,7 @@ export function HomeParaTi() {
             <div className="mt-8 flex justify-center sm:mt-10">
               <Link
                 href="/productos"
-                className="group inline-flex h-12 items-center gap-2 bg-[#0b2d60] px-8 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="group inline-flex h-12 items-center gap-2 rounded-lg bg-[#0b2d60] px-8 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
                 Ver más productos
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

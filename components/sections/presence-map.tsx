@@ -703,7 +703,7 @@ export function PresenceMapSection() {
             title="Nuestra presencia a nivel nacional"
             subtitle="Visualizamos la intensidad de operaciones por región"
           />
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="font-semibold text-[#103a7b]">Mapa dinámico</p>
             <p>Gradiente según peso relativo de ventas por región.</p>
           </div>
@@ -712,7 +712,7 @@ export function PresenceMapSection() {
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-[#e7f2ff] via-white to-[#f4f7fb] p-6 shadow-inner">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,181,226,0.15),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(16,58,123,0.12),transparent_40%)]" />
-            <div className="relative h-[500px] w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="relative h-[500px] w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
               <button
                 onClick={() => setIsMaximized(true)}
                 className="absolute top-4 right-4 z-10 flex items-center gap-2 rounded-lg bg-white/90 px-3 py-2 text-sm font-medium text-[#103a7b] shadow-md backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg"
@@ -739,7 +739,7 @@ export function PresenceMapSection() {
               {selectedRegion && (
                 <div
                   data-tooltip
-                  className="absolute z-30 rounded-xl border-2 border-[#103a7b]/20 bg-white p-5 shadow-2xl backdrop-blur-sm"
+                  className="absolute z-30 rounded-lg border-2 border-[#103a7b]/20 bg-white p-5 shadow-2xl backdrop-blur-sm"
                   style={{
                     left: `${Math.min(selectedRegion.x + 15, window.innerWidth - 250)}px`,
                     top: `${Math.max(selectedRegion.y - 10, 10)}px`,
@@ -862,7 +862,7 @@ export function PresenceMapSection() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,181,226,0.15),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(16,58,123,0.12),transparent_40%)] rounded-3xl" />
-            <div className="relative h-full w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="relative h-full w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
               <button
                 onClick={() => {
             setIsMaximized(false);
@@ -893,7 +893,7 @@ export function PresenceMapSection() {
               {selectedRegion && (
                 <div
                   data-tooltip
-                  className="absolute z-30 rounded-xl border-2 border-[#103a7b]/20 bg-white p-5 shadow-2xl backdrop-blur-sm"
+                  className="absolute z-30 rounded-lg border-2 border-[#103a7b]/20 bg-white p-5 shadow-2xl backdrop-blur-sm"
                   style={{
                     left: `${Math.min(selectedRegion.x + 15, window.innerWidth - 250)}px`,
                     top: `${Math.max(selectedRegion.y - 10, 10)}px`,

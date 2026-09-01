@@ -1,6 +1,5 @@
 'use client';
 
-import { Product } from '@/lib/mockData';
 import {
   PRODUCTS_API_URL,
   buildCatalogFromApi,
@@ -27,6 +26,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
+import { ProductCard } from '@/components/products/product-card';
 import {
   ArrowLeft,
   ChevronRight,
@@ -34,12 +34,10 @@ import {
   FileText,
   ExternalLink,
   Minus,
-  Package,
   Plus,
   ShoppingCart,
 } from 'lucide-react';
 import { useState, useEffect, use, useMemo, useCallback, type ReactNode } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ProductDetailSkeleton } from '@/components/ui/skeleton';
 import { Toast } from '@/components/ui/toast';
@@ -117,87 +115,7 @@ function RelatedCard({
 }: {
   product: CatalogProduct;
 }) {
-  const addItem = useQuoteStore((s) => s.addItem);
-  const [qty, setQty] = useState(1);
-
-  return (
-    <article className="group flex flex-col overflow-hidden border border-slate-200 bg-white transition hover:border-[#0b2d60]/25 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)]">
-      <div className="relative aspect-[4/3] bg-slate-50">
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 z-10 h-8 w-10 bg-[#0b2d60]"
-          style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)' }}
-        />
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 z-10 h-5 w-7 bg-[#F5C400]"
-          style={{ clipPath: 'polygon(35% 0, 100% 0, 100% 100%, 0 100%)' }}
-        />
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-contain p-4 transition duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 50vw, 25vw"
-            unoptimized
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Package className="h-10 w-10 text-slate-300" />
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col px-3 py-3 text-center">
-        <p className="text-[11px] text-slate-500">{product.category}</p>
-        <Link
-          href={`/productos/${encodeURIComponent(product.slug)}`}
-          className="mt-1 line-clamp-2 text-sm font-bold text-[#0c1427] transition-colors hover:text-[#0b2d60]"
-        >
-          {product.name}
-        </Link>
-
-        <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
-          <span className="inline-flex items-center border border-emerald-300/80 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 sm:text-[10px]">
-            Delivery en 24 horas
-          </span>
-          <span className="inline-flex items-center border border-slate-300 bg-slate-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-700 sm:text-[10px]">
-            Recojo en tienda
-          </span>
-        </div>
-
-        <div className="mt-auto space-y-2 pt-3">
-          <div className="mx-auto flex h-9 w-full max-w-[140px] items-center border border-slate-200">
-            <button
-              type="button"
-              aria-label="Menos"
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="flex h-full w-9 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-            >
-              <Minus className="h-3.5 w-3.5" />
-            </button>
-            <span className="flex-1 text-sm font-bold text-[#0b2d60]">{qty}</span>
-            <button
-              type="button"
-              aria-label="Más"
-              onClick={() => setQty((q) => q + 1)}
-              className="flex h-full w-9 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-            >
-              <Plus className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() => addItem(product, qty)}
-            className="h-10 w-full bg-slate-100 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
-          >
-            Cotizar
-          </button>
-        </div>
-      </div>
-    </article>
-  );
+  return <ProductCard product={product} />;
 }
 
 export default function ProductDetailPage({ params }: Props) {
@@ -351,7 +269,7 @@ export default function ProductDetailPage({ params }: Props) {
           </p>
           <Button
             onClick={() => router.push('/productos')}
-            className="rounded-none bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
+            className="rounded-lg bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al catálogo
@@ -379,7 +297,7 @@ export default function ProductDetailPage({ params }: Props) {
           <span className="text-[#0b2d60]">Detalle</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12 xl:gap-16">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12 xl:gap-16">
           <ProductImageZoom
             key={productImage}
             src={productImage}
@@ -389,7 +307,7 @@ export default function ProductDetailPage({ params }: Props) {
           {/* Panel de compra */}
           <div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-emerald-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="rounded-md bg-emerald-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                 En stock
               </span>
             </div>
@@ -419,7 +337,7 @@ export default function ProductDetailPage({ params }: Props) {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center border border-slate-300">
+              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden rounded-xl border border-slate-300">
                 <button
                   type="button"
                   aria-label="Disminuir cantidad"
@@ -444,7 +362,7 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
                 <ShoppingCart className="h-4 w-4 shrink-0" />
                 Agregar a carrito
@@ -455,7 +373,7 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleQuoteNow}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-white"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-white"
               >
                 <ClipboardList className="h-4 w-4 shrink-0" />
                 Cotizar ahora
@@ -466,7 +384,7 @@ export default function ProductDetailPage({ params }: Props) {
                   href={product.fichaTecnica}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
                 >
                   <FileText className="h-4 w-4 shrink-0" />
                   <span className="truncate">Ver ficha técnica</span>
@@ -481,7 +399,7 @@ export default function ProductDetailPage({ params }: Props) {
                 open={openSection === 'info'}
                 onToggle={() => toggleSection('info')}
               >
-                <div className="divide-y divide-slate-100 border border-slate-100">
+                <div className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-100">
                   {(
                     [
                       { label: 'Marca', value: product.brand },

@@ -65,7 +65,7 @@ function LogoSlide({
       className="group/slide flex w-[140px] shrink-0 flex-col sm:w-[156px]"
       title={name}
     >
-      <div className="relative flex aspect-[5/3.2] items-center justify-center overflow-hidden border border-[#0b2d60]/10 bg-[#f4f7fb] px-4 py-4 transition duration-300 group-hover/slide:border-[#F5C400] group-hover/slide:bg-white group-hover/slide:shadow-[0_10px_28px_rgba(11,45,96,0.1)] sm:py-5">
+      <div className="relative flex aspect-[5/3.2] items-center justify-center overflow-hidden rounded-xl border border-[#0b2d60]/10 bg-[#f4f7fb] px-4 py-4 transition duration-300 group-hover/slide:border-[#F5C400] group-hover/slide:bg-white group-hover/slide:shadow-[0_10px_28px_rgba(11,45,96,0.1)] sm:py-5">
         <span
           aria-hidden
           className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 group-hover/slide:scale-x-100"
@@ -160,7 +160,7 @@ export function TrustSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, delay: 0.08 }}
-          className="mt-8 overflow-hidden border border-[#0b2d60]/12 bg-[#0b2d60] shadow-[0_20px_50px_rgba(11,45,96,0.12)] sm:mt-10 lg:grid lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]"
+          className="mt-8 overflow-hidden rounded-xl border border-[#0b2d60]/12 bg-[#0b2d60] shadow-[0_20px_50px_rgba(11,45,96,0.12)] sm:mt-10 lg:grid lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]"
         >
           {/* Panel lateral único */}
           <div className="relative bg-[#071f45] px-6 py-8 sm:px-8 lg:flex lg:flex-col lg:justify-center lg:py-10">
@@ -178,7 +178,7 @@ export function TrustSection() {
 
             <div className="mt-6 space-y-5 border-t border-white/10 pt-6">
               <div className="flex gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F5C400]/15 text-[#F5C400]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F5C400]/15 text-[#F5C400]">
                   <Award className="h-4 w-4" />
                 </span>
                 <div>
@@ -191,7 +191,7 @@ export function TrustSection() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F5C400]/15 text-[#F5C400]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#F5C400]/15 text-[#F5C400]">
                   <ShieldCheck className="h-4 w-4" />
                 </span>
                 <div>

@@ -312,7 +312,7 @@ export function HomePeruCoverage() {
 
         <div className="mx-auto flex w-full max-w-[1100px] flex-col items-stretch gap-5 lg:flex-row lg:gap-5">
           <div className="w-full min-w-0 flex-1 lg:max-w-[520px]">
-            <div className="relative overflow-hidden border border-[#0b2d60]/15 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
+            <div className="relative overflow-hidden rounded-xl border border-[#0b2d60]/15 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
               <div className="pointer-events-none absolute left-3 top-3 z-10">
                 <div className="border border-white/15 bg-[#071f45]/95 px-3 py-2">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#F5C400]">

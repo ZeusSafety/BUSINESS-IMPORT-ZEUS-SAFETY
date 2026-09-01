@@ -33,12 +33,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <article className="group flex h-full flex-col overflow-hidden border border-slate-200 bg-white transition hover:border-[#0b2d60]/25 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)]">
+      <article className="zeus-card group flex h-full flex-col transition hover:border-[#0b2d60]/25 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)]">
         <div className="relative aspect-[4/3] bg-slate-50">
           <Link
             href={`/productos?categoria=${encodeURIComponent(product.category)}`}
             onClick={(e) => e.stopPropagation()}
-            className="absolute left-0 top-0 z-20 bg-[#0b2d60] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+            className="absolute left-3 top-3 z-20 zeus-badge bg-[#0b2d60] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
           >
             {product.category}
           </Link>
@@ -95,16 +95,16 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
-            <span className="inline-flex items-center border border-emerald-300/80 bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800 sm:text-[10px]">
+            <span className="zeus-badge border border-emerald-300/80 bg-emerald-50 text-emerald-800 sm:text-[10px]">
               Delivery en 24 horas
             </span>
-            <span className="inline-flex items-center border border-slate-300 bg-slate-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-700 sm:text-[10px]">
+            <span className="zeus-badge border border-slate-300 bg-slate-50 text-slate-700 sm:text-[10px]">
               Recojo en tienda
             </span>
           </div>
 
           <div className="mt-auto space-y-2 pt-3">
-            <div className="mx-auto flex h-9 w-full max-w-[140px] items-center border border-slate-200">
+            <div className="mx-auto flex h-9 w-full max-w-[140px] items-center overflow-hidden rounded-lg border border-slate-200">
               <button
                 type="button"
                 aria-label="Menos"
@@ -126,7 +126,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               onClick={handleAddToQuote}
-              className="h-10 w-full bg-slate-100 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
+              className="h-10 w-full rounded-lg bg-slate-100 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
             >
               Cotizar
             </button>

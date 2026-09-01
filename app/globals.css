@@ -9,6 +9,10 @@
   --yellow: #f5c400;
   --muted: #e4e9f2;
   --surface: #ffffff;
+  --zeus-radius-sm: 6px;
+  --zeus-radius-md: 8px;
+  --zeus-radius-lg: 12px;
+  --zeus-radius-xl: 14px;
 }
 
 @theme inline {
@@ -81,6 +85,93 @@
 
 .zeus-marquee-reverse {
   animation: zeus-brands-scroll-reverse 45s linear infinite;
+}
+
+/* Superficies y controles — estilo iOS / empresarial */
+@layer components {
+  .zeus-card {
+    overflow: hidden;
+    border-radius: var(--zeus-radius-lg);
+    border: 1px solid rgb(226 232 240 / 0.8);
+    background-color: #fff;
+    box-shadow: 0 8px 30px rgba(11, 45, 96, 0.06);
+  }
+
+  .zeus-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--zeus-radius-md);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+  }
+
+  .zeus-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--zeus-radius-md);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #f5c400;
+    color: #0b2d60;
+    transition: all 0.2s ease;
+  }
+
+  .zeus-btn-primary:hover {
+    background-color: #ffd233;
+    box-shadow: 0 6px 20px rgba(245, 196, 0, 0.35);
+  }
+
+  .zeus-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--zeus-radius-md);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgb(11 45 96 / 0.2);
+    background-color: #fff;
+    color: #0b2d60;
+    transition: all 0.2s ease;
+  }
+
+  .zeus-btn-secondary:hover {
+    border-color: #0b2d60;
+    background-color: #0b2d60;
+    color: #fff;
+  }
+
+  .zeus-arrow-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    box-shadow: 0 4px 16px rgba(11, 45, 96, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .zeus-arrow-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .zeus-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--zeus-radius-sm);
+    padding: 0.125rem 0.5rem;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 }
 
 .zeus-marquee-shipping {

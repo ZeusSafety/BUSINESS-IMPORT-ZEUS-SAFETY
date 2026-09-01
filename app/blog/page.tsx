@@ -100,7 +100,7 @@ export default function BlogPage() {
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
+              className="inline-flex h-10 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
             >
               <ChevronLeft className="h-4 w-4" />
               Anterior
@@ -111,7 +111,7 @@ export default function BlogPage() {
                 key={n}
                 type="button"
                 onClick={() => setPage(n)}
-                className={`inline-flex h-10 min-w-[40px] items-center justify-center border text-xs font-bold ${
+                className={`inline-flex h-10 min-w-[40px] items-center justify-center rounded-lg border text-xs font-bold ${
                   page === n
                     ? 'border-[#0b2d60] bg-[#0b2d60] text-white'
                     : 'border-slate-200 bg-white text-[#0b2d60] hover:border-[#F5C400]'
@@ -125,7 +125,7 @@ export default function BlogPage() {
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
+              className="inline-flex h-10 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
             >
               Siguiente
               <ChevronRight className="h-4 w-4" />

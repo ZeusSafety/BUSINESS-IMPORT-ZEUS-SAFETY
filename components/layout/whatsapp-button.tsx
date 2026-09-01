@@ -74,7 +74,7 @@ export function WhatsAppButton() {
     >
       {/* absolute: no ocupa espacio ni tapa el carrito cuando está cerrado */}
       <div
-        className={`pointer-events-auto absolute bottom-[4.25rem] right-0 w-[min(340px,calc(100vw-2.5rem))] origin-bottom-right overflow-hidden rounded-2xl border border-[#0b2d60]/10 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.28)] transition-all duration-200 ${
+        className={`pointer-events-auto absolute bottom-[4.25rem] right-0 w-[min(340px,calc(100vw-2.5rem))] origin-bottom-right overflow-hidden rounded-xl border border-[#0b2d60]/10 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.28)] transition-all duration-200 ${
           open
             ? 'translate-y-0 scale-100 opacity-100'
             : 'pointer-events-none invisible translate-y-3 scale-95 opacity-0'
@@ -111,7 +111,7 @@ export function WhatsAppButton() {
         </div>
 
         <div className="space-y-3 bg-[#eef2f7] px-4 py-4">
-          <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-3.5 py-2.5 text-sm leading-relaxed text-[#0c1427] shadow-sm">
+          <div className="max-w-[85%] rounded-lg rounded-tl-sm bg-white px-3.5 py-2.5 text-sm leading-relaxed text-[#0c1427] shadow-sm">
             Hola 👋 ¿Cómo podemos ayudarte?
             <span className="mt-1 block text-[10px] text-slate-400">
               Asesor Zeus · ahora

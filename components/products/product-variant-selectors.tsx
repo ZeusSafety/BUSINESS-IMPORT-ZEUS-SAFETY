@@ -66,7 +66,7 @@ export function ProductVariantSelectors({
                   key={color}
                   type="button"
                   onClick={() => onColorChange(color)}
-                  className={`h-10 min-w-[72px] border px-3 text-xs font-bold uppercase tracking-wide transition-colors ${
+                  className={`h-10 min-w-[72px] rounded-lg border px-3 text-xs font-bold uppercase tracking-wide transition-colors ${
                     active
                       ? 'border-[#0b2d60] bg-[#0b2d60] text-white'
                       : 'border-slate-300 bg-white text-[#0b2d60] hover:border-[#0b2d60]'
@@ -93,7 +93,7 @@ export function ProductVariantSelectors({
                   key={size}
                   type="button"
                   onClick={() => onSizeChange(size)}
-                  className={`h-10 min-w-[48px] border px-3 text-xs font-bold transition-colors ${
+                  className={`h-10 min-w-[48px] rounded-lg border px-3 text-xs font-bold transition-colors ${
                     active
                       ? 'border-[#0b2d60] bg-[#0b2d60] text-white'
                       : 'border-slate-300 bg-white text-[#0b2d60] hover:border-[#0b2d60]'

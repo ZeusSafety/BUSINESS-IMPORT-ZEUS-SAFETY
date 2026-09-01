@@ -29,7 +29,7 @@ export function BlogCard({
 
   return (
     <article
-      className={`group flex h-full w-full overflow-hidden border border-slate-200 bg-white transition hover:border-[#0b2d60]/30 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)] ${
+      className={`group zeus-card flex h-full w-full transition hover:border-[#0b2d60]/30 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)] ${
         listView
           ? 'flex-col sm:flex-row'
           : isHorizontal
@@ -92,7 +92,7 @@ export function BlogCard({
         </p>
         <Link
           href={`/blog/${slug}`}
-          className={`mt-3 inline-flex w-fit items-center justify-center border border-[#F5C400] bg-white font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400] ${
+          className={`mt-3 inline-flex w-fit items-center justify-center rounded-lg border border-[#F5C400] bg-white font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400] ${
             compact ? 'h-8 px-3 text-[10px]' : 'mt-4 h-9 px-4 text-xs'
           }`}
         >

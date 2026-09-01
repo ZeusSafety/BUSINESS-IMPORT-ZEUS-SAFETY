@@ -126,7 +126,7 @@ export default function QuotePage() {
   };
 
   const fieldClass =
-    'h-11 rounded-none border-slate-200 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
+    'h-11 rounded-lg border-slate-200 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
 
   const fieldError = (ok: boolean) =>
     touched && !ok ? 'border-red-400 focus:border-red-500' : '';
@@ -169,14 +169,14 @@ export default function QuotePage() {
               <QuoteEmptyState variant="page" />
             ) : (
               <>
-                <div className="relative overflow-hidden border border-[#0b2d60]/12 bg-white shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+                <div className="relative overflow-hidden rounded-xl border border-[#0b2d60]/12 bg-white shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
                   <span
                     aria-hidden
                     className="absolute left-0 top-0 h-full w-1 bg-[#F5C400]"
                   />
                   <div className="flex items-center justify-between gap-3 px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0b2d60] text-[#F5C400]">
                         <ShoppingCart className="h-5 w-5" strokeWidth={2.3} />
                       </span>
                       <div>
@@ -239,7 +239,7 @@ export default function QuotePage() {
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative overflow-hidden border border-[#0b2d60]/12 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.1)]"
+              className="relative overflow-hidden rounded-xl border border-[#0b2d60]/12 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.1)]"
               noValidate
             >
               <span
@@ -253,7 +253,7 @@ export default function QuotePage() {
                     accent="yellow"
                     size="md"
                     rounded="lg"
-                    className="!rounded-none !bg-[#F5C400] !text-[#0b2d60]"
+                    className="!rounded-lg !bg-[#F5C400] !text-[#0b2d60]"
                   />
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
@@ -352,7 +352,7 @@ export default function QuotePage() {
                         accent="brand"
                         size="sm"
                         rounded="lg"
-                        className="!rounded-none"
+                        className="!rounded-lg"
                       />
                       <span className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                         Total referencial
@@ -382,7 +382,7 @@ export default function QuotePage() {
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="zeus-btn-primary inline-flex h-12 w-full items-center justify-center gap-2 text-xs disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Mail className="h-4 w-4" />
                   Cotizar por correo
@@ -392,7 +392,7 @@ export default function QuotePage() {
                   type="button"
                   onClick={openWhatsApp}
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   Cotizar por WhatsApp
@@ -400,7 +400,7 @@ export default function QuotePage() {
 
                 <Link
                   href="/productos"
-                  className="inline-flex h-11 w-full items-center justify-center border-2 border-[#0b2d60]/20 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-[#0b2d60] hover:text-white"
+                  className="zeus-btn-secondary inline-flex h-11 w-full items-center justify-center text-xs"
                 >
                   Seguir cotizando
                 </Link>

@@ -177,7 +177,7 @@ export function FeaturedProducts() {
                   key={item.text}
                   className="inline-flex items-center gap-2 text-sm font-semibold text-[#0b2d60]"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F5C400] text-[#0b2d60]">
                     <Icon className="h-4 w-4" />
                   </span>
                   {item.text}
@@ -198,7 +198,7 @@ export function FeaturedProducts() {
                 <button
                   type="button"
                   onClick={prevSlide}
-                  className="hidden h-11 w-11 shrink-0 items-center justify-center border border-[#0b2d60] bg-white text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white sm:flex"
+                  className="zeus-arrow-btn hidden h-11 w-11 shrink-0 sm:flex"
                   aria-label="Productos anteriores"
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -226,7 +226,7 @@ export function FeaturedProducts() {
                 <button
                   type="button"
                   onClick={nextSlide}
-                  className="hidden h-11 w-11 shrink-0 items-center justify-center border border-[#0b2d60] bg-white text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white sm:flex"
+                  className="zeus-arrow-btn hidden h-11 w-11 shrink-0 sm:flex"
                   aria-label="Siguientes productos"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -245,7 +245,7 @@ export function FeaturedProducts() {
                       key={pageIndex}
                       type="button"
                       onClick={() => setCurrentIndex(pageIndex * 3)}
-                      className={`h-2.5 transition-all ${
+                      className={`h-2.5 rounded-full transition-all ${
                         isActive
                           ? 'w-10 bg-[#F5C400]'
                           : 'w-2.5 bg-slate-300 hover:bg-slate-400'
@@ -260,7 +260,7 @@ export function FeaturedProducts() {
             <div className="mt-10 flex flex-col items-center gap-4">
               <Link
                 href="/productos"
-                className="group inline-flex h-12 items-center gap-2 bg-[#0b2d60] px-8 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#103a7b]"
+                className="group inline-flex h-12 items-center gap-2 rounded-lg bg-[#0b2d60] px-8 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#103a7b]"
               >
                 Ver catálogo completo
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -271,7 +271,7 @@ export function FeaturedProducts() {
             </div>
           </div>
         ) : (
-          <div className="mt-12 border border-dashed border-slate-300 bg-white p-12 text-center">
+          <div className="mt-12 rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
             <Package className="mx-auto mb-4 h-10 w-10 text-slate-400" />
             <h3 className="mb-1 text-lg font-bold text-[#0c1427]">
               No hay productos estrella disponibles

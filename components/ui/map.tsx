@@ -64,7 +64,7 @@ export function Map({ lat, lng, address }: MapProps) {
 
   if (!MapComponents) {
     return (
-      <div className="h-full w-full rounded-xl bg-slate-100 flex items-center justify-center">
+      <div className="h-full w-full rounded-lg bg-slate-100 flex items-center justify-center">
         <p className="text-sm text-slate-500">Cargando mapa...</p>
       </div>
     );
@@ -73,7 +73,7 @@ export function Map({ lat, lng, address }: MapProps) {
   const { MapContainer, TileLayer, Marker, Popup, icon } = MapComponents;
 
   return (
-    <div className="h-full w-full rounded-xl overflow-hidden relative">
+    <div className="h-full w-full rounded-lg overflow-hidden relative">
       <MapContainer
         center={[lat, lng]}
         zoom={15}

@@ -103,7 +103,7 @@ export function FormSelect({
             role="listbox"
             aria-label={ariaLabel}
             style={menuStyle}
-            className="overflow-y-auto border border-slate-200 bg-white shadow-[0_20px_48px_rgba(11,45,96,0.22)]"
+            className="overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-[0_20px_48px_rgba(11,45,96,0.22)]"
           >
             {options.map((option) => {
               const selected = option.value === value;
@@ -144,7 +144,7 @@ export function FormSelect({
         aria-label={ariaLabel}
         disabled={disabled}
         onClick={() => !disabled && setOpen((v) => !v)}
-        className={`flex h-10 w-full items-center justify-between gap-2 border px-3 text-left text-sm transition-colors ${
+        className={`flex h-10 w-full items-center justify-between gap-2 rounded-lg border px-3 text-left text-sm transition-colors ${
           disabled
             ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
             : open

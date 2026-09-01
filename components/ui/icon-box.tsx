@@ -34,7 +34,7 @@ export function IconBox({
   className,
 }: IconBoxProps) {
   const roundClass =
-    rounded === 'full' ? 'rounded-full' : rounded === 'lg' ? 'rounded-lg' : 'rounded-xl';
+    rounded === 'full' ? 'rounded-full' : rounded === 'lg' ? 'rounded-lg' : 'rounded-lg';
 
   return (
     <span

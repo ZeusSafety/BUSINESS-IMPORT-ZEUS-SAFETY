@@ -43,7 +43,7 @@ export function HomeFeaturedCategories() {
   return (
     <section className="bg-white py-8 sm:py-10 lg:py-12">
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10 xl:px-12">
-        <div className="relative overflow-hidden bg-[#0b2d60]">
+        <div className="relative overflow-hidden rounded-xl bg-[#0b2d60]">
           <div className="absolute left-0 top-0 h-full w-1.5 bg-[#F5C400]" />
 
           <div className="relative px-5 py-7 sm:px-7 sm:py-8 lg:px-9 lg:py-10">
@@ -58,7 +58,7 @@ export function HomeFeaturedCategories() {
               </div>
               <Link
                 href="/productos"
-                className="group inline-flex items-center gap-2 border border-white/25 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="group inline-flex items-center gap-2 rounded-lg border border-white/25 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
                 Ver catálogo
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -76,7 +76,7 @@ export function HomeFeaturedCategories() {
                 >
                   <Link
                     href={item.href}
-                    className="group relative flex h-full flex-col overflow-hidden bg-white shadow-[0_14px_40px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(0,0,0,0.35)]"
+                    className="group relative flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-[0_14px_40px_rgba(0,0,0,0.28)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(0,0,0,0.35)]"
                   >
                     <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-100">
                       <Image
@@ -99,7 +99,7 @@ export function HomeFeaturedCategories() {
                           {item.subtitle}
                         </p>
 
-                        <span className="mt-3 inline-flex items-center gap-2 bg-[#F5C400] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors group-hover:bg-[#0b2d60] group-hover:text-[#F5C400]">
+                        <span className="mt-3 inline-flex items-center gap-2 rounded-md bg-[#F5C400] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors group-hover:bg-[#0b2d60] group-hover:text-[#F5C400]">
                           Ver productos
                           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                         </span>

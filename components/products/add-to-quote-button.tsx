@@ -15,7 +15,7 @@ export function AddToQuoteButton({ product }: Props) {
   return (
     <Button
       size="lg"
-      className="h-12 w-full rounded-none bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] shadow-none transition-colors hover:bg-[#ffd233]"
+      className="h-12 w-full rounded-md bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] shadow-none transition-colors hover:bg-[#ffd233]"
       onClick={() => addItem(product)}
     >
       <Plus className="mr-2 h-5 w-5" strokeWidth={2.5} />

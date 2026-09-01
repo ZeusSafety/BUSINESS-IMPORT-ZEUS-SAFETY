@@ -29,7 +29,7 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
 
   if (!src) {
     return (
-      <div className="flex min-h-[320px] flex-col items-center justify-center bg-[#f4f5f7] sm:min-h-[480px] lg:min-h-[560px]">
+      <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl bg-[#f4f5f7] sm:min-h-[480px] lg:min-h-[560px]">
         <Package className="mb-2 h-12 w-12 text-slate-300" />
         <p className="text-sm text-slate-400">Imagen no disponible</p>
       </div>
@@ -41,7 +41,7 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
       <button
         type="button"
         onClick={() => setZoomOpen(true)}
-        className="group relative block min-h-[320px] w-full cursor-zoom-in overflow-hidden bg-[#f4f5f7] sm:min-h-[480px] lg:min-h-[560px]"
+        className="group relative block min-h-[320px] w-full cursor-zoom-in overflow-hidden rounded-xl bg-[#f4f5f7] sm:min-h-[480px] lg:min-h-[560px]"
         aria-label="Ampliar imagen del producto"
       >
         <Image
@@ -53,7 +53,7 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
           className="object-contain p-6 transition-transform duration-300 group-hover:scale-[1.03] sm:p-10"
           sizes="(max-width: 1024px) 100vw, 55vw"
         />
-        <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 bg-[#0b2d60]/85 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="absolute bottom-4 right-4 inline-flex items-center gap-1.5 rounded-lg bg-[#0b2d60]/85 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white opacity-0 transition-opacity group-hover:opacity-100">
           <ZoomIn className="h-3.5 w-3.5" />
           Ampliar
         </span>
@@ -70,7 +70,7 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
           <button
             type="button"
             onClick={closeZoom}
-            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center bg-white text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
             aria-label="Cerrar zoom"
           >
             <X className="h-5 w-5" />
@@ -119,7 +119,7 @@ export function ProductTrustBadges() {
       {TRUST_BADGES.map((badge) => (
         <div
           key={badge.label}
-          className="group relative flex cursor-default flex-col items-center gap-2.5 border border-slate-200 bg-slate-50/60 px-2 py-4 text-center transition-all duration-300 hover:border-[#0b2d60] hover:bg-white hover:shadow-[0_8px_24px_rgba(11,45,96,0.12)] sm:px-3 sm:py-5"
+          className="group relative flex cursor-default flex-col items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-4 text-center transition-all duration-300 hover:border-[#0b2d60] hover:bg-white hover:shadow-[0_8px_24px_rgba(11,45,96,0.12)] sm:px-3 sm:py-5"
         >
           <span
             aria-hidden

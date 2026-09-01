@@ -300,7 +300,7 @@ export default function AdvisorsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group flex flex-col overflow-hidden border border-[#0b2d60]/10 bg-white shadow-[0_8px_28px_rgba(11,45,96,0.08)] transition duration-300 hover:-translate-y-1 hover:border-[#F5C400]/40 hover:shadow-[0_18px_44px_rgba(11,45,96,0.14)]"
+                  className="group zeus-card flex flex-col overflow-hidden border-[#0b2d60]/10 transition duration-300 hover:-translate-y-1 hover:border-[#F5C400]/40 hover:shadow-[0_18px_44px_rgba(11,45,96,0.14)]"
                 >
                   <div className="relative aspect-[4/5] max-h-[300px] overflow-hidden bg-[#0b2d60] sm:max-h-[320px]">
                     <span
@@ -333,7 +333,7 @@ export default function AdvisorsPage() {
                       </div>
                     )}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2d60] via-[#0b2d60]/90 to-transparent px-3.5 pb-3 pt-12">
-                      <p className="mb-1 inline-flex max-w-full items-center gap-1.5 border border-[#F5C400]/30 bg-[#F5C400] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                      <p className="mb-1 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[#F5C400]/30 bg-[#F5C400] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
                         <Phone className="h-3 w-3 shrink-0" strokeWidth={2.5} />
                         <span className="truncate">{advisor.specialty}</span>
                       </p>
@@ -348,14 +348,14 @@ export default function AdvisorsPage() {
                       {ADVISOR_PERKS.map((perk) => (
                         <div
                           key={perk.label}
-                          className="flex flex-col items-center gap-1.5 border border-slate-100 bg-[#f8fafc] px-1 py-2 text-center transition-colors group-hover:border-[#0b2d60]/15"
+                          className="flex flex-col items-center gap-1.5 rounded-lg border border-slate-100 bg-[#f8fafc] px-1 py-2 text-center transition-colors group-hover:border-[#0b2d60]/15"
                         >
                           <IconBox
                             icon={perk.icon}
                             accent={perk.accent}
                             size="sm"
                             rounded="lg"
-                            className="!rounded-none"
+                            className="!rounded-lg"
                           />
                           <span className="text-[9px] font-bold uppercase leading-tight tracking-wide text-[#0b2d60]/80">
                             {perk.label}
@@ -369,14 +369,14 @@ export default function AdvisorsPage() {
                         href={`https://wa.me/${advisor.phone}?text=${DEFAULT_WA_MESSAGE}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 bg-[#25D366] text-[10px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
+                        className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-[10px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
                       >
                         <WhatsAppIcon className="h-4 w-4" />
                         Escribir por WhatsApp
                         <ArrowRight className="h-3.5 w-3.5 opacity-80" />
                       </a>
                     ) : (
-                      <p className="mt-auto flex h-10 items-center justify-center gap-1.5 border border-slate-200 bg-[#f8f9fb] text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                      <p className="mt-auto flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-[#f8f9fb] text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                         <Phone className="h-3.5 w-3.5" />
                         No disponible
                       </p>
@@ -427,14 +427,14 @@ export default function AdvisorsPage() {
               {CTA_FEATURES.map((item) => (
                 <div
                   key={item.title}
-                  className="flex items-center gap-2.5 border border-white/10 bg-[#0b2d60]/60 px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2"
+                  className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0b2d60]/60 px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2"
                 >
                   <IconBox
                     icon={item.icon}
                     accent={item.accent}
                     size="sm"
                     rounded="lg"
-                    className="!rounded-none !bg-[#F5C400] !text-[#0b2d60]"
+                    className="!rounded-lg !bg-[#F5C400] !text-[#0b2d60]"
                   />
                   <div>
                     <p className="text-xs font-bold text-white">{item.title}</p>
@@ -462,14 +462,14 @@ export default function AdvisorsPage() {
             <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
               <a
                 href="#contacto"
-                className="group inline-flex h-11 items-center justify-center gap-2 bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+                className="group zeus-btn-primary inline-flex h-11 items-center justify-center gap-2 px-6 text-xs"
               >
                 Contáctanos
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <Link
                 href="/cotizacion"
-                className="inline-flex h-11 items-center justify-center gap-2 border border-white/35 bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/35 bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
               >
                 <MessageCircle className="h-4 w-4" />
                 Arma tu cotización
@@ -496,7 +496,7 @@ export default function AdvisorsPage() {
           </div>
 
           <div className="mb-8 grid gap-4 sm:grid-cols-3">
-            <div className="flex items-start gap-3.5 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+            <div className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0b2d60] text-white">
                 <Clock className="h-5 w-5" />
               </span>
@@ -507,7 +507,7 @@ export default function AdvisorsPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-3.5 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+            <div className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0b2d60] text-white">
                 <Headphones className="h-5 w-5" />
               </span>
@@ -524,7 +524,7 @@ export default function AdvisorsPage() {
               href={`https://wa.me/${WA_NUMBER}?text=${DEFAULT_WA_MESSAGE}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-start gap-3.5 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)] transition-shadow hover:shadow-[0_12px_28px_rgba(11,45,96,0.1)]"
+              className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)] transition-shadow hover:shadow-[0_12px_28px_rgba(11,45,96,0.1)]"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white">
                 <WhatsAppIcon className="h-5 w-5" />
@@ -542,7 +542,7 @@ export default function AdvisorsPage() {
 
           <form
             onSubmit={handleContactSubmit}
-            className="bg-white p-5 shadow-[0_12px_36px_rgba(11,45,96,0.08)] sm:p-7"
+            className="rounded-xl bg-white p-5 shadow-[0_12px_36px_rgba(11,45,96,0.08)] sm:p-7"
             noValidate
           >
             <div className="grid gap-4 sm:grid-cols-2">
@@ -605,7 +605,7 @@ export default function AdvisorsPage() {
             <div className="mt-5 flex flex-col items-center gap-2">
               <button
                 type="submit"
-                className="inline-flex h-12 items-center justify-center gap-2 bg-[#F5C400] px-8 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+                className="zeus-btn-primary inline-flex h-12 items-center justify-center gap-2 px-8 text-sm"
               >
                 <Send className="h-4 w-4" />
                 Enviar mensaje
@@ -630,7 +630,7 @@ export default function AdvisorsPage() {
       </section>
 
       {/* FAQ */}
-      <section className="border-t border-slate-200 bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10">
+      <section id="faq" className="border-t border-slate-200 bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10">
         <div className="mx-auto max-w-3xl">
           <div className="mb-6 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">
@@ -647,7 +647,7 @@ export default function AdvisorsPage() {
               return (
                 <div
                   key={item.q}
-                  className={`overflow-hidden border bg-white transition-colors ${
+                  className={`overflow-hidden rounded-lg border bg-white transition-colors ${
                     open
                       ? 'border-[#0b2d60]'
                       : 'border-slate-200 hover:border-[#0b2d60]/35'
