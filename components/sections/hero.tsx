@@ -85,6 +85,7 @@ export function HeroSection() {
           onClick={prev}
           aria-label="Banner anterior"
           className="zeus-arrow-btn absolute left-3 top-1/2 z-20 h-11 w-11 -translate-y-1/2 bg-[#0b2d60] text-white hover:bg-[#103a7b] sm:left-5 sm:h-12 sm:w-12 lg:left-8"
+          style={{ '--arrow-hover-x': '-3px' } as React.CSSProperties}
         >
           <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
         </button>
@@ -94,6 +95,7 @@ export function HeroSection() {
           onClick={next}
           aria-label="Siguiente banner"
           className="zeus-arrow-btn absolute right-3 top-1/2 z-20 h-11 w-11 -translate-y-1/2 bg-[#F5C400] text-[#0b2d60] hover:bg-[#ffd233] sm:right-5 sm:h-12 sm:w-12 lg:right-8"
+          style={{ '--arrow-hover-x': '3px' } as React.CSSProperties}
         >
           <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
         </button>

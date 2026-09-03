@@ -17,15 +17,16 @@ function hasImage(url?: string) {
 }
 
 function useVisibleCount() {
-  const [count, setCount] = useState(4);
+  const [count, setCount] = useState(5);
 
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
       if (w < 640) setCount(1);
-      else if (w < 1024) setCount(2);
-      else if (w < 1280) setCount(3);
-      else setCount(4);
+      else if (w < 768) setCount(2);
+      else if (w < 1024) setCount(3);
+      else if (w < 1280) setCount(4);
+      else setCount(5);
     };
     update();
     window.addEventListener('resize', update);
@@ -36,7 +37,7 @@ function useVisibleCount() {
 }
 
 const AUTO_PLAY_MS = 5000;
-const GAP_PX = 20;
+const GAP_PX = 12;
 
 export function HomeFeaturedProducts() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -160,9 +161,9 @@ export function HomeFeaturedProducts() {
             No hay productos destacados disponibles.
           </div>
         ) : (
-          <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white">
-            {/* Encabezado — mismo estilo que categorías */}
-            <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.03] to-transparent px-5 py-4 sm:px-8 lg:px-10">
+          <div className="relative overflow-hidden border border-slate-200 bg-white">
+            {/* Encabezado */}
+            <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.03] to-transparent px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex items-center gap-3">
                 <span className="hidden h-9 w-1.5 bg-[#F5C400] sm:block" />
                 <div>
@@ -172,9 +173,6 @@ export function HomeFeaturedProducts() {
                   <h2 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
                     Productos destacados
                   </h2>
-                  <p className="mt-0.5 hidden text-xs text-slate-500 sm:block">
-                    Los EPP más pedidos — cotiza directo desde cada tarjeta
-                  </p>
                 </div>
               </div>
 
@@ -185,7 +183,7 @@ export function HomeFeaturedProducts() {
                       type="button"
                       onClick={prev}
                       aria-label="Anterior"
-                      className="zeus-arrow-btn h-9 w-9 bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                      className="flex h-9 w-9 items-center justify-center bg-[#0b2d60] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
                     >
                       <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
                     </button>
@@ -193,7 +191,7 @@ export function HomeFeaturedProducts() {
                       type="button"
                       onClick={next}
                       aria-label="Siguiente"
-                      className="zeus-arrow-btn h-9 w-9 bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                      className="flex h-9 w-9 items-center justify-center bg-[#0b2d60] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
                     >
                       <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
                     </button>
@@ -201,16 +199,16 @@ export function HomeFeaturedProducts() {
                 )}
                 <Link
                   href="/productos"
-                  className="group hidden items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:text-[#F5C400] sm:inline-flex"
+                  className="group hidden items-center gap-2 bg-[#F5C400] px-4 py-2 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:bg-[#ffd233] hover:shadow-[0_4px_16px_rgba(245,196,0,0.35)] sm:inline-flex"
                 >
                   Ver catálogo
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-3.5 w-3.5 animate-[bounceX_1s_ease-in-out_infinite]" />
                 </Link>
               </div>
             </div>
 
             {/* Carrusel */}
-            <div className="relative px-3 py-5 sm:px-6 sm:py-6 lg:px-8">
+            <div className="relative px-3 py-4 sm:px-4 sm:py-5 lg:px-6">
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(11,45,96,0.03)_0%,transparent_55%)]"
@@ -261,10 +259,10 @@ export function HomeFeaturedProducts() {
                         type="button"
                         onClick={() => goTo(i)}
                         aria-label={`Página ${i + 1}`}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                        className={`h-2 transition-all duration-300 ${
                           i === currentIndex
                             ? 'w-8 bg-[#0b2d60]'
-                            : 'w-1.5 bg-slate-300 hover:bg-slate-400'
+                            : 'w-2 bg-slate-300 hover:bg-slate-400'
                         }`}
                       />
                     ))}

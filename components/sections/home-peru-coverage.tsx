@@ -68,7 +68,7 @@ const cityNotes: Partial<Record<CityId, string>> = {
   tacna: 'Frontera y comercio del sur.',
 };
 
-const WA_NUMBER = '51999999999';
+const WA_NUMBER = '51916532849';
 const PULSE_MS = 1800;
 const OUT_MS = 1600;
 const BACK_MS = 1200;

@@ -9,7 +9,7 @@ import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import { useQuoteStore } from '@/store/quoteStore';
 
-const WA_NUMBER = '51999999999';
+const WA_NUMBER = '51916532849';
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -80,7 +80,7 @@ export function QuoteCartDrawer() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Abrir carrito de cotización"
-        className="fixed bottom-[5.75rem] right-5 z-[86] flex h-14 w-14 items-center justify-center rounded-full bg-[#0b2d60] text-white shadow-[0_10px_28px_rgba(11,45,96,0.4)] transition-transform hover:scale-105 hover:bg-[#0a2552]"
+        className="fixed bottom-[5.75rem] right-5 z-[84] flex h-14 w-14 items-center justify-center rounded-full bg-[#0b2d60] text-white shadow-[0_10px_28px_rgba(11,45,96,0.4)] transition-transform hover:scale-105 hover:bg-[#0a2552]"
       >
         <ShoppingCart className="h-6 w-6" strokeWidth={2.2} />
         {totalItems > 0 && (
@@ -116,7 +116,7 @@ export function QuoteCartDrawer() {
               <div className="relative bg-[#0b2d60] px-5 pb-4 pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                    <span className="flex h-9 w-9 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
                       <ShoppingCart className="h-4 w-4" strokeWidth={2.4} />
                     </span>
                     <div>

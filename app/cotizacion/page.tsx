@@ -1,7 +1,9 @@
 'use client';
  
-import { useQuoteStore } from '@/store/quoteStore';
-import { Input } from '@/components/ui/input';
+import { FormEvent, useMemo, useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import {
   Building2,
   Calculator,
@@ -13,16 +15,13 @@ import {
   Trash2,
   User,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { IconBox } from '@/components/ui/icon-box';
+import { useQuoteStore } from '@/store/quoteStore';
+import { Input } from '@/components/ui/input';
 import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
-import Link from 'next/link';
-import Image from 'next/image';
-import { FormEvent, useMemo, useState } from 'react';
 
-const WA_NUMBER = '51999999999';
-const QUOTE_EMAIL = 'ventas@zeussafety.com';
+const WA_NUMBER = '51916532849';
+const QUOTE_EMAIL = 'zeus.safety2020@gmail.com';
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -126,7 +125,7 @@ export default function QuotePage() {
   };
 
   const fieldClass =
-    'h-11 rounded-lg border-slate-200 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
+    'h-11 rounded-none border-slate-200 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
 
   const fieldError = (ok: boolean) =>
     touched && !ok ? 'border-red-400 focus:border-red-500' : '';
@@ -169,14 +168,14 @@ export default function QuotePage() {
               <QuoteEmptyState variant="page" />
             ) : (
               <>
-                <div className="relative overflow-hidden rounded-xl border border-[#0b2d60]/12 bg-white shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+                <div className="relative overflow-hidden border border-slate-200 bg-white">
                   <span
                     aria-hidden
                     className="absolute left-0 top-0 h-full w-1 bg-[#F5C400]"
                   />
-                  <div className="flex items-center justify-between gap-3 px-5 py-4">
+                  <div className="flex items-center justify-between gap-3 border-b border-[#F5C400] px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0b2d60] text-[#F5C400]">
+                      <span className="flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
                         <ShoppingCart className="h-5 w-5" strokeWidth={2.3} />
                       </span>
                       <div>
@@ -200,25 +199,18 @@ export default function QuotePage() {
                       Vaciar todo
                     </button>
                   </div>
-                  <div className="h-1 bg-[#F5C400]" />
                 </div>
 
                 <div className="space-y-3">
-                  {items.map((item, index) => (
-                    <motion.div
+                  {items.map((item) => (
+                    <QuoteLineItem
                       key={item.id}
-                      initial={{ opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.35, delay: index * 0.04 }}
-                    >
-                      <QuoteLineItem
-                        item={item}
-                        variant="page"
-                        onDecrease={() => handleQuantityChange(item.id, -1)}
-                        onIncrease={() => handleQuantityChange(item.id, 1)}
-                        onRemove={() => removeItem(item.id)}
-                      />
-                    </motion.div>
+                      item={item}
+                      variant="page"
+                      onDecrease={() => handleQuantityChange(item.id, -1)}
+                      onIncrease={() => handleQuantityChange(item.id, 1)}
+                      onRemove={() => removeItem(item.id)}
+                    />
                   ))}
                 </div>
 
@@ -234,41 +226,23 @@ export default function QuotePage() {
           </div>
 
           <div className="lg:sticky lg:top-24 lg:h-fit">
-            <motion.form
+            <form
               onSubmit={handleSubmit}
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative overflow-hidden rounded-xl border border-[#0b2d60]/12 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.1)]"
+              className="relative overflow-hidden border border-slate-200 bg-white shadow-[0_12px_32px_rgba(11,45,96,0.08)]"
               noValidate
             >
               <span
                 aria-hidden
                 className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
               />
-              <div className="relative bg-[#0b2d60] px-5 py-4 sm:px-6">
-                <div className="flex items-center gap-3">
-                  <IconBox
-                    icon={FileText}
-                    accent="yellow"
-                    size="md"
-                    rounded="lg"
-                    className="!rounded-lg !bg-[#F5C400] !text-[#0b2d60]"
-                  />
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
-                      Zeus Safety
-                    </p>
-                    <h2 className="text-lg font-black text-white">
-                      Datos para la cotización
-                    </h2>
-                    <p className="text-xs text-white/65">
-                      Completa los campos para enviar
-                    </p>
-                  </div>
-                </div>
+              <div className="relative border-b border-[#F5C400] bg-[#0b2d60] px-5 py-4 sm:px-6">
+                <h2 className="text-lg font-black text-white">
+                  Datos para la cotización
+                </h2>
+                <p className="mt-1 text-xs text-white/65">
+                  Completa los campos para enviar
+                </p>
               </div>
-              <div className="h-1 bg-[#F5C400]" />
 
               <div className="space-y-4 p-5 sm:p-6">
                 <div>
@@ -340,20 +314,16 @@ export default function QuotePage() {
                   />
                 </div>
 
-                <div className="relative overflow-hidden border border-[#0b2d60]/12 bg-[#f4f7fb] p-4">
+                <div className="relative overflow-hidden border border-slate-200 bg-[#f4f7fb] p-4">
                   <span
                     aria-hidden
                     className="absolute left-0 top-0 h-full w-0.5 bg-[#F5C400]"
                   />
                   <div className="mb-2 flex items-center justify-between gap-3 pl-2">
                     <div className="flex items-center gap-2">
-                      <IconBox
-                        icon={Calculator}
-                        accent="brand"
-                        size="sm"
-                        rounded="lg"
-                        className="!rounded-lg"
-                      />
+                      <span className="flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
+                        <Calculator className="h-4 w-4" strokeWidth={2.25} />
+                      </span>
                       <span className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                         Total referencial
                       </span>
@@ -382,7 +352,7 @@ export default function QuotePage() {
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="zeus-btn-primary inline-flex h-12 w-full items-center justify-center gap-2 text-xs disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Mail className="h-4 w-4" />
                   Cotizar por correo
@@ -392,7 +362,7 @@ export default function QuotePage() {
                   type="button"
                   onClick={openWhatsApp}
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   Cotizar por WhatsApp
@@ -400,12 +370,12 @@ export default function QuotePage() {
 
                 <Link
                   href="/productos"
-                  className="zeus-btn-secondary inline-flex h-11 w-full items-center justify-center text-xs"
+                  className="inline-flex h-11 w-full items-center justify-center border border-slate-200 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
                 >
                   Seguir cotizando
                 </Link>
               </div>
-            </motion.form>
+            </form>
           </div>
         </div>
       </motion.div>

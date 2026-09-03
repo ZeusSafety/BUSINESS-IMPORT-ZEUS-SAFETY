@@ -105,11 +105,11 @@ export function B2BCtaSection() {
             </div>
 
             <a
-              href="tel:+5115555555"
+              href="tel:+51916532849"
               className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-[#F5C400]"
             >
               <Phone className="h-4 w-4 text-[#F5C400]" />
-              +51 1 555 5555 · Lun–Sáb 9:00–17:30
+              +51 916 532 849 · Lun–Sáb 9:00–17:30
             </a>
           </motion.div>
         </div>

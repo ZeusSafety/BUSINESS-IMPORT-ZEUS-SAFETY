@@ -26,18 +26,15 @@ export function QuoteLineItem({
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-xl border border-[#0b2d60]/10 bg-white transition hover:border-[#0b2d60]/20 hover:shadow-[0_12px_32px_rgba(11,45,96,0.08)] ${
+      className={`relative border border-slate-200 bg-white ${
         compact ? 'p-3' : 'p-3.5 sm:p-4'
       }`}
     >
-      <span
-        aria-hidden
-        className="absolute left-0 top-0 h-full w-1 bg-[#F5C400] transition-all group-hover:w-1.5"
-      />
+      <span aria-hidden className="absolute left-0 top-0 h-full w-1 bg-[#F5C400]" />
 
       <div className={`flex gap-3 ${compact ? '' : 'sm:gap-4'}`}>
         <div
-          className={`relative shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-[#f4f7fb] ${
+          className={`relative shrink-0 overflow-hidden border border-slate-200 bg-[#f4f7fb] ${
             compact ? 'h-16 w-16' : 'h-[72px] w-[72px] sm:h-20 sm:w-20'
           }`}
         >
@@ -63,7 +60,7 @@ export function QuoteLineItem({
               {!compact && (
                 <Link
                   href={`/productos?categoria=${encodeURIComponent(item.category)}`}
-                  className="mb-1 inline-block rounded-lg bg-[#0b2d60] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                  className="mb-1 inline-block bg-[#0b2d60] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
                 >
                   {item.category}
                 </Link>
@@ -83,7 +80,7 @@ export function QuoteLineItem({
             <button
               type="button"
               onClick={onRemove}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+              className="flex h-8 w-8 shrink-0 items-center justify-center border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
               aria-label={`Eliminar ${item.name}`}
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -95,22 +92,22 @@ export function QuoteLineItem({
               compact ? 'mt-2 pt-2' : 'mt-3 pt-3'
             }`}
           >
-            <div className="inline-flex h-9 items-center overflow-hidden rounded-xl border border-[#0b2d60]/15 bg-white">
+            <div className="inline-flex h-9 items-center overflow-hidden border border-slate-200 bg-white">
               <button
                 type="button"
                 onClick={onDecrease}
-                className="flex h-full w-9 items-center justify-center text-[#0b2d60] transition-colors hover:bg-[#F5C400]/25"
+                className="flex h-full w-9 items-center justify-center text-[#0b2d60] transition-colors hover:bg-slate-50"
                 aria-label="Disminuir cantidad"
               >
                 <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
               </button>
-              <span className="min-w-8 border-x border-[#0b2d60]/15 text-center text-sm font-bold text-[#0b2d60]">
+              <span className="min-w-8 border-x border-slate-200 text-center text-sm font-bold text-[#0b2d60]">
                 {item.quantity}
               </span>
               <button
                 type="button"
                 onClick={onIncrease}
-                className="flex h-full w-9 items-center justify-center text-[#0b2d60] transition-colors hover:bg-[#F5C400]/25"
+                className="flex h-full w-9 items-center justify-center text-[#0b2d60] transition-colors hover:bg-slate-50"
                 aria-label="Aumentar cantidad"
               >
                 <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />

@@ -9,6 +9,7 @@ type CategoryDef = {
   label: string;
   hrefCategory: string;
   image: string;
+  color?: string;
 };
 
 /** Categorías reales del catálogo Zeus + imágenes HD */
@@ -17,46 +18,55 @@ const CATEGORIES: CategoryDef[] = [
     label: 'Guantes de Seguridad',
     hrefCategory: 'Protección Manual',
     image: '/producto-imagen-home/Guante-zeus.png',
+    color: 'hover:bg-[#F5C400]',
   },
   {
     label: 'Calzado de Seguridad',
     hrefCategory: 'Calzado de Seguridad',
     image: '/producto-imagen-home/calzado-seguridad-zeus.png',
+    color: 'hover:bg-[#22d3ee]',
   },
   {
     label: 'Protección Corporal',
     hrefCategory: 'Protección Corporal',
     image: '/producto-imagen-home/proteccion-corporal-zeus.png',
+    color: 'hover:bg-[#fb923c]',
   },
   {
     label: 'Protección Respiratoria',
     hrefCategory: 'Protección Respiratoria',
     image: '/producto-imagen-home/proteccion-respiratoria-zeus.png',
+    color: 'hover:bg-[#f43f5e]',
   },
   {
     label: 'Protección Visual',
     hrefCategory: 'Protección Visual',
     image: '/producto-imagen-home/proteccion-visual-zeus.png',
+    color: 'hover:bg-[#22c55e]',
   },
   {
     label: 'Seguridad Vial',
     hrefCategory: 'Seguridad Vial',
     image: '/producto-imagen-home/seguridad-vial-zeus.png',
+    color: 'hover:bg-[#f59e0b]',
   },
   {
     label: 'Equipo Laboral',
     hrefCategory: 'Equipo Laboral',
     image: '/producto-imagen-home/equipo-laboral-zeus.png',
+    color: 'hover:bg-[#818cf8]',
   },
   {
     label: 'Material Eléctrico',
     hrefCategory: 'Electric',
     image: '/producto-imagen-home/material-electrico-zeus.png',
+    color: 'hover:bg-[#facc15]',
   },
   {
     label: 'Protección Auditiva',
     hrefCategory: 'Protección Auditiva',
     image: '/producto-imagen-home/proteccion-auditica-zeus.png',
+    color: 'hover:bg-[#a78bfa]',
   },
 ];
 
@@ -127,7 +137,7 @@ export function HomeCategoryStrip() {
               key={cat.hrefCategory}
               data-category-item
               href={`/productos?categoria=${encodeURIComponent(cat.hrefCategory)}`}
-              className="group flex w-[128px] shrink-0 flex-col items-center justify-center gap-2.5 border-r border-white/10 px-2 py-6 transition-all duration-200 hover:bg-[#F5C400] sm:w-[142px] sm:gap-3 sm:py-7 md:w-[150px] lg:min-w-0 lg:w-auto lg:flex-1 lg:px-3 lg:py-8"
+              className={`group flex w-[128px] shrink-0 flex-col items-center justify-center gap-2.5 border-r border-white/10 px-2 py-6 transition-all duration-200 ${cat.color || 'hover:bg-[#F5C400]'} sm:w-[142px] sm:gap-3 sm:py-7 md:w-[150px] lg:min-w-0 lg:w-auto lg:flex-1 lg:px-3 lg:py-8`}
             >
               <span className="relative flex h-16 w-16 items-center justify-center sm:h-[4.5rem] sm:w-[4.5rem] lg:h-20 lg:w-20">
                 <Image

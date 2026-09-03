@@ -4,13 +4,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/lib/mockData';
 import type { CatalogProduct } from '@/lib/product-catalog';
-import { Minus, Package, Plus } from 'lucide-react';
+import { Minus, Package, Plus, ShoppingCart, Truck, Store } from 'lucide-react';
 import { useQuoteStore } from '@/store/quoteStore';
 import { useCallback, useState } from 'react';
 import { Toast } from '@/components/ui/toast';
 
 interface ProductCardProps {
   product: Product | CatalogProduct;
+}
+
+const categoryColors: Record<string, string> = {
+  'Protección Manual': 'bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]',
+  'Protección Visual': 'bg-[#1a6b3c] text-white hover:bg-[#22c55e] hover:text-white',
+  'Protección Respiratoria': 'bg-[#9f1239] text-white hover:bg-[#f43f5e] hover:text-white',
+  'Protección de Cabeza': 'bg-[#b45309] text-white hover:bg-[#f59e0b] hover:text-[#0b2d60]',
+  'Protección Auditiva': 'bg-[#6d28d9] text-white hover:bg-[#a78bfa] hover:text-white',
+  'Calzado de Seguridad': 'bg-[#0e7490] text-white hover:bg-[#22d3ee] hover:text-[#0b2d60]',
+  'Protección Corporal': 'bg-[#c2410c] text-white hover:bg-[#fb923c] hover:text-[#0b2d60]',
+};
+
+function getCategoryColor(category: string) {
+  return categoryColors[category] || 'bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]';
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -33,27 +47,18 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <article className="zeus-card group flex h-full flex-col transition hover:border-[#0b2d60]/25 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)]">
+      <article className="zeus-card group relative flex h-full flex-col overflow-hidden transition hover:border-[#0b2d60]/25 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)]">
+        {/* Shine animation on hover */}
+        <div className="pointer-events-none absolute inset-0 z-30 overflow-hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="absolute -left-full top-0 h-full w-1/2 skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-[300%]" />
+        </div>
+
+        {/* Category header bar */}
+        <div className={`flex items-center justify-center px-3 py-2 text-[10px] font-bold uppercase tracking-wide ${getCategoryColor(product.category).split(' hover:')[0]}`}>
+          {product.category}
+        </div>
+
         <div className="relative aspect-[4/3] bg-slate-50">
-          <Link
-            href={`/productos?categoria=${encodeURIComponent(product.category)}`}
-            onClick={(e) => e.stopPropagation()}
-            className="absolute left-3 top-3 z-20 zeus-badge bg-[#0b2d60] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
-          >
-            {product.category}
-          </Link>
-
-          <span
-            aria-hidden
-            className="absolute right-0 top-0 z-10 h-8 w-10 bg-[#0b2d60]"
-            style={{ clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)' }}
-          />
-          <span
-            aria-hidden
-            className="absolute right-0 top-0 z-10 h-5 w-7 bg-[#F5C400]"
-            style={{ clipPath: 'polygon(35% 0, 100% 0, 100% 100%, 0 100%)' }}
-          />
-
           <Link
             href={`/productos/${product.slug}`}
             className="absolute inset-0 block"
@@ -94,17 +99,19 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
           )}
 
-          <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5">
-            <span className="zeus-badge border border-emerald-300/80 bg-emerald-50 text-emerald-800 sm:text-[10px]">
-              Delivery en 24 horas
+          <div className="mt-2.5 flex items-center justify-center gap-1.5">
+            <span className="inline-flex items-center gap-1 border border-emerald-200 bg-emerald-50 px-1.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-800">
+              <Truck className="h-3 w-3 shrink-0" strokeWidth={2.5} />
+              Delivery 24h
             </span>
-            <span className="zeus-badge border border-slate-300 bg-slate-50 text-slate-700 sm:text-[10px]">
-              Recojo en tienda
+            <span className="inline-flex items-center gap-1 border border-sky-200 bg-sky-50 px-1.5 py-1 text-[9px] font-bold uppercase tracking-wide text-sky-800">
+              <Store className="h-3 w-3 shrink-0" strokeWidth={2.5} />
+              Recojo tienda
             </span>
           </div>
 
           <div className="mt-auto space-y-2 pt-3">
-            <div className="mx-auto flex h-9 w-full max-w-[140px] items-center overflow-hidden rounded-lg border border-slate-200">
+            <div className="mx-auto flex h-9 w-full max-w-[140px] items-center overflow-hidden border border-slate-200">
               <button
                 type="button"
                 aria-label="Menos"
@@ -126,8 +133,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               onClick={handleAddToQuote}
-              className="h-10 w-full rounded-lg bg-slate-100 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400]"
+              className="flex h-10 w-full items-center justify-center gap-2 bg-[#0b2d60] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
             >
+              <ShoppingCart className="h-3.5 w-3.5" strokeWidth={2.5} />
               Cotizar
             </button>
           </div>

@@ -186,16 +186,19 @@ export default function ProductDetailPage({ params }: Props) {
 
         const catalog = buildCatalogFromApi(data);
         const currentGroup = getProductGroupKey(matched[0]);
-        const relatedList = catalog
-          .filter(
-            (item) =>
-              item.groupSlug !== currentGroup &&
-              item.category === detailVariants[0].category &&
-              Boolean(item.image?.trim()),
-          )
-          .slice(0, 4);
-
-        setRelated(relatedList);
+        const sameCategory = catalog.filter(
+          (item) =>
+            item.groupSlug !== currentGroup &&
+            item.category === detailVariants[0].category &&
+            Boolean(item.image?.trim()),
+        );
+        const extras = catalog.filter(
+          (item) =>
+            item.groupSlug !== currentGroup &&
+            item.category !== detailVariants[0].category &&
+            Boolean(item.image?.trim()),
+        );
+        setRelated([...sameCategory, ...extras].slice(0, 4));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
@@ -269,7 +272,7 @@ export default function ProductDetailPage({ params }: Props) {
           </p>
           <Button
             onClick={() => router.push('/productos')}
-            className="rounded-lg bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
+            className="bg-[#0b2d60] text-white hover:bg-[#F5C400] hover:text-[#0b2d60]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Volver al catálogo
@@ -290,8 +293,9 @@ export default function ProductDetailPage({ params }: Props) {
       <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-[1500px] px-3 py-6 sm:px-4 lg:px-6 lg:py-10">
         <nav className="mb-6 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-          <Link href="/productos" className="transition-colors hover:text-[#0b2d60]">
+          <Link href="/productos" className="group relative pb-0.5 transition-colors hover:text-[#0b2d60]">
             Catálogo
+            <span className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-[#F5C400] transition-transform duration-200 group-hover:scale-x-100" />
           </Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-[#0b2d60]">Detalle</span>
@@ -307,7 +311,8 @@ export default function ProductDetailPage({ params }: Props) {
           {/* Panel de compra */}
           <div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md bg-emerald-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="zeus-stock-badge inline-flex items-center gap-2 bg-emerald-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                <span className="zeus-stock-dot h-2 w-2 bg-emerald-300" />
                 En stock
               </span>
             </div>
@@ -337,7 +342,7 @@ export default function ProductDetailPage({ params }: Props) {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden rounded-xl border border-slate-300">
+              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden border border-slate-300">
                 <button
                   type="button"
                   aria-label="Disminuir cantidad"
@@ -362,7 +367,7 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-all duration-200 hover:bg-[#F5C400] hover:text-[#0b2d60] hover:shadow-[0_8px_20px_rgba(11,45,96,0.18)]"
               >
                 <ShoppingCart className="h-4 w-4 shrink-0" />
                 Agregar a carrito
@@ -373,7 +378,7 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleQuoteNow}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60] hover:bg-white"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:border-[#0b2d60] hover:bg-white"
               >
                 <ClipboardList className="h-4 w-4 shrink-0" />
                 Cotizar ahora
@@ -384,7 +389,7 @@ export default function ProductDetailPage({ params }: Props) {
                   href={product.fichaTecnica}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:bg-[#0b2d60] hover:text-white"
                 >
                   <FileText className="h-4 w-4 shrink-0" />
                   <span className="truncate">Ver ficha técnica</span>
@@ -399,7 +404,7 @@ export default function ProductDetailPage({ params }: Props) {
                 open={openSection === 'info'}
                 onToggle={() => toggleSection('info')}
               >
-                <div className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-100">
+                <div className="divide-y divide-slate-100 overflow-hidden border border-slate-100">
                   {(
                     [
                       { label: 'Marca', value: product.brand },

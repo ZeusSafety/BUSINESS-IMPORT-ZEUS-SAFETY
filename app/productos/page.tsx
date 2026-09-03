@@ -330,7 +330,7 @@ function ProductsPageContent() {
         {/* Search + columnas */}
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative min-w-0 flex-1">
-            <div className="flex h-12 items-center rounded-lg border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
+            <div className="flex h-12 items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
               <Search className="mr-3 h-4 w-4 shrink-0 text-[#0b2d60]" />
               <Input
                 placeholder="Buscar por nombre, marca o código..."
@@ -343,7 +343,7 @@ function ProductsPageContent() {
                   type="button"
                   onClick={() => setSearchQuery('')}
                   aria-label="Limpiar búsqueda"
-                  className="ml-2 flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition-colors hover:text-[#0b2d60]"
+                  className="ml-2 flex h-7 w-7 items-center justify-center text-slate-400 transition-colors hover:text-[#0b2d60]"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -360,7 +360,7 @@ function ProductsPageContent() {
 
             <Button
               variant="outline"
-              className="h-12 rounded-lg border-slate-200 lg:hidden"
+              className="h-12 rounded-none border-slate-200 lg:hidden"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
             >
               <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -370,7 +370,7 @@ function ProductsPageContent() {
         </div>
 
         {hasActiveFilters && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#F5C400]/40 bg-[#fff8db] px-4 py-3">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border border-[#F5C400]/40 bg-[#fff8db] px-4 py-3">
             <div className="flex items-center gap-2 text-sm font-medium text-[#0b2d60]">
               <Filter className="h-4 w-4 text-[#F5C400]" />
               {filteredProducts.length} producto
@@ -391,13 +391,13 @@ function ProductsPageContent() {
         <div className="grid gap-6 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
           {/* Sidebar */}
           <aside
-            className={`h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
+            className={`h-fit border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
               showMobileFilters ? 'block' : 'hidden lg:block'
             }`}
           >
             <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
               <h2 className="flex items-center gap-2 text-base font-bold text-[#0c1427]">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0b2d60] text-white">
+                <span className="flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-white">
                   <Filter className="h-4 w-4" />
                 </span>
                 Filtros
@@ -413,7 +413,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Top products */}
-            <div className="mb-5 rounded-lg border border-slate-100 p-3">
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Star className="h-3.5 w-3.5 fill-[#F5C400] text-[#F5C400]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -432,7 +432,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Categories — sin scroll feo: mostrar todas o Ver más */}
-            <div className="mb-5 rounded-lg border border-slate-100 p-3">
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Package className="h-3.5 w-3.5 text-[#0b2d60]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -472,7 +472,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Certifications */}
-            <div className="mb-5 rounded-lg border border-slate-100 p-3">
+            <div className="mb-5 border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Award className="h-3.5 w-3.5 text-[#0b2d60]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -498,7 +498,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Precio — slider S/ */}
-            <div className="mb-5 rounded-lg border border-slate-100 p-3">
+            <div className="mb-5 border border-slate-100 p-3">
               <button
                 type="button"
                 onClick={() => setPriceFilterOpen((v) => !v)}
@@ -520,9 +520,9 @@ function ProductsPageContent() {
               {priceFilterOpen && (
                 <div className="pt-3">
                   <div className="relative h-6">
-                    <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200" />
+                    <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-slate-200" />
                     <div
-                      className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-[#0b2d60]"
+                      className="absolute top-1/2 h-1 -translate-y-1/2 bg-[#0b2d60]"
                       style={{
                         left: `${
                           ((priceMin - priceBounds.min) /
@@ -575,7 +575,7 @@ function ProductsPageContent() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-600 transition-colors hover:border-red-300 hover:text-red-600"
+                className="inline-flex h-10 w-full items-center justify-center gap-2 border border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-600 transition-colors hover:border-red-300 hover:text-red-600"
               >
                 <X className="h-3.5 w-3.5" />
                 Limpiar filtros
@@ -588,7 +588,7 @@ function ProductsPageContent() {
             {loading ? (
               <ProductGridSkeleton count={8} columns={4} />
             ) : error ? (
-              <div className="rounded-xl border border-red-200 bg-white p-12 text-center">
+              <div className="border border-red-200 bg-white p-12 text-center">
                 <Package className="mx-auto mb-4 h-10 w-10 text-red-500" />
                 <h3 className="mb-2 text-lg font-bold text-[#0c1427]">
                   Error al cargar productos
@@ -597,13 +597,13 @@ function ProductsPageContent() {
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="inline-flex h-10 items-center rounded-lg border border-red-300 px-4 text-xs font-bold uppercase text-red-600"
+                  className="inline-flex h-10 items-center border border-red-300 px-4 text-xs font-bold uppercase text-red-600"
                 >
                   Reintentar
                 </button>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
+              <div className="border border-dashed border-slate-300 bg-white p-12 text-center">
                 <Package className="mx-auto mb-4 h-10 w-10 text-slate-400" />
                 <h3 className="mb-2 text-lg font-bold text-[#0c1427]">
                   No se encontraron productos
@@ -615,7 +615,7 @@ function ProductsPageContent() {
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="inline-flex h-10 items-center rounded-lg bg-[#0b2d60] px-5 text-xs font-bold uppercase text-white"
+                    className="inline-flex h-10 items-center bg-[#0b2d60] px-5 text-xs font-bold uppercase text-white"
                   >
                     Limpiar filtros
                   </button>
@@ -656,7 +656,7 @@ function ProductsPageContent() {
                         setCurrentPage((prev) => Math.max(1, prev - 1))
                       }
                       disabled={currentPage === 1}
-                      className="inline-flex h-10 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
+                      className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       Anterior
@@ -675,7 +675,7 @@ function ProductsPageContent() {
                                 key={page}
                                 type="button"
                                 onClick={() => setCurrentPage(page)}
-                                className={`inline-flex h-10 min-w-[40px] items-center justify-center rounded-lg border text-xs font-bold ${
+                                className={`inline-flex h-10 min-w-[40px] items-center justify-center border text-xs font-bold ${
                                   currentPage === page
                                     ? 'border-[#0b2d60] bg-[#0b2d60] text-white'
                                     : 'border-slate-200 bg-white text-[#0b2d60] hover:border-[#F5C400]'
@@ -708,7 +708,7 @@ function ProductsPageContent() {
                         )
                       }
                       disabled={currentPage === totalPages}
-                      className="inline-flex h-10 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
+                      className="inline-flex h-10 items-center gap-1 border border-slate-200 bg-white px-3 text-xs font-bold uppercase text-[#0b2d60] disabled:opacity-40"
                     >
                       Siguiente
                       <ChevronRight className="h-4 w-4" />

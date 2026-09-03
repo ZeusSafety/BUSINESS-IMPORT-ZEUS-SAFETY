@@ -67,9 +67,9 @@ const DEFAULT_WA_MESSAGE = encodeURIComponent(
   'Hola 👋, me gustaría recibir información y cotizar productos de seguridad industrial de Zeus Safety.',
 );
 
-const WA_NUMBER = '51999999999';
-const EMAIL = 'ventas@zeussafety.com';
-const ADDRESS = 'Av. Industrial 123, Lima';
+const WA_NUMBER = '51916532849';
+const EMAIL = 'zeus.safety2020@gmail.com';
+const ADDRESS = 'Av. Guillermo Dansey 401, C.C Plaza Ferretero Las Malvinas, Lima';
 
 const CONTACT_MOTIVOS = [
   { value: 'Consulta general', label: 'Consulta general' },

@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 type SpinnerProps = {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -59,17 +57,7 @@ export function BrandLoader({
       />
 
       <div className="flex flex-col items-center">
-        <div className="relative h-9 w-36 sm:h-10 sm:w-40">
-          <Image
-            src="/logo_zeus_azul.svg"
-            alt="Zeus Safety"
-            fill
-            className="object-contain object-center"
-            priority
-          />
-        </div>
-
-        <div className="mt-6 h-1 w-44 overflow-hidden bg-slate-100 sm:w-52">
+        <div className="h-1 w-44 overflow-hidden bg-slate-100 sm:w-52">
           <div className="zeus-loader-bar h-full w-1/3 bg-[#F5C400]" />
         </div>
 

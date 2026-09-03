@@ -569,7 +569,7 @@ export function HomeCoverageMap() {
 
           <div className="shrink-0 border-t border-white/10 bg-[#0b2d60] px-4 py-3.5">
             <a
-              href="tel:+5115555555"
+              href="tel:+51916532849"
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#F5C400] transition-colors hover:text-[#ffd233]"
             >
               <Phone size={16} weight="duotone" />

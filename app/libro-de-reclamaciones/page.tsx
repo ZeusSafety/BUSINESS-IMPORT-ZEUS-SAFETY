@@ -9,7 +9,7 @@ const COMPANY = {
   name: 'ZEUS SAFETY S.A.C.',
   brand: 'Zeus Safety',
   ruc: '20601234567',
-  address: 'Av. Industrial 123, Lima — Perú',
+  address: 'Av. Guillermo Dansey 401, C.C Plaza Ferretero Las Malvinas, Lima',
   code: '0001',
   email: 'reclamaciones@zeussafety.com',
 };
