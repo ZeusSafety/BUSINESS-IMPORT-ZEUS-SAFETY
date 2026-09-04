@@ -11,6 +11,7 @@ import {
   BlogDetailSection,
 } from '@/components/blog/blog-detail-entrance';
 import { BlogPostHero } from '@/components/blog/blog-post-hero';
+import { BlogCtaBanner } from '@/components/blog/blog-cta-banner';
 import { ArrowLeft } from 'lucide-react';
 
 type Props = {
@@ -54,7 +55,7 @@ export default async function BlogDetailPage({ params }: Props) {
             </BlogDetailSection>
 
             <BlogDetailSection>
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
                 <BlogPostHero
                   title={post.title}
                   date={post.date}
@@ -64,20 +65,7 @@ export default async function BlogDetailPage({ params }: Props) {
                   sections={post.sections}
                 />
 
-                <div className="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-[#0b2d60] px-5 py-6 text-center sm:px-8">
-                  <p className="text-sm font-bold text-white sm:text-base">
-                    ¿Necesitas el EPP correcto para tu operación?
-                  </p>
-                  <p className="mt-1 text-xs text-white/70 sm:text-sm">
-                    Cotiza con Zeus Safety y recibe asesoría técnica.
-                  </p>
-                  <Link
-                    href="/cotizacion"
-                    className="mt-4 inline-flex h-11 items-center rounded-lg bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-                  >
-                    Arma tu cotización
-                  </Link>
-                </div>
+                <BlogCtaBanner />
               </div>
             </BlogDetailSection>
           </div>

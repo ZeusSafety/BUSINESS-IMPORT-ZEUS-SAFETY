@@ -6,7 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const WA_NUMBER = '51916532849';
 const DEFAULT_MESSAGE =
-  'Hola, deseo información sobre los productos de Zeus Safety.';
+  'Hola Zeus Safety 👋, deseo información sobre sus productos de seguridad industrial.';
+
+const QUICK_REPLIES = [
+  { emoji: '🧤', label: 'Guantes', text: 'Hola 👋, quiero cotizar guantes de seguridad.' },
+  { emoji: '🥾', label: 'Calzado', text: 'Hola 👋, necesito información de calzado de seguridad.' },
+  { emoji: '🦺', label: 'EPP', text: 'Hola 👋, quiero asesoría para armar un kit de EPP.' },
+] as const;
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -35,7 +41,7 @@ function openWhatsApp(text: string) {
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-function TypingMessage({ text, delay = 500 }: { text: string; delay?: number }) {
+function TypingMessage({ text, delay = 400 }: { text: string; delay?: number }) {
   const [displayed, setDisplayed] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [started, setStarted] = useState(false);
@@ -53,13 +59,13 @@ function TypingMessage({ text, delay = 500 }: { text: string; delay?: number }) 
     }
     const t = setTimeout(() => {
       setDisplayed(text.slice(0, displayed.length + 1));
-    }, 28);
+    }, 26);
     return () => clearTimeout(t);
   }, [displayed, text, started]);
 
   if (!started) {
     return (
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex items-center gap-1 py-0.5">
         <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:0ms]" />
         <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:150ms]" />
         <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:300ms]" />
@@ -85,7 +91,7 @@ export function WhatsAppButton() {
 
   useEffect(() => {
     if (open) {
-      const t = setTimeout(() => inputRef.current?.focus(), 350);
+      const t = setTimeout(() => inputRef.current?.focus(), 380);
       return () => clearTimeout(t);
     }
   }, [open]);
@@ -117,74 +123,123 @@ export function WhatsAppButton() {
     [message],
   );
 
+  const sendQuick = (text: string) => {
+    openWhatsApp(text);
+    setOpen(false);
+    setMessage('');
+  };
+
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none fixed bottom-5 right-5 z-[85] flex flex-col items-end gap-3"
+      className="pointer-events-none fixed bottom-5 right-5 z-[85] flex items-end gap-3"
     >
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.96 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto w-[min(340px,calc(100vw-2.5rem))] overflow-hidden border border-slate-200 bg-white shadow-[0_16px_40px_rgba(11,45,96,0.2)]"
-            style={{ marginBottom: '7.5rem' }}
+            initial={{ opacity: 0, x: 28, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.94 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 320 }}
+            className="pointer-events-auto relative mb-1 w-[min(320px,calc(100vw-5.5rem))]"
             role="dialog"
-            aria-label="Chat WhatsApp"
+            aria-label="Chat WhatsApp Zeus Safety"
           >
-            <div className="flex items-center justify-between bg-[#0b2d60] px-4 py-3">
-              <div>
-                <p className="text-sm font-bold text-white">Atención en línea</p>
-                <p className="flex items-center gap-1.5 text-[11px] text-white/70">
-                  <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#25D366]" />
-                  En línea
+            {/* Globo de diálogo */}
+            <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-[0_20px_50px_rgba(11,45,96,0.22)]">
+              <div className="relative flex items-center justify-between overflow-hidden rounded-t-3xl bg-[#0b2d60] px-4 py-3.5">
+                <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#F5C400]/15" />
+                <div className="relative flex items-center gap-3">
+                  <span className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-[#25D366] text-white shadow-md">
+                    <WhatsAppIcon className="h-5 w-5" />
+                    <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0b2d60] bg-[#25D366]" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-white">Atención en línea 💬</p>
+                    <p className="flex items-center gap-1.5 text-[11px] text-white/75">
+                      <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#25D366]" />
+                      En línea · Zeus Safety
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Cerrar chat"
+                  onClick={() => setOpen(false)}
+                  className="relative flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+                >
+                  <X className="h-4 w-4" strokeWidth={2.5} />
+                </button>
+              </div>
+
+              <div className="space-y-3 bg-gradient-to-b from-[#eef2f7] to-[#f8fafc] px-4 py-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.12 }}
+                  className="max-w-[92%] rounded-2xl rounded-tl-md border border-white bg-white px-3.5 py-3 text-sm leading-relaxed text-[#0c1427] shadow-sm"
+                >
+                  <TypingMessage
+                    text="¡Hola! 👋 ¿Cómo podemos ayudarte hoy?"
+                    delay={350}
+                  />
+                  <span className="mt-1.5 block text-[10px] font-medium text-slate-400">
+                    Asesor Zeus · ahora ⚡
+                  </span>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="flex flex-wrap gap-1.5"
+                >
+                  {QUICK_REPLIES.map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => sendQuick(item.text)}
+                      className="inline-flex items-center gap-1 rounded-full border border-[#0b2d60]/15 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#0b2d60] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#F5C400] hover:bg-[#F5C400]/20"
+                    >
+                      <span>{item.emoji}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </motion.div>
+
+                <p className="text-center text-[10px] text-slate-400">
+                  Al enviar se abrirá WhatsApp con tu mensaje ✨
                 </p>
               </div>
-              <button
-                type="button"
-                aria-label="Cerrar chat"
-                onClick={() => setOpen(false)}
-                className="flex h-8 w-8 items-center justify-center text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+
+              <form
+                onSubmit={handleSubmit}
+                className="flex items-center gap-2 rounded-b-3xl border-t border-slate-100 bg-white px-3 py-3"
               >
-                <X className="h-4 w-4" strokeWidth={2.5} />
-              </button>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Escribe tu mensaje… ✍️"
+                  className="h-10 min-w-0 flex-1 rounded-full border border-slate-200 bg-[#f8fafc] px-4 text-sm text-[#0c1427] outline-none placeholder:text-slate-400 focus:border-[#25D366] focus:bg-white"
+                  aria-label="Mensaje para WhatsApp"
+                />
+                <button
+                  type="submit"
+                  aria-label="Enviar a WhatsApp"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_6px_16px_rgba(37,211,102,0.4)] transition-transform hover:scale-105 hover:bg-[#20BA5A]"
+                >
+                  <SendIcon className="h-4 w-4" />
+                </button>
+              </form>
             </div>
 
-            <div className="space-y-3 bg-[#f4f6f9] px-4 py-4">
-              <div className="max-w-[90%] border border-slate-200 bg-white px-3.5 py-3 text-sm leading-relaxed text-[#0c1427]">
-                <TypingMessage text="Hola. ¿Cómo podemos ayudarte?" delay={400} />
-                <span className="mt-1.5 block text-[10px] text-slate-400">
-                  Asesor · ahora
-                </span>
-              </div>
-              <p className="text-center text-[10px] text-slate-400">
-                Al enviar se abrirá WhatsApp con tu mensaje
-              </p>
-            </div>
-
-            <form
-              onSubmit={handleSubmit}
-              className="flex items-center gap-2 border-t border-slate-200 bg-white px-3 py-3"
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Escribe tu mensaje…"
-                className="h-10 min-w-0 flex-1 border border-slate-200 bg-white px-3 text-sm text-[#0c1427] outline-none placeholder:text-slate-400 focus:border-[#0b2d60]"
-                aria-label="Mensaje para WhatsApp"
-              />
-              <button
-                type="submit"
-                aria-label="Enviar a WhatsApp"
-                className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#25D366] text-white transition-transform hover:scale-105 hover:bg-[#20BA5A]"
-              >
-                <SendIcon className="h-4 w-4" />
-              </button>
-            </form>
+            {/* Cola del globo hacia el botón */}
+            <span
+              aria-hidden
+              className="absolute -right-1.5 bottom-5 h-4 w-4 rotate-45 rounded-sm border-b border-r border-slate-200/80 bg-white shadow-[2px_2px_4px_rgba(11,45,96,0.06)]"
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -196,7 +251,7 @@ export function WhatsAppButton() {
         onClick={() => setOpen((prev) => !prev)}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
-        className="pointer-events-auto relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)]"
+        className="pointer-events-auto relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_28px_rgba(37,211,102,0.45)]"
       >
         {!open && (
           <>

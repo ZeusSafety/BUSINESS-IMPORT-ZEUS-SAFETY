@@ -49,10 +49,10 @@ export function BlogLayoutSwitcher({
 export function blogViewGridClass(mode: BlogViewMode): string {
   switch (mode) {
     case 'grid-2':
-      return 'grid grid-cols-1 gap-5 sm:grid-cols-2';
+      return 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4';
     case 'grid-3':
-      return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3';
+      return 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3';
     case 'grid-4':
-      return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+      return 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4';
   }
 }

@@ -91,7 +91,7 @@
 @layer components {
   .zeus-card {
     overflow: hidden;
-    border-radius: 0;
+    border-radius: var(--zeus-radius-xl);
     border: 1px solid rgb(226 232 240 / 0.8);
     background-color: #fff;
     box-shadow: 0 8px 30px rgba(11, 45, 96, 0.06);
@@ -153,7 +153,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0;
+    border-radius: 9999px;
     box-shadow: 0 4px 16px rgba(11, 45, 96, 0.2);
     transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }

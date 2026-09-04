@@ -15,7 +15,7 @@ export function ViewSwitcherShell({
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-0 border border-slate-200 bg-white p-1 ${
+      className={`inline-flex items-center gap-0.5 rounded-2xl border border-slate-200 bg-white p-1 ${
         size === 'lg' ? 'h-12' : ''
       } ${className}`}
       role="group"
@@ -46,7 +46,7 @@ export function ViewSwitcherButton({
       title={title}
       aria-label={ariaLabel}
       aria-pressed={active}
-      className={`inline-flex h-9 w-9 items-center justify-center transition-colors duration-150 sm:h-10 sm:w-10 ${
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-150 sm:h-10 sm:w-10 ${
         active
           ? 'bg-[#0b2d60] text-white'
           : 'text-slate-400 hover:bg-slate-50 hover:text-[#0b2d60]'

@@ -9,7 +9,6 @@ type CategoryDef = {
   label: string;
   hrefCategory: string;
   image: string;
-  color?: string;
 };
 
 /** Categorías reales del catálogo Zeus + imágenes HD */
@@ -18,55 +17,46 @@ const CATEGORIES: CategoryDef[] = [
     label: 'Guantes de Seguridad',
     hrefCategory: 'Protección Manual',
     image: '/producto-imagen-home/Guante-zeus.png',
-    color: 'hover:bg-[#F5C400]',
   },
   {
     label: 'Calzado de Seguridad',
     hrefCategory: 'Calzado de Seguridad',
     image: '/producto-imagen-home/calzado-seguridad-zeus.png',
-    color: 'hover:bg-[#22d3ee]',
   },
   {
     label: 'Protección Corporal',
     hrefCategory: 'Protección Corporal',
     image: '/producto-imagen-home/proteccion-corporal-zeus.png',
-    color: 'hover:bg-[#fb923c]',
   },
   {
     label: 'Protección Respiratoria',
     hrefCategory: 'Protección Respiratoria',
     image: '/producto-imagen-home/proteccion-respiratoria-zeus.png',
-    color: 'hover:bg-[#f43f5e]',
   },
   {
     label: 'Protección Visual',
     hrefCategory: 'Protección Visual',
     image: '/producto-imagen-home/proteccion-visual-zeus.png',
-    color: 'hover:bg-[#22c55e]',
   },
   {
     label: 'Seguridad Vial',
     hrefCategory: 'Seguridad Vial',
     image: '/producto-imagen-home/seguridad-vial-zeus.png',
-    color: 'hover:bg-[#f59e0b]',
   },
   {
     label: 'Equipo Laboral',
     hrefCategory: 'Equipo Laboral',
     image: '/producto-imagen-home/equipo-laboral-zeus.png',
-    color: 'hover:bg-[#818cf8]',
   },
   {
     label: 'Material Eléctrico',
     hrefCategory: 'Electric',
     image: '/producto-imagen-home/material-electrico-zeus.png',
-    color: 'hover:bg-[#facc15]',
   },
   {
     label: 'Protección Auditiva',
     hrefCategory: 'Protección Auditiva',
     image: '/producto-imagen-home/proteccion-auditica-zeus.png',
-    color: 'hover:bg-[#a78bfa]',
   },
 ];
 
@@ -118,15 +108,17 @@ export function HomeCategoryStrip() {
       className="relative z-30 scroll-mt-20 border-t-4 border-[#F5C400] bg-[#0b2d60]"
     >
       <div className="flex items-stretch">
-        <button
-          type="button"
-          onClick={() => scrollBy(-1)}
-          disabled={!canPrev}
-          aria-label="Categorías anteriores"
-          className="flex w-11 shrink-0 items-center justify-center border-r border-white/10 text-white transition-colors hover:bg-white/10 disabled:cursor-default disabled:opacity-35 sm:w-14"
-        >
-          <ChevronLeft className="h-8 w-8" strokeWidth={2} />
-        </button>
+        <div className="flex w-11 shrink-0 items-center justify-center border-r border-white/10 sm:w-14">
+          <button
+            type="button"
+            onClick={() => scrollBy(-1)}
+            disabled={!canPrev}
+            aria-label="Categorías anteriores"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 disabled:cursor-default disabled:opacity-35 sm:h-10 sm:w-10"
+          >
+            <ChevronLeft className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
+          </button>
+        </div>
 
         <div
           ref={scrollerRef}
@@ -137,7 +129,7 @@ export function HomeCategoryStrip() {
               key={cat.hrefCategory}
               data-category-item
               href={`/productos?categoria=${encodeURIComponent(cat.hrefCategory)}`}
-              className={`group flex w-[128px] shrink-0 flex-col items-center justify-center gap-2.5 border-r border-white/10 px-2 py-6 transition-all duration-200 ${cat.color || 'hover:bg-[#F5C400]'} sm:w-[142px] sm:gap-3 sm:py-7 md:w-[150px] lg:min-w-0 lg:w-auto lg:flex-1 lg:px-3 lg:py-8`}
+              className="group relative flex w-[128px] shrink-0 flex-col items-center justify-center gap-2.5 border-r border-white/10 px-2 py-6 transition-all duration-200 hover:z-10 hover:bg-[#F5C400] hover:shadow-[0_6px_20px_rgba(0,0,0,0.18)] sm:w-[142px] sm:gap-3 sm:py-7 md:w-[150px] lg:min-w-0 lg:w-auto lg:flex-1 lg:px-3 lg:py-8"
             >
               <span className="relative flex h-16 w-16 items-center justify-center sm:h-[4.5rem] sm:w-[4.5rem] lg:h-20 lg:w-20">
                 <Image
@@ -156,15 +148,17 @@ export function HomeCategoryStrip() {
           ))}
         </div>
 
-        <button
-          type="button"
-          onClick={() => scrollBy(1)}
-          disabled={!canNext}
-          aria-label="Siguientes categorías"
-          className="flex w-11 shrink-0 items-center justify-center border-l border-white/10 text-white transition-colors hover:bg-white/10 disabled:cursor-default disabled:opacity-35 sm:w-14"
-        >
-          <ChevronRight className="h-8 w-8" strokeWidth={2} />
-        </button>
+        <div className="flex w-11 shrink-0 items-center justify-center border-l border-white/10 sm:w-14">
+          <button
+            type="button"
+            onClick={() => scrollBy(1)}
+            disabled={!canNext}
+            aria-label="Siguientes categorías"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 disabled:cursor-default disabled:opacity-35 sm:h-10 sm:w-10"
+          >
+            <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
+          </button>
+        </div>
       </div>
     </section>
   );

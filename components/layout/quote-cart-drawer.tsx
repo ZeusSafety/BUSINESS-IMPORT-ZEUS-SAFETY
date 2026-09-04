@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ShoppingCart, X } from 'lucide-react';
+import { ClipboardList, ShoppingBag, ShoppingCart, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
@@ -80,14 +80,12 @@ export function QuoteCartDrawer() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Abrir carrito de cotización"
-        className="fixed bottom-[5.75rem] right-5 z-[84] flex h-14 w-14 items-center justify-center rounded-full bg-[#0b2d60] text-white shadow-[0_10px_28px_rgba(11,45,96,0.4)] transition-transform hover:scale-105 hover:bg-[#0a2552]"
+        className="fixed bottom-[5.75rem] right-5 z-[90] flex h-14 w-14 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] shadow-[0_12px_32px_rgba(245,196,0,0.55)] ring-4 ring-[#F5C400]/35 transition-transform hover:scale-110 hover:bg-[#ffd233]"
       >
-        <ShoppingCart className="h-6 w-6" strokeWidth={2.2} />
-        {totalItems > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F5C400] px-1 text-[10px] font-black text-[#0b2d60]">
-            {totalItems > 99 ? '99+' : totalItems}
-          </span>
-        )}
+        <ShoppingCart className="h-6 w-6" strokeWidth={2.4} />
+        <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#0b2d60] px-1.5 text-[11px] font-black text-white shadow-md">
+          {totalItems > 99 ? '99+' : totalItems}
+        </span>
       </button>
 
       <AnimatePresence>
@@ -116,7 +114,7 @@ export function QuoteCartDrawer() {
               <div className="relative bg-[#0b2d60] px-5 pb-4 pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F5C400] text-[#0b2d60]">
                       <ShoppingCart className="h-4 w-4" strokeWidth={2.4} />
                     </span>
                     <div>
@@ -133,7 +131,7 @@ export function QuoteCartDrawer() {
                     type="button"
                     onClick={() => setOpen(false)}
                     aria-label="Cerrar"
-                    className="flex h-9 w-9 items-center justify-center bg-white/10 text-white transition-colors hover:bg-white/20"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                   >
                     <X className="h-4 w-4" strokeWidth={2.5} />
                   </button>
@@ -172,22 +170,42 @@ export function QuoteCartDrawer() {
                 <Link
                   href="/cotizacion"
                   onClick={() => setOpen(false)}
-                  className="flex h-11 w-full items-center justify-center bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+                  className="group/btn relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F5C400] text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-[0_6px_18px_rgba(11,45,96,0.25)]"
                 >
-                  Ver cotización
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#0b2d60] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <ClipboardList
+                    className="relative z-10 h-4 w-4 transition-colors duration-300 group-hover/btn:text-white"
+                    strokeWidth={2.4}
+                  />
+                  <span className="relative z-10 transition-colors duration-300 group-hover/btn:text-white">
+                    Ver cotización
+                  </span>
                 </Link>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="flex h-11 w-full items-center justify-center border border-slate-200 bg-white text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
+                  className="group/btn relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-slate-200 bg-white text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:border-[#0b2d60]"
                 >
-                  Seguir cotizando
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#0b2d60] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <ShoppingBag
+                    className="relative z-10 h-4 w-4 transition-colors duration-300 group-hover/btn:text-white"
+                    strokeWidth={2.4}
+                  />
+                  <span className="relative z-10 transition-colors duration-300 group-hover/btn:text-white">
+                    Seguir cotizando
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={openWhatsAppQuote}
                   disabled={items.length === 0}
-                  className="flex h-11 w-full items-center justify-center gap-2 bg-[#25D366] text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   Cotizar por WhatsApp

@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
 import { Facebook, Instagram, Mail, MapPin, Clock } from 'lucide-react';
 
 const EMAIL = 'zeus.safety2020@gmail.com';
@@ -28,41 +27,31 @@ const socials = [
 ];
 
 export function NavbarTopBar() {
-  const [current, setCurrent] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % infoItems.length);
-    }, 3500);
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
-  const item = infoItems[current];
-  const Icon = item.icon;
-
   return (
     <div className="topbar-wrapper hidden border-b border-[#F5C400]/20 bg-[#0b2d60] lg:block">
-      <div className="mx-auto flex h-9 max-w-[1600px] items-center justify-between px-6 xl:px-10">
-        {/* Carrusel de info */}
-        <div className="relative flex h-full flex-1 items-center overflow-hidden">
-          <div
-            key={current}
-            className="flex animate-[fadeSlideIn_0.4s_ease] items-center gap-2 text-[11px] font-medium tracking-wide text-white/90"
-          >
-            <Icon className="h-3.5 w-3.5 shrink-0 text-[#F5C400]" strokeWidth={2} />
-            {item.href ? (
-              <a href={item.href} className="transition-colors hover:text-[#F5C400]">
-                {item.text}
-              </a>
-            ) : (
-              <span>{item.text}</span>
-            )}
-          </div>
+      <div className="mx-auto flex h-9 max-w-[1600px] items-center justify-between gap-6 px-6 xl:px-10">
+        <div className="flex min-w-0 flex-1 items-center gap-5 xl:gap-8">
+          {infoItems.map(({ icon: Icon, text, href }) => (
+            <div
+              key={text}
+              className="flex min-w-0 items-center gap-2 text-[11px] font-medium tracking-wide text-white/90"
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0 text-[#F5C400]" strokeWidth={2} />
+              {href ? (
+                <a
+                  href={href}
+                  className="truncate transition-colors hover:text-[#F5C400]"
+                >
+                  {text}
+                </a>
+              ) : (
+                <span className="truncate">{text}</span>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Redes */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5">
           {socials.map(({ href, label, icon: SIcon }) => (
             <a
               key={label}
