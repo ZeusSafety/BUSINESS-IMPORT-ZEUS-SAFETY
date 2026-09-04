@@ -1,57 +1,104 @@
 'use client';
 
 import { create } from 'zustand';
-import { Product } from '@/lib/mockData';
+import { persist } from 'zustand/middleware';
+import type { Product } from '@/lib/mockData';
 
 export type QuoteItem = Product & { quantity: number };
 
+type QuoteProductInput = Pick<
+  Product,
+  | 'id'
+  | 'name'
+  | 'slug'
+  | 'category'
+  | 'brand'
+  | 'price'
+  | 'certification'
+  | 'description'
+  | 'specs'
+  | 'image'
+  | 'tags'
+>;
+
 type QuoteState = {
   items: QuoteItem[];
-  addItem: (product: Product, quantity?: number) => void;
+  totalItems: number;
+  addItem: (product: QuoteProductInput, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
-  totalItems: number;
 };
 
-export const useQuoteStore = create<QuoteState>((set, get) => ({
-  items: [],
-  addItem: (product, quantity = 1) =>
-    set((state) => {
-      const qty = Math.max(1, quantity);
-      const exists = state.items.find((item) => item.id === product.id);
-      const nextItems = exists
-        ? state.items.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + qty }
-              : item,
-          )
-        : [...state.items, { ...product, quantity: qty }];
+function toQuoteItem(product: QuoteProductInput, quantity: number): QuoteItem {
+  return {
+    id: String(product.id),
+    name: product.name,
+    slug: product.slug,
+    category: product.category,
+    brand: product.brand || 'Zeus Safety',
+    price: Number(product.price) || 0,
+    certification: product.certification ?? [],
+    description: product.description ?? '',
+    specs: product.specs ?? [],
+    image: product.image?.trim() || '',
+    tags: product.tags,
+    quantity: Math.max(1, quantity),
+  };
+}
 
-      return {
-        items: nextItems,
-        totalItems: nextItems.reduce((acc, item) => acc + item.quantity, 0),
-      };
-    }),
-  removeItem: (id) =>
-    set((state) => {
-      const nextItems = state.items.filter((item) => item.id !== id);
-      return {
-        items: nextItems,
-        totalItems: nextItems.reduce((acc, item) => acc + item.quantity, 0),
-      };
-    }),
-  updateQuantity: (id, quantity) =>
-    set((state) => {
-      const nextItems = state.items.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item,
-      );
-      return {
-        items: nextItems,
-        totalItems: nextItems.reduce((acc, item) => acc + item.quantity, 0),
-      };
-    }),
-  clear: () => set({ items: [], totalItems: 0 }),
-  totalItems: 0,
-}));
+function sumItems(items: QuoteItem[]) {
+  return items.reduce((acc, item) => acc + item.quantity, 0);
+}
 
+export const useQuoteStore = create<QuoteState>()(
+  persist(
+    (set) => ({
+      items: [],
+      totalItems: 0,
+      addItem: (product, quantity = 1) =>
+        set((state) => {
+          const qty = Math.max(1, quantity);
+          const exists = state.items.find((item) => item.id === product.id);
+          const nextItems = exists
+            ? state.items.map((item) =>
+                item.id === product.id
+                  ? { ...item, quantity: item.quantity + qty }
+                  : item,
+              )
+            : [...state.items, toQuoteItem(product, qty)];
+
+          return {
+            items: nextItems,
+            totalItems: sumItems(nextItems),
+          };
+        }),
+      removeItem: (id) =>
+        set((state) => {
+          const nextItems = state.items.filter((item) => item.id !== id);
+          return {
+            items: nextItems,
+            totalItems: sumItems(nextItems),
+          };
+        }),
+      updateQuantity: (id, quantity) =>
+        set((state) => {
+          const nextItems = state.items.map((item) =>
+            item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item,
+          );
+          return {
+            items: nextItems,
+            totalItems: sumItems(nextItems),
+          };
+        }),
+      clear: () => set({ items: [], totalItems: 0 }),
+    }),
+    {
+      name: 'zeus-quote-cart',
+      partialize: (state) => ({
+        items: state.items,
+        totalItems: state.totalItems,
+      }),
+    },
+  ),
+);

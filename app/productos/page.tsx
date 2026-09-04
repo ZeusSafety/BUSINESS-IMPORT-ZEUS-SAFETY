@@ -12,9 +12,8 @@ import { SortSelect, type SortOption } from '@/components/ui/sort-select';
 import { PageLoader } from '@/components/ui/spinner';
 import { ProductGridSkeleton } from '@/components/ui/skeleton';
 import { Product, certifications } from '@/lib/mockData';
-import { Search, Filter, X, Package, Award, DollarSign, SlidersHorizontal, Star, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { Search, Filter, X, Package, Award, SlidersHorizontal, Star, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
@@ -301,36 +300,11 @@ function ProductsPageContent() {
 
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
-      {/* Hero */}
-      <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[280px]">
-        <Image
-          src="/inventario.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[#0b2d60]/78" />
-        <div className="relative z-10 mx-auto max-w-3xl px-4 text-center">
-          <p className="mb-2 text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-            Catálogo
-          </p>
-          <h1 className="text-4xl font-black uppercase tracking-wide text-white sm:text-5xl">
-            EPP industrial
-          </h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base">
-            Productos certificados listos para cotizar. Stock inmediato y
-            asesoría especializada.
-          </p>
-        </div>
-      </section>
-
       <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
         {/* Search + columnas */}
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative min-w-0 flex-1">
-            <div className="flex h-12 items-center border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
+            <div className="flex h-12 items-center rounded-xl border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
               <Search className="mr-3 h-4 w-4 shrink-0 text-[#0b2d60]" />
               <Input
                 placeholder="Buscar por nombre, marca o código..."
@@ -360,7 +334,7 @@ function ProductsPageContent() {
 
             <Button
               variant="outline"
-              className="h-12 rounded-none border-slate-200 lg:hidden"
+              className="h-12 rounded-xl border-slate-200 lg:hidden"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
             >
               <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -391,13 +365,13 @@ function ProductsPageContent() {
         <div className="grid gap-6 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
           {/* Sidebar */}
           <aside
-            className={`h-fit border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
+            className={`h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
               showMobileFilters ? 'block' : 'hidden lg:block'
             }`}
           >
             <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
               <h2 className="flex items-center gap-2 text-base font-bold text-[#0c1427]">
-                <span className="flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0b2d60] text-white">
                   <Filter className="h-4 w-4" />
                 </span>
                 Filtros
@@ -413,7 +387,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Top products */}
-            <div className="mb-5 border border-slate-100 p-3">
+            <div className="mb-5 rounded-xl border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Star className="h-3.5 w-3.5 fill-[#F5C400] text-[#F5C400]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -432,7 +406,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Categories — sin scroll feo: mostrar todas o Ver más */}
-            <div className="mb-5 border border-slate-100 p-3">
+            <div className="mb-5 rounded-xl border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Package className="h-3.5 w-3.5 text-[#0b2d60]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -472,7 +446,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Certifications */}
-            <div className="mb-5 border border-slate-100 p-3">
+            <div className="mb-5 rounded-xl border border-slate-100 p-3">
               <div className="mb-3 flex items-center gap-2">
                 <Award className="h-3.5 w-3.5 text-[#0b2d60]" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
@@ -498,14 +472,19 @@ function ProductsPageContent() {
             </div>
 
             {/* Precio — slider S/ */}
-            <div className="mb-5 border border-slate-100 p-3">
+            <div className="mb-5 rounded-xl border border-slate-100 p-3">
               <button
                 type="button"
                 onClick={() => setPriceFilterOpen((v) => !v)}
                 className="mb-1 flex w-full items-center justify-between gap-2"
               >
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-3.5 w-3.5 text-[#0b2d60]" />
+                  <span
+                    className="flex h-3.5 min-w-[14px] items-center justify-center text-[11px] font-black leading-none text-[#0b2d60]"
+                    aria-hidden
+                  >
+                    S/
+                  </span>
                   <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
                     Precio
                   </h3>

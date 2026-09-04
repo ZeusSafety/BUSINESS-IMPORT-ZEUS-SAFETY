@@ -11,12 +11,10 @@ import {
   ChevronDown,
   CircleHelp,
   ClipboardList,
-  Clock,
   Globe,
-  Headphones,
+  Headset,
   Mail,
   Menu,
-  Phone,
   Plane,
   Search,
   ShieldCheck,
@@ -25,9 +23,8 @@ import {
   X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { products } from '@/lib/mockData';
 
 type NavChild = { href: string; label: string; icon: LucideIcon };
 
@@ -65,7 +62,9 @@ const navLinks: NavLink[] = [
   },
 ];
 
-/* ── Nav dropdown (fila 3) ────────────────────────────── */
+const navItemClass =
+  'group relative inline-flex h-[72px] shrink-0 items-center gap-1 whitespace-nowrap px-3 text-[13px] font-bold uppercase tracking-wide transition-colors xl:px-4';
+
 function NavDropdown({
   link,
   active,
@@ -83,42 +82,54 @@ function NavDropdown({
     >
       <button
         type="button"
-        className={`inline-flex h-11 items-center gap-1 whitespace-nowrap px-4 text-[12px] font-bold uppercase tracking-wide transition-all duration-200 xl:px-5 ${
-          active
-            ? 'bg-[#F5C400] text-[#0b2d60]'
-            : 'text-white/90 hover:bg-[#F5C400] hover:text-[#0b2d60]'
+        className={`${navItemClass} ${
+          active ? 'text-[#F5C400]' : 'text-[#0c1427] hover:text-[#F5C400]'
         }`}
         aria-expanded={open}
         aria-haspopup="true"
       >
         {link.label}
         <ChevronDown
-          className={`h-3 w-3 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`h-3.5 w-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           strokeWidth={2.5}
+        />
+        <span
+          aria-hidden
+          className={`absolute bottom-0 left-3 right-3 h-[2px] origin-left bg-[#F5C400] transition-transform duration-200 xl:left-4 xl:right-4 ${
+            active || open ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+          }`}
         />
       </button>
 
       <div
-        className={`absolute left-0 top-full z-50 min-w-[220px] transition-all duration-200 ${
+        className={`absolute left-0 top-full z-50 min-w-[240px] transition-all duration-200 ${
           open
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-1 opacity-0'
         }`}
       >
-        <div className="flex flex-col border border-slate-200 bg-white shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
+        <div className="absolute -top-1 left-0 right-0 h-1" aria-hidden />
+        <div className="overflow-hidden border border-slate-200 bg-white shadow-[0_16px_40px_rgba(11,45,96,0.14)]">
           {link.children.map((child) => {
             const Icon = child.icon;
             return (
               <Link
                 key={child.href}
                 href={child.href}
-                className="group flex items-center gap-2.5 border-b border-slate-100 px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 last:border-b-0 hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                className="group/item relative flex items-center gap-2.5 overflow-hidden border-b border-slate-100 px-5 py-3.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] last:border-b-0"
               >
+                {/* Barrido amarillo izquierda → derecha */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/item:scale-x-100"
+                />
                 <Icon
-                  className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                  className="relative z-10 h-3.5 w-3.5 shrink-0 -translate-x-1.5 opacity-0 transition-all duration-300 ease-out group-hover/item:translate-x-0 group-hover/item:opacity-100 group-hover/item:delay-100"
                   strokeWidth={2.5}
                 />
-                {child.label}
+                <span className="relative z-10 transition-colors duration-200">
+                  {child.label}
+                </span>
               </Link>
             );
           })}
@@ -128,110 +139,6 @@ function NavDropdown({
   );
 }
 
-/* ── Live search con botón SEARCH ─────────────────────── */
-function LiveSearch() {
-  const [query, setQuery] = useState('');
-  const [focused, setFocused] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (q.length < 2) return [];
-    return products
-      .filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q),
-      )
-      .slice(0, 6);
-  }, [query]);
-
-  const showResults = focused && query.trim().length >= 2;
-
-  const handleBlur = useCallback((e: React.FocusEvent) => {
-    if (wrapperRef.current?.contains(e.relatedTarget as Node)) return;
-    setFocused(false);
-  }, []);
-
-  return (
-    <div ref={wrapperRef} className="relative hidden w-full max-w-lg md:block" onBlur={handleBlur}>
-      <div className="flex">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          placeholder="Buscar productos, categorías..."
-          className="h-10 min-w-0 flex-1 border border-r-0 border-slate-300 bg-white px-4 text-sm text-[#0c1427] outline-none placeholder:text-slate-400 transition-colors focus:border-[#F5C400]"
-        />
-        <button
-          type="button"
-          className="flex h-10 items-center gap-1.5 bg-[#F5C400] px-5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-        >
-          <Search className="h-4 w-4" strokeWidth={2.5} />
-          Buscar
-        </button>
-      </div>
-
-      {showResults && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-0.5 max-h-[420px] overflow-y-auto border border-slate-200 bg-white shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
-          {results.length === 0 ? (
-            <div className="px-4 py-6 text-center text-sm text-slate-400">
-              No se encontraron productos para &quot;{query}&quot;
-            </div>
-          ) : (
-            results.map((product) => (
-              <Link
-                key={product.id}
-                href={`/productos/${product.slug}`}
-                onClick={() => {
-                  setQuery('');
-                  setFocused(false);
-                }}
-                className="flex items-center gap-3 border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-[#F5C400]/10"
-              >
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden border border-slate-100 bg-white">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-1"
-                    sizes="56px"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-[#0b2d60]">
-                    {product.name}
-                  </p>
-                  <p className="text-xs text-slate-500">{product.category}</p>
-                </div>
-                <span className="shrink-0 text-sm font-bold text-[#0b2d60]">
-                  S/ {product.price.toFixed(2)}
-                </span>
-              </Link>
-            ))
-          )}
-          {results.length > 0 && (
-            <Link
-              href={`/productos?q=${encodeURIComponent(query)}`}
-              onClick={() => {
-                setQuery('');
-                setFocused(false);
-              }}
-              className="flex items-center justify-center gap-2 bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
-            >
-              Ver todos los resultados
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Main Navbar ──────────────────────────────────────── */
 export function Navbar() {
   const items = useQuoteStore((state) => state.items);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -262,12 +169,10 @@ export function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
-    let lastY = 0;
     const onScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 8);
       setHideTopBar(y > 60);
-      lastY = y;
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -276,11 +181,11 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-shadow duration-300 ${
+      className={`sticky top-0 z-50 w-full bg-white transition-shadow duration-300 ${
         scrolled ? 'shadow-[0_8px_28px_rgba(11,45,96,0.1)]' : 'shadow-none'
       }`}
     >
-      {/* ─── FILA 1: Top bar — se esconde al hacer scroll ─── */}
+      {/* Top bar */}
       <div
         className={`transition-all duration-300 ${
           hideTopBar ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-12 opacity-100'
@@ -289,10 +194,9 @@ export function Navbar() {
         <NavbarTopBar />
       </div>
 
-      {/* ─── FILA 2: Logo + Buscador centrado + Teléfono/Horario + Carrito + CTA ─── */}
+      {/* Header versión anterior: logo + menú + iconos + CTA */}
       <div className="border-b border-slate-200/80 bg-white">
-        <div className="mx-auto flex h-[68px] max-w-[1600px] items-center gap-4 px-6 xl:px-10">
-          {/* Logo */}
+        <div className="mx-auto flex h-[72px] max-w-[1600px] items-center gap-4 px-6 xl:px-10">
           <Link
             href="/"
             className="flex shrink-0 items-center transition-opacity hover:opacity-80"
@@ -300,75 +204,14 @@ export function Navbar() {
             <Image
               src="/Logo de Zeus.png"
               alt="Zeus Safety"
-              width={140}
-              height={44}
+              width={150}
+              height={46}
               priority
-              className="h-10 w-auto object-contain"
+              className="h-11 w-auto object-contain"
             />
           </Link>
 
-          {/* Buscador centrado */}
-          <div className="flex flex-1 justify-center">
-            <LiveSearch />
-          </div>
-
-          {/* Info contacto + Carrito + CTA */}
-          <div className="flex items-center gap-4">
-            {/* Teléfono y horario */}
-            <div className="hidden items-center gap-4 xl:flex">
-              <a
-                href="tel:+51916532849"
-                className="flex items-center gap-2 text-[12px] font-semibold text-[#0b2d60] transition-colors hover:text-[#F5C400]"
-              >
-                <Phone className="h-4 w-4 text-[#F5C400]" strokeWidth={2} />
-                +51 916 532 849
-              </a>
-              <span className="flex items-center gap-2 text-[12px] font-semibold text-[#0b2d60]/70">
-                <Clock className="h-4 w-4 text-[#F5C400]" strokeWidth={2} />
-                Lun–Sáb: 9:00–17:30
-              </span>
-            </div>
-
-            <Link
-              href="/cotizacion"
-              className="relative flex h-10 w-10 items-center justify-center text-[#0c1427] transition-colors hover:text-[#F5C400]"
-              aria-label="Carrito de cotización"
-            >
-              <ShoppingCart className="h-5 w-5" strokeWidth={2} />
-              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F5C400] px-1 text-[10px] font-bold text-[#0b2d60]">
-                {total > 99 ? '99+' : total}
-              </span>
-            </Link>
-
-            <Link
-              href="/cotizacion"
-              className="group ml-1 hidden h-10 items-center gap-2 bg-[#F5C400] px-5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-300 hover:gap-3 hover:bg-[#ffd233] hover:shadow-[0_6px_20px_rgba(245,196,0,0.35)] lg:inline-flex"
-            >
-              <Headphones className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
-              Hablar con un asesor
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.5} />
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen((o) => !o)}
-              className="flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-white lg:hidden"
-              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" strokeWidth={2.5} />
-              ) : (
-                <Menu className="h-5 w-5" strokeWidth={2.5} />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── FILA 3: Nav bar centrada (fondo oscuro, hover fill) ─── */}
-      <div className="hidden bg-[#0b2d60] lg:block">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-center px-6 xl:px-10">
-          <nav className="flex items-center">
+          <nav className="hidden min-w-0 flex-1 items-center gap-0.5 lg:flex xl:gap-1">
             {navLinks.map((link) => {
               const active = isActive(link.href, link.children);
               if (link.children?.length) {
@@ -384,33 +227,80 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`inline-flex h-11 items-center whitespace-nowrap px-4 text-[12px] font-bold uppercase tracking-wide transition-all duration-200 xl:px-5 ${
+                  className={`${navItemClass} ${
                     active
-                      ? 'bg-[#F5C400] text-[#0b2d60]'
-                      : 'text-white/90 hover:bg-[#F5C400] hover:text-[#0b2d60]'
+                      ? 'text-[#F5C400]'
+                      : 'text-[#0c1427] hover:text-[#F5C400]'
                   }`}
                 >
                   {link.label}
+                  <span
+                    aria-hidden
+                    className={`absolute bottom-0 left-3 right-3 h-[2px] origin-left bg-[#F5C400] transition-transform duration-200 xl:left-4 xl:right-4 ${
+                      active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                    }`}
+                  />
                 </Link>
               );
             })}
           </nav>
+
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            <Link
+              href="/productos"
+              className="hidden h-11 w-11 items-center justify-center rounded-full text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400] sm:flex"
+              aria-label="Buscar / Catálogo"
+            >
+              <Search className="h-5 w-5" strokeWidth={2} />
+            </Link>
+
+            <Link
+              href="/cotizacion"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full text-[#0c1427] transition-colors hover:bg-[#F5C400]/15 hover:text-[#F5C400]"
+              aria-label="Carrito de cotización"
+            >
+              <ShoppingCart className="h-5 w-5" strokeWidth={2} />
+              <span className="absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F5C400] px-1 text-[10px] font-bold text-[#0b2d60]">
+                {total > 99 ? '99+' : total}
+              </span>
+            </Link>
+
+            <Link
+              href="/asesores"
+              className="group relative ml-1 hidden h-11 items-center gap-2.5 overflow-hidden rounded-full bg-[#F5C400] px-5 text-[12px] font-bold uppercase tracking-wide text-[#0b2d60] shadow-[0_4px_14px_rgba(245,196,0,0.28)] transition-all duration-300 hover:bg-[#ffd233] hover:shadow-[0_8px_22px_rgba(245,196,0,0.4)] lg:inline-flex"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+              />
+              <Headset
+                className="relative h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+                strokeWidth={2.5}
+              />
+              <span className="relative">Hablar con un asesor</span>
+              <ArrowRight className="relative h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen((o) => !o)}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0b2d60] text-white lg:hidden"
+              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" strokeWidth={2.5} />
+              ) : (
+                <Menu className="h-5 w-5" strokeWidth={2.5} />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ─── Mobile menu ─── */}
+      {/* Mobile */}
       {isMobileMenuOpen && (
         <div className="border-b border-slate-200 bg-white lg:hidden">
           <nav className="mx-auto flex max-w-[1600px] flex-col px-6 py-3">
-            <div className="relative mb-3 md:hidden">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                className="h-10 w-full border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-[#0c1427] outline-none placeholder:text-slate-400 focus:border-[#F5C400] focus:bg-white"
-              />
-            </div>
-
             {navLinks.map((link) => {
               const active = isActive(link.href, link.children);
               if (link.children?.length) {
@@ -432,7 +322,7 @@ export function Navbar() {
                       />
                     </button>
                     {expanded && (
-                      <div className="mb-3 flex flex-col border border-slate-200 bg-white">
+                      <div className="mb-3 overflow-hidden border border-slate-200 bg-white">
                         {link.children.map((child) => {
                           const Icon = child.icon;
                           return (
@@ -440,13 +330,17 @@ export function Navbar() {
                               key={child.href}
                               href={child.href}
                               onClick={() => setIsMobileMenuOpen(false)}
-                              className="group flex items-center justify-center gap-2 border-b border-slate-100 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-colors last:border-b-0 hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                              className="group/item relative flex items-center gap-2 overflow-hidden border-b border-slate-100 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] last:border-b-0"
                             >
+                              <span
+                                aria-hidden
+                                className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/item:scale-x-100"
+                              />
                               <Icon
-                                className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                                className="relative z-10 h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity duration-300 group-hover/item:opacity-100"
                                 strokeWidth={2.5}
                               />
-                              {child.label}
+                              <span className="relative z-10">{child.label}</span>
                             </Link>
                           );
                         })}
@@ -461,7 +355,7 @@ export function Navbar() {
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`border-b border-slate-100 py-3.5 pl-3 text-sm font-bold uppercase tracking-wide transition-colors ${
-                    active ? 'bg-[#F5C400]/10 text-[#F5C400]' : 'text-[#0c1427]'
+                    active ? 'text-[#F5C400]' : 'text-[#0c1427]'
                   }`}
                 >
                   {link.label}
@@ -470,10 +364,11 @@ export function Navbar() {
             })}
 
             <Link
-              href="/cotizacion"
+              href="/asesores"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-3 inline-flex h-11 items-center justify-center bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
+              className="mt-3 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
             >
+              <Headset className="h-4 w-4" strokeWidth={2.5} />
               Hablar con un asesor
             </Link>
           </nav>

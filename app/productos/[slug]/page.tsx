@@ -311,8 +311,8 @@ export default function ProductDetailPage({ params }: Props) {
           {/* Panel de compra */}
           <div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="zeus-stock-badge inline-flex items-center gap-2 bg-emerald-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                <span className="zeus-stock-dot h-2 w-2 bg-emerald-300" />
+              <span className="zeus-stock-badge inline-flex items-center gap-2 rounded-full bg-emerald-600 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                <span className="zeus-stock-dot h-2 w-2 rounded-full bg-emerald-300" />
                 En stock
               </span>
             </div>
@@ -342,7 +342,7 @@ export default function ProductDetailPage({ params }: Props) {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden border border-slate-300">
+              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden rounded-full border border-slate-300">
                 <button
                   type="button"
                   aria-label="Disminuir cantidad"
@@ -367,7 +367,7 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-all duration-200 hover:bg-[#F5C400] hover:text-[#0b2d60] hover:shadow-[0_8px_20px_rgba(11,45,96,0.18)]"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#0b2d60] px-6 text-sm font-bold uppercase tracking-wide text-white transition-all duration-200 hover:bg-[#F5C400] hover:text-[#0b2d60] hover:shadow-[0_8px_20px_rgba(11,45,96,0.18)]"
               >
                 <ShoppingCart className="h-4 w-4 shrink-0" />
                 Agregar a carrito
@@ -378,10 +378,14 @@ export default function ProductDetailPage({ params }: Props) {
               <button
                 type="button"
                 onClick={handleQuoteNow}
-                className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:border-[#0b2d60] hover:bg-white"
+                className="group/quote relative inline-flex h-12 flex-1 items-center justify-center gap-2 overflow-hidden rounded-full border border-slate-300 bg-slate-100 text-sm font-bold uppercase tracking-wide text-[#0b2d60] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400] hover:shadow-[0_6px_18px_rgba(245,196,0,0.35)]"
               >
-                <ClipboardList className="h-4 w-4 shrink-0" />
-                Cotizar ahora
+                <span
+                  aria-hidden
+                  className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/quote:scale-x-100"
+                />
+                <ClipboardList className="relative z-10 h-4 w-4 shrink-0 transition-transform duration-300 group-hover/quote:scale-110" />
+                <span className="relative z-10">Cotizar ahora</span>
               </button>
 
               {product.fichaTecnica ? (
@@ -389,7 +393,7 @@ export default function ProductDetailPage({ params }: Props) {
                   href={product.fichaTecnica}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:bg-[#0b2d60] hover:text-white"
+                  className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-[#0b2d60] bg-white px-4 text-sm font-bold uppercase tracking-wide text-[#0b2d60] transition-all duration-200 hover:bg-[#0b2d60] hover:text-white"
                 >
                   <FileText className="h-4 w-4 shrink-0" />
                   <span className="truncate">Ver ficha técnica</span>

@@ -3,9 +3,9 @@ import { HomeCategoryStrip } from '@/components/sections/home-category-strip';
 import { HomeShippingMarquee } from '@/components/sections/home-shipping-marquee';
 import { HomeFeaturedCategories } from '@/components/sections/home-featured-categories';
 import { HomeFeaturedProducts } from '@/components/sections/home-featured-products';
+import { HomeBestProducts } from '@/components/sections/home-best-products';
 import { HomePromoBanners } from '@/components/sections/home-promo-banners';
 import { HomeDistributorBanner } from '@/components/sections/home-distributor-banner';
-import { HomeBestsellers } from '@/components/sections/home-bestsellers';
 import { HomeCoverageMap } from '@/components/sections/home-coverage-map';
 import { TrustSection } from '@/components/sections/trust';
 import { ImportanteModal } from '@/components/sections/importante-modal';
@@ -17,8 +17,8 @@ export default function Home() {
       <HomeCategoryStrip />
       <HomeShippingMarquee />
       <HomeFeaturedProducts />
+      <HomeBestProducts />
       <HomePromoBanners />
-      <HomeBestsellers />
       <HomeFeaturedCategories />
       <HomeDistributorBanner />
       <HomeCoverageMap />
