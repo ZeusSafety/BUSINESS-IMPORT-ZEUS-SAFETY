@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -14,36 +15,33 @@ import {
   Target,
 } from 'lucide-react';
 
-const missionVision = [
+const pillars = [
   {
     num: '01',
     title: 'Misión',
     description:
-      'Soluciones integrales de seguridad industrial con EPP certificado, asesoría técnica y logística confiable.',
+      'Proporcionar soluciones integrales de seguridad industrial que protejan la vida de los trabajadores con EPP certificado, asesoría técnica y logística confiable.',
     icon: Target,
   },
   {
     num: '02',
     title: 'Visión',
     description:
-      'Ser el referente en seguridad industrial en Latinoamérica por excelencia operativa e innovación.',
+      'Ser el referente líder en seguridad industrial en Latinoamérica por excelencia operativa, innovación y compromiso con entornos laborales más seguros.',
     icon: Eye,
   },
-];
-
-const values = [
   {
     num: '03',
     title: 'Seguridad',
     description:
-      'Estándares globales y auditorías constantes para proteger a tu fuerza laboral en campo.',
+      'Operamos bajo estándares globales y auditorías constantes para proteger a tu fuerza laboral en campo.',
     icon: Shield,
   },
   {
     num: '04',
     title: 'Calidad',
     description:
-      'EPP con certificaciones internacionales, trazabilidad de lotes y cumplimiento en cada entrega.',
+      'EPP certificados internacionalmente con trazabilidad de lotes y cumplimiento normativo en cada entrega.',
     icon: Award,
   },
 ];
@@ -114,12 +112,16 @@ function StatCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay }}
-      className="group relative flex items-center gap-4 border border-[#0b2d60]/20 bg-[#0b2d60] p-4 transition-all hover:border-[#F5C400] hover:shadow-[0_12px_28px_rgba(11,45,96,0.25)] sm:p-5"
+      className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-white/10 bg-[#0b2d60] p-4 shadow-[0_10px_28px_rgba(11,45,96,0.2)] transition-all hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:shadow-[0_14px_32px_rgba(11,45,96,0.28)] sm:p-5"
     >
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-[#F5C400] text-[#0b2d60] sm:h-14 sm:w-14">
+      <span
+        aria-hidden
+        className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400]/15 transition-transform duration-300 ease-out group-hover:scale-x-100"
+      />
+      <span className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] sm:h-14 sm:w-14">
         <Icon className="h-6 w-6" strokeWidth={2.25} />
       </span>
-      <div className="min-w-0">
+      <div className="relative z-10 min-w-0">
         <p className="text-3xl font-black tabular-nums tracking-tight text-white sm:text-4xl">
           {count}
           {suffix}
@@ -128,90 +130,33 @@ function StatCard({
           {label}
         </p>
       </div>
-      <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#F5C400] transition-all duration-300 group-hover:w-full" />
     </motion.div>
   );
 }
 
-function PillarCard({
-  item,
-  index,
-}: {
-  item: (typeof missionVision)[number];
-  index: number;
-}) {
-  const Icon = item.icon;
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.06 }}
-      className="group flex flex-col border border-slate-200/80 bg-white p-5 shadow-[0_6px_20px_rgba(11,45,96,0.04)] transition-shadow hover:border-[#F5C400]/50 hover:shadow-[0_12px_32px_rgba(11,45,96,0.1)] sm:p-6"
-    >
-      <div className="mb-5 flex items-center justify-between">
-        <span className="flex h-10 w-10 items-center justify-center bg-[#F5C400] text-[#0b2d60]">
-          <Icon className="h-5 w-5" strokeWidth={2.25} />
-        </span>
-        <span className="text-[11px] font-bold tracking-widest text-slate-300">
-          {item.num}
-        </span>
-      </div>
-      <h3 className="text-sm font-black uppercase tracking-wide text-[#0b2d60]">
-        {item.title}
-      </h3>
-      <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-500">
-        {item.description}
-      </p>
-      <div className="mt-5 h-0.5 w-8 bg-[#F5C400] transition-all group-hover:w-14" />
-    </motion.article>
-  );
-}
-
-function SectionHeading({
-  label,
-  title,
-  subtitle,
-}: {
-  label: string;
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <div className="mb-6 flex items-center gap-3 sm:mb-7">
-      <span className="hidden h-9 w-1.5 bg-[#F5C400] sm:block" />
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
-          {label}
-        </p>
-        <h3 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
-          {title}
-        </h3>
-        {subtitle && (
-          <p className="mt-0.5 hidden text-xs text-slate-500 sm:block">
-            {subtitle}
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function HomeEmpresa() {
+/** Cabecera amarilla + stats — va arriba de “Protección industrial…” */
+export function AboutEmpresaIntro() {
   const statsRef = useRef<HTMLDivElement>(null);
-  const statsInView = useInView(statsRef, { once: true, amount: 0.4 });
+  const statsInView = useInView(statsRef, { once: true, amount: 0.35 });
 
   return (
-    <section id="empresa" className="scroll-mt-28 overflow-hidden bg-white">
+    <section className="overflow-hidden bg-[#f3f5f8]">
       <div className="bg-[#F5C400]">
-        <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10 lg:flex-row lg:items-end lg:justify-between lg:px-10 xl:px-12">
-          <div className="max-w-xl">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-6 py-8 sm:px-8 sm:py-10 lg:flex-row lg:items-end lg:justify-between lg:px-12 xl:px-16">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45 }}
+            className="max-w-xl"
+          >
             <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-[#0b2d60]/70">
               Quiénes somos
             </p>
             <h2 className="text-2xl font-black uppercase leading-[1.05] tracking-tight text-[#0b2d60] sm:text-3xl">
               Nuestra empresa
             </h2>
+            <div className="mt-2 h-1 w-14 rounded-full bg-[#0b2d60]/35" />
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#0b2d60]/85">
               Combinamos distribución de EPP certificado, asesoría consultiva y
               logística para proyectos de gran escala. Nuestro compromiso:{' '}
@@ -220,30 +165,40 @@ export function HomeEmpresa() {
               </span>
               .
             </p>
-          </div>
+          </motion.div>
 
           <div className="flex flex-wrap gap-3">
             <Link
               href="/productos"
-              className="group inline-flex h-11 items-center gap-2 bg-[#0b2d60] px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#103a7b]"
+              className="group/btn relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-full bg-[#0b2d60] px-6 text-xs font-bold uppercase tracking-wide text-white transition-all hover:shadow-[0_8px_22px_rgba(11,45,96,0.35)]"
             >
-              Ver productos
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              <span
+                aria-hidden
+                className="absolute inset-0 origin-left scale-x-0 bg-white/20 transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+              />
+              <span className="relative z-10">Ver productos</span>
+              <ArrowRight className="relative z-10 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
             </Link>
             <Link
               href="/asesores"
-              className="inline-flex h-11 items-center gap-2 border-2 border-[#0b2d60] px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#0b2d60] hover:text-white"
+              className="group/btn relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-full border-2 border-[#0b2d60] bg-transparent px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-sm"
             >
-              Hablar con un asesor
+              <span
+                aria-hidden
+                className="absolute inset-0 origin-left scale-x-0 bg-[#0b2d60] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+              />
+              <span className="relative z-10 transition-colors group-hover/btn:text-white">
+                Hablar con un asesor
+              </span>
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-12 xl:px-12">
+      <div className="mx-auto max-w-[1600px] px-6 py-6 sm:px-8 lg:px-12 xl:px-16">
         <div
           ref={statsRef}
-          className="mb-12 grid gap-3 sm:grid-cols-3 sm:gap-4 lg:mb-14"
+          className="grid gap-3 sm:grid-cols-3 sm:gap-4"
         >
           {stats.map((stat, i) => (
             <StatCard
@@ -257,28 +212,100 @@ export function HomeEmpresa() {
             />
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
 
-        <SectionHeading
-          label="Propósito"
-          title="Misión y visión"
-          subtitle="El norte que guía cada decisión en Zeus Safety"
-        />
-        <div className="mb-12 grid gap-4 sm:grid-cols-2 lg:mb-14 lg:gap-5">
-          {missionVision.map((item, index) => (
-            <PillarCard key={item.title} item={item} index={index} />
-          ))}
-        </div>
+/** Misión, visión y valores — panel amarillo + grid sobre imagen */
+export function HomeEmpresa() {
+  return (
+    <section id="empresa" className="scroll-mt-28 overflow-hidden bg-[#f3f5f8] py-10 sm:py-12 lg:py-14">
+      <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5 }}
+          className="overflow-hidden rounded-2xl border border-slate-200 shadow-[0_16px_44px_rgba(11,45,96,0.1)] lg:grid lg:grid-cols-[minmax(260px,0.38fr)_minmax(0,1fr)]"
+        >
+          {/* Panel izquierdo amarillo */}
+          <div className="relative flex flex-col justify-center bg-[#F5C400] px-6 py-10 sm:px-8 sm:py-12 lg:px-10">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#0b2d60]/70">
+              Propósito Zeus
+            </p>
+            <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight text-[#0b2d60] sm:text-3xl">
+              Nuestra empresa
+            </h2>
+            <div className="mt-3 h-1 w-14 rounded-full bg-[#0b2d60]/40" />
+            <p className="mt-4 text-sm leading-relaxed text-[#0b2d60]/90">
+              Combinamos distribución de EPP certificado, asesoría consultiva y
+              logística para proyectos de gran escala. Nuestro compromiso es
+              claro: que tu equipo regrese a casa seguro.
+            </p>
+            <Link
+              href="/asesores"
+              className="group/btn relative mt-7 inline-flex h-11 w-fit items-center gap-2 overflow-hidden rounded-full bg-[#0b2d60] px-5 text-xs font-bold uppercase tracking-wide text-white transition-all hover:shadow-[0_8px_22px_rgba(11,45,96,0.35)]"
+            >
+              <span
+                aria-hidden
+                className="absolute inset-0 origin-left scale-x-0 bg-white/20 transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+              />
+              <span className="relative z-10">Leer más</span>
+              <ArrowRight className="relative z-10 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
+            </Link>
+          </div>
 
-        <SectionHeading
-          label="Cultura Zeus"
-          title="Valores"
-          subtitle="Los principios que sostienen nuestra operación diaria"
-        />
-        <div className="grid gap-4 sm:grid-cols-2 lg:gap-5">
-          {values.map((item, index) => (
-            <PillarCard key={item.title} item={item} index={index} />
-          ))}
-        </div>
+          {/* Panel derecho con imagen + pilares */}
+          <div className="relative min-h-[420px] bg-[#0b2d60] p-5 sm:p-7 lg:p-8">
+            <Image
+              src="/zeus2.jpg"
+              alt=""
+              fill
+              className="object-cover object-center opacity-35"
+              sizes="(max-width: 1024px) 100vw, 60vw"
+            />
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-[#0b2d60]/55"
+            />
+
+            <div className="relative z-10 grid gap-4 sm:grid-cols-2 sm:gap-5">
+              {pillars.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.article
+                    key={item.title}
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: index * 0.07 }}
+                    className="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:bg-white/15"
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400]/15 transition-transform duration-300 ease-out group-hover:scale-x-100"
+                    />
+                    <div className="relative z-10 mb-3 flex items-center justify-between">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
+                        <Icon className="h-5 w-5" strokeWidth={2.25} />
+                      </span>
+                      <span className="text-[11px] font-bold tracking-widest text-white/35">
+                        {item.num}
+                      </span>
+                    </div>
+                    <h3 className="relative z-10 text-sm font-black uppercase tracking-wide text-white">
+                      {item.title}
+                    </h3>
+                    <p className="relative z-10 mt-2 text-[13px] leading-relaxed text-white/75">
+                      {item.description}
+                    </p>
+                  </motion.article>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
