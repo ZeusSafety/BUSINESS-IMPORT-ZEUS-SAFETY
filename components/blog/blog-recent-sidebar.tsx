@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import type { BlogPost } from '@/lib/blog-data';
 
 type BlogRecentSidebarProps = {
@@ -18,11 +19,19 @@ export function BlogRecentSidebar({ posts }: BlogRecentSidebarProps) {
           <li key={post.slug}>
             <Link
               href={`/blog/${post.slug}`}
-              className={`block px-5 py-3.5 text-sm leading-snug text-slate-600 transition-colors hover:bg-[#F5C400]/10 hover:text-[#0b2d60] ${
+              className={`group/item relative flex items-center gap-2 overflow-hidden px-5 py-3.5 text-sm leading-snug text-slate-600 transition-colors hover:text-[#0b2d60] ${
                 index < posts.length - 1 ? 'border-b border-slate-100' : ''
               }`}
             >
-              {post.title}
+              <span
+                aria-hidden
+                className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400]/15 transition-transform duration-300 ease-out group-hover/item:scale-x-100"
+              />
+              <span className="relative z-10 min-w-0 flex-1">{post.title}</span>
+              <ArrowRight
+                className="relative z-10 h-3.5 w-3.5 shrink-0 -translate-x-1 text-[#0b2d60] opacity-0 transition-all duration-300 group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                strokeWidth={2.5}
+              />
             </Link>
           </li>
         ))}

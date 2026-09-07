@@ -6,10 +6,10 @@ import {
   ArrowRight,
   BadgeCheck,
   ChevronDown,
+  ClipboardList,
   Clock,
   Headphones,
   MapPin,
-  MessageCircle,
   Phone,
   Send,
   Shield,
@@ -20,7 +20,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IconBox } from '@/components/ui/icon-box';
 import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { FormSelect } from '@/components/ui/form-select';
@@ -78,30 +77,21 @@ const CONTACT_MOTIVOS = [
   { value: 'Otro', label: 'Otro' },
 ];
 
-const ADVISOR_PERKS = [
-  { icon: Zap, label: 'Respuesta inmediata', accent: 'brand' as const },
-  { icon: Headphones, label: 'Asesoría técnica', accent: 'sky' as const },
-  { icon: ShieldCheck, label: 'EPP certificado', accent: 'yellow' as const },
-];
-
 const CTA_FEATURES = [
   {
     icon: Truck,
     title: 'Entrega rápida',
     text: 'Despachos ágiles',
-    accent: 'yellow' as const,
   },
   {
     icon: BadgeCheck,
     title: 'Precios competitivos',
     text: 'Mejor relación valor',
-    accent: 'yellow' as const,
   },
   {
     icon: MapPin,
     title: 'Cobertura nacional',
     text: 'Envíos a todo el Perú',
-    accent: 'yellow' as const,
   },
 ];
 
@@ -232,45 +222,20 @@ export default function AdvisorsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero — solo texto, estilo Blog */}
-      <section className="relative flex h-[240px] items-center justify-center overflow-hidden sm:h-[300px] lg:h-[340px]">
-        <Image
-          src="/inventario.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[#0b2d60]/72" />
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-          <p className="mb-2 text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-            Zeus Safety
-          </p>
-          <h1 className="text-4xl font-black uppercase tracking-wide text-white sm:text-5xl">
-            Contáctanos
-          </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-white/85 sm:text-base">
-            Asesoría técnica, cotizaciones ágiles y EPP industrial listo para tu
-            operación en Perú.
-          </p>
-        </div>
-      </section>
-
-      {/* Asesores — 4 en fila */}
+      {/* Asesores */}
       <section
         id="asesores"
-        className="scroll-mt-28 w-full bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10"
+        className="scroll-mt-28 w-full bg-[#f3f5f8] px-3 py-12 sm:px-4 lg:px-6 lg:py-16 xl:px-8"
       >
         <div className="mx-auto max-w-[1400px]">
           <div className="mb-10 text-center">
-            <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
               Equipo Zeus
             </p>
-            <h2 className="text-2xl font-black tracking-tight text-[#0b2d60] sm:text-3xl">
+            <h2 className="text-2xl font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-3xl">
               Nuestros asesores
             </h2>
-            <div className="mx-auto mt-3 h-[3px] w-14 bg-[#F5C400]" />
+            <div className="mx-auto mt-3 h-1.5 w-14 rounded-full bg-[#F5C400]" />
             <p className="mx-auto mt-3 max-w-xl text-sm text-slate-500">
               Especialistas listos para cotizar y orientarte en EPP industrial.
             </p>
@@ -293,33 +258,16 @@ export default function AdvisorsPage() {
           )}
 
           {!loading && !error && displayedAdvisors.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
-              {displayedAdvisors.map((advisor, index) => (
-                <motion.article
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              {displayedAdvisors.map((advisor) => (
+                <article
                   key={advisor.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group zeus-card flex flex-col overflow-hidden border-[#0b2d60]/10 transition duration-300 hover:-translate-y-1 hover:border-[#F5C400]/40 hover:shadow-[0_18px_44px_rgba(11,45,96,0.14)]"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_32px_rgba(11,45,96,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#0b2d60]/30 hover:shadow-[0_20px_48px_rgba(11,45,96,0.14)]"
                 >
-                  <div className="relative aspect-[4/5] max-h-[300px] overflow-hidden bg-[#0b2d60] sm:max-h-[320px]">
+                  <div className="relative h-[320px] overflow-hidden bg-[#e8eef5] sm:h-[360px]">
                     <span
                       aria-hidden
                       className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute right-0 top-0 z-10 h-9 w-11 bg-[#0b2d60]"
-                      style={{
-                        clipPath: 'polygon(30% 0, 100% 0, 100% 100%, 0 100%)',
-                      }}
-                    />
-                    <span
-                      aria-hidden
-                      className="absolute right-0 top-0 z-10 h-5 w-7 bg-[#F5C400]"
-                      style={{
-                        clipPath: 'polygon(35% 0, 100% 0, 100% 100%, 0 100%)',
-                      }}
                     />
                     {advisor.avatar ? (
                       <img
@@ -328,40 +276,34 @@ export default function AdvisorsPage() {
                         className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-5xl font-black text-white">
+                      <div className="flex h-full items-center justify-center bg-[#0b2d60] text-5xl font-black text-white">
                         {advisor.name.charAt(0)}
                       </div>
                     )}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b2d60] via-[#0b2d60]/90 to-transparent px-3.5 pb-3 pt-12">
-                      <p className="mb-1 inline-flex max-w-full items-center gap-1.5 rounded-md border border-[#F5C400]/30 bg-[#F5C400] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#0b2d60]">
-                        <Phone className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-                        <span className="truncate">{advisor.specialty}</span>
-                      </p>
-                      <h3 className="line-clamp-2 text-sm font-black uppercase leading-tight tracking-wide text-white">
-                        {advisor.name}
-                      </h3>
-                    </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col bg-white p-3.5">
-                    <div className="mb-3 grid grid-cols-3 gap-1.5">
-                      {ADVISOR_PERKS.map((perk) => (
-                        <div
-                          key={perk.label}
-                          className="flex flex-col items-center gap-1.5 rounded-lg border border-slate-100 bg-[#f8fafc] px-1 py-2 text-center transition-colors group-hover:border-[#0b2d60]/15"
-                        >
-                          <IconBox
-                            icon={perk.icon}
-                            accent={perk.accent}
-                            size="sm"
-                            rounded="lg"
-                            className="!rounded-lg"
-                          />
-                          <span className="text-[9px] font-bold uppercase leading-tight tracking-wide text-[#0b2d60]/80">
-                            {perk.label}
-                          </span>
-                        </div>
-                      ))}
+                  <div className="flex flex-1 flex-col border-t border-slate-100 px-5 pb-5 pt-4">
+                    <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#0b2d60]/[0.06] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#0b2d60]">
+                      <Phone className="h-3 w-3 text-[#F5C400]" strokeWidth={2.5} />
+                      {advisor.specialty}
+                    </p>
+                    <h3 className="mt-2.5 line-clamp-2 text-[15px] font-bold uppercase leading-snug tracking-wide text-[#0b2d60]">
+                      {advisor.name}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                      Asesor Zeus Safety · Cotización y orientación en EPP
+                      industrial.
+                    </p>
+
+                    <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-3 text-[11px] font-semibold text-slate-500">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Zap className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.4} />
+                        Respuesta rápida
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <ShieldCheck className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.4} />
+                        EPP certificado
+                      </span>
                     </div>
 
                     {advisor.phone ? (
@@ -369,118 +311,133 @@ export default function AdvisorsPage() {
                         href={`https://wa.me/${advisor.phone}?text=${DEFAULT_WA_MESSAGE}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-auto inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-[10px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A]"
+                        className="group/btn relative mt-4 inline-flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] text-[11px] font-bold uppercase tracking-wide text-white transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(37,211,102,0.4)]"
                       >
-                        <WhatsAppIcon className="h-4 w-4" />
-                        Escribir por WhatsApp
-                        <ArrowRight className="h-3.5 w-3.5 opacity-80" />
+                        <span
+                          aria-hidden
+                          className="absolute inset-0 origin-left scale-x-0 bg-[#20BA5A] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                        />
+                        <WhatsAppIcon className="relative z-10 h-4 w-4" />
+                        <span className="relative z-10">Escribir por WhatsApp</span>
+                        <ArrowRight className="relative z-10 h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                       </a>
                     ) : (
-                      <p className="mt-auto flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-[#f8f9fb] text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                      <p className="mt-4 flex h-11 items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-[#f8f9fb] text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                         <Phone className="h-3.5 w-3.5" />
                         No disponible
                       </p>
                     )}
                   </div>
-                </motion.article>
+                </article>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA servicios — imagen superior recortada + panel contenido */}
-      <section className="relative overflow-hidden bg-[#071f45]">
-        <div className="absolute left-0 top-0 z-10 h-full w-1.5 bg-[#F5C400]" />
+      {/* CTA servicios — imagen visible + panel sólido */}
+      <section className="relative overflow-hidden bg-[#0b2d60]">
+        <div className="absolute left-0 top-0 z-20 h-full w-1.5 bg-[#F5C400]" />
 
-        <div className="mx-auto grid max-w-[1600px] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-          <div className="relative h-[200px] overflow-hidden sm:h-[240px] lg:h-auto lg:min-h-[400px]">
+        <div className="mx-auto grid min-h-[560px] max-w-[1600px] lg:min-h-[640px] lg:grid-cols-2">
+          <div className="relative min-h-[280px] sm:min-h-[360px] lg:min-h-[640px]">
             <Image
               src="/asesores-cta-bg.png"
               alt="Zeus Safety — consulta nuestros servicios"
               fill
               quality={95}
-              sizes="(max-width: 1024px) 100vw, 55vw"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover object-[center_20%] lg:object-[left_center]"
               priority={false}
-              className="object-cover object-[center_top] lg:object-[left_top]"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-[#071f45]/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-[#071f45]/90"
             />
           </div>
 
-          <div className="relative px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12 xl:px-12">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-[#F5C400]">
-              Zeus Safety
-            </p>
-            <h2 className="max-w-lg text-2xl font-black uppercase leading-[1.1] tracking-tight text-white sm:text-3xl lg:text-[2rem]">
-              ¡Consulta ahora los servicios que{' '}
-              <span className="text-[#F5C400]">necesitas!</span>
-            </h2>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/75">
-              Cotiza EPP certificado, recibe asesoría técnica y coordina
-              despachos a nivel nacional con el equipo Zeus Safety.
-            </p>
+          <div className="relative flex items-center bg-[#0b2d60] px-5 py-14 sm:px-8 sm:py-16 lg:px-12 lg:py-20 xl:px-14">
+            <div className="w-full max-w-xl">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+                Zeus Safety
+              </p>
+              <h2 className="text-2xl font-black uppercase leading-[1.12] tracking-tight text-white sm:text-3xl lg:text-[2.4rem]">
+                ¡Consulta ahora los servicios que{' '}
+                <span className="text-[#F5C400]">necesitas!</span>
+              </h2>
+              <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 sm:text-[15px]">
+                Cotiza EPP certificado, recibe asesoría técnica y coordina
+                despachos a nivel nacional con el equipo Zeus Safety.
+              </p>
 
-            <div className="mt-5 grid gap-2 sm:grid-cols-3">
-              {CTA_FEATURES.map((item) => (
-                <div
-                  key={item.title}
-                  className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0b2d60]/60 px-3 py-2.5 sm:flex-col sm:items-start sm:gap-2"
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                {CTA_FEATURES.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.title}
+                      className="rounded-2xl border border-white/15 bg-[#103a7b] px-4 py-4 transition-colors hover:border-[#F5C400]/60"
+                    >
+                      <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5C400] text-[#0b2d60]">
+                        <Icon className="h-4 w-4" strokeWidth={2.4} />
+                      </span>
+                      <p className="text-sm font-bold text-white">{item.title}</p>
+                      <p className="mt-0.5 text-xs text-white/65">{item.text}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-white/85">
+                <span className="inline-flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.4} />
+                  EPP certificado
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Headphones className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.4} />
+                  Asesoría técnica
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.4} />
+                  Respuesta rápida
+                </span>
+              </div>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <a
+                  href="#contacto"
+                  className="group/btn relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F5C400] px-6 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_22px_rgba(245,196,0,0.4)]"
                 >
-                  <IconBox
-                    icon={item.icon}
-                    accent={item.accent}
-                    size="sm"
-                    rounded="lg"
-                    className="!rounded-lg !bg-[#F5C400] !text-[#0b2d60]"
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-white/40 transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
                   />
-                  <div>
-                    <p className="text-xs font-bold text-white">{item.title}</p>
-                    <p className="text-[10px] text-white/60">{item.text}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-white/10 pt-4 text-xs font-semibold text-white/85">
-              <span className="inline-flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                EPP certificado
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Headphones className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                Asesoría técnica
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                Respuesta rápida
-              </span>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
-              <a
-                href="#contacto"
-                className="group zeus-btn-primary inline-flex h-11 items-center justify-center gap-2 px-6 text-xs"
-              >
-                Contáctanos
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </a>
-              <Link
-                href="/cotizacion"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/35 bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:border-[#F5C400] hover:bg-[#F5C400] hover:text-[#0b2d60]"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Arma tu cotización
-              </Link>
+                  <span className="relative z-10">Contáctanos</span>
+                  <ArrowRight className="relative z-10 h-4 w-4 transition-transform group-hover/btn:translate-x-0.5" />
+                </a>
+                <Link
+                  href="/cotizacion"
+                  className="group/btn relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full border border-white/40 bg-transparent px-6 text-xs font-bold uppercase tracking-wide text-white transition-all hover:-translate-y-0.5 hover:border-[#F5C400]"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <ClipboardList
+                    className="relative z-10 h-4 w-4 transition-colors group-hover/btn:text-[#0b2d60]"
+                    strokeWidth={2.4}
+                  />
+                  <span className="relative z-10 transition-colors group-hover/btn:text-[#0b2d60]">
+                    Arma tu cotización
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Formulario de contacto */}
-      <section id="contacto" className="scroll-mt-24 bg-[#f6f6f6] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
+      {/* Contáctanos */}
+      <section
+        id="contacto"
+        className="scroll-mt-24 bg-[#f6f6f6] px-2 py-10 sm:px-3 lg:px-4 lg:py-14 xl:px-6"
+      >
         <div className="mx-auto max-w-5xl">
           <div className="mb-8 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.22em] text-[#F5C400]">
@@ -495,8 +452,8 @@ export default function AdvisorsPage() {
             </p>
           </div>
 
-          <div className="mb-8 grid gap-4 sm:grid-cols-3">
-            <div className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+          <div className="mb-6 grid gap-3 sm:grid-cols-3">
+            <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0b2d60] text-white">
                 <Clock className="h-5 w-5" />
               </span>
@@ -507,7 +464,7 @@ export default function AdvisorsPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
+            <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)]">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0b2d60] text-white">
                 <Headphones className="h-5 w-5" />
               </span>
@@ -524,7 +481,7 @@ export default function AdvisorsPage() {
               href={`https://wa.me/${WA_NUMBER}?text=${DEFAULT_WA_MESSAGE}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-start gap-3.5 rounded-xl bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)] transition-shadow hover:shadow-[0_12px_28px_rgba(11,45,96,0.1)]"
+              className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(11,45,96,0.06)] transition-shadow hover:shadow-[0_12px_28px_rgba(11,45,96,0.1)]"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white">
                 <WhatsAppIcon className="h-5 w-5" />
@@ -542,7 +499,7 @@ export default function AdvisorsPage() {
 
           <form
             onSubmit={handleContactSubmit}
-            className="rounded-xl bg-white p-5 shadow-[0_12px_36px_rgba(11,45,96,0.08)] sm:p-7"
+            className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_36px_rgba(11,45,96,0.08)] sm:p-7"
             noValidate
           >
             <div className="grid gap-4 sm:grid-cols-2">
@@ -597,7 +554,7 @@ export default function AdvisorsPage() {
                   onChange={(e) => setContactMessage(e.target.value)}
                   placeholder="Cuéntanos en qué podemos ayudarte"
                   rows={4}
-                  className="mt-1.5 w-full resize-y rounded-lg border border-slate-200 bg-[#f7f8fa] px-3 py-2.5 text-sm text-[#0c1427] outline-none transition placeholder:text-slate-400 focus:border-[#0b2d60] focus:bg-white focus:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]"
+                  className="mt-1.5 w-full resize-y rounded-xl border border-slate-200 bg-[#f7f8fa] px-3 py-2.5 text-sm text-[#0c1427] outline-none transition placeholder:text-slate-400 focus:border-[#0b2d60] focus:bg-white focus:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]"
                 />
               </label>
             </div>
@@ -605,10 +562,14 @@ export default function AdvisorsPage() {
             <div className="mt-5 flex flex-col items-center gap-2">
               <button
                 type="submit"
-                className="zeus-btn-primary inline-flex h-12 items-center justify-center gap-2 px-8 text-sm"
+                className="group/btn relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full border border-slate-200 bg-white px-8 text-sm font-bold uppercase tracking-wide text-[#0b2d60] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400] hover:shadow-[0_6px_18px_rgba(245,196,0,0.35)]"
               >
-                <Send className="h-4 w-4" />
-                Enviar mensaje
+                <span
+                  aria-hidden
+                  className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                />
+                <Send className="relative z-10 h-4 w-4" strokeWidth={2.4} />
+                <span className="relative z-10">Enviar mensaje</span>
               </button>
               {contactSent && (
                 <p className="text-xs font-medium text-emerald-700">
@@ -630,8 +591,11 @@ export default function AdvisorsPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="border-t border-slate-200 bg-white px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10">
-        <div className="mx-auto max-w-3xl">
+      <section
+        id="faq"
+        className="scroll-mt-24 border-t border-slate-200 bg-white px-2 py-10 sm:px-3 lg:px-4 lg:py-14 xl:px-6"
+      >
+        <div className="mx-auto max-w-5xl">
           <div className="mb-6 text-center">
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#F5C400]">
               Ayuda
@@ -647,7 +611,7 @@ export default function AdvisorsPage() {
               return (
                 <div
                   key={item.q}
-                  className={`overflow-hidden rounded-lg border bg-white transition-colors ${
+                  className={`overflow-hidden rounded-2xl border bg-white transition-colors ${
                     open
                       ? 'border-[#0b2d60]'
                       : 'border-slate-200 hover:border-[#0b2d60]/35'

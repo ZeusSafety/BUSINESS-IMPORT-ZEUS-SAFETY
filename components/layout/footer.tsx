@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowUp,
   Facebook,
@@ -26,6 +27,10 @@ const PHONE_HREF = 'tel:+51916532849';
 const EMAIL = 'zeus.safety2020@gmail.com';
 const ADDRESS = 'Av. Guillermo Dansey 401, C.C Plaza Ferretero Las Malvinas, Lima';
 
+const CTA_PREFIX = '¿Tienes alguna consulta? ';
+const CTA_BOLD = 'Comunícate con un asesor especializado';
+const CTA_FULL = CTA_PREFIX + CTA_BOLD;
+
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -36,6 +41,57 @@ function WhatsAppIcon({ className }: { className?: string }) {
     >
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
     </svg>
+  );
+}
+
+function FooterCtaTypewriter() {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [started, setStarted] = useState(false);
+  const [count, setCount] = useState(0);
+  const done = count >= CTA_FULL.length;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started || done) return;
+    const t = window.setTimeout(() => setCount((c) => c + 1), 28);
+    return () => window.clearTimeout(t);
+  }, [started, count, done]);
+
+  const shown = CTA_FULL.slice(0, count);
+  const prefixLen = Math.min(shown.length, CTA_PREFIX.length);
+  const prefixPart = shown.slice(0, prefixLen);
+  const boldPart = shown.slice(prefixLen);
+
+  return (
+    <p
+      ref={ref}
+      className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-snug text-[#0b2d60] sm:text-[15px] lg:text-base"
+      aria-label={CTA_FULL}
+    >
+      {prefixPart}
+      {boldPart ? <span className="font-black">{boldPart}</span> : null}
+      {!done && (
+        <span
+          aria-hidden
+          className="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-[#0b2d60]/70 align-[-0.1em]"
+        />
+      )}
+    </p>
   );
 }
 
@@ -65,8 +121,8 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-white pt-16 text-slate-100 sm:pt-20">
-      {/* Cinta CTA centrada en el borde blanco / navy */}
+    <footer className="relative bg-[#f3f5f8] pt-16 text-slate-100 sm:pt-20">
+      {/* Cinta CTA centrada en el borde gris / navy */}
       <div className="pointer-events-none absolute inset-x-0 top-16 z-20 flex -translate-y-1/2 justify-center px-4 sm:top-20">
         <div
           className="pointer-events-auto flex w-full max-w-[1120px] items-center justify-between gap-4 bg-[#F5C400] py-5 pl-6 pr-5 shadow-[0_14px_40px_rgba(11,45,96,0.3)] sm:gap-6 sm:py-6 sm:pl-8 sm:pr-6 lg:pl-10 lg:pr-7"
@@ -75,17 +131,12 @@ export function Footer() {
               'polygon(0 0, calc(100% - 52px) 0, 100% 50%, calc(100% - 52px) 100%, 0 100%)',
           }}
         >
-          <p className="min-w-0 flex-1 text-[13px] font-semibold leading-snug text-[#0b2d60] sm:text-[15px] lg:text-base">
-            ¿Tienes alguna consulta?{' '}
-            <span className="font-black">
-              Comunícate con un asesor especializado
-            </span>
-          </p>
+          <FooterCtaTypewriter />
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noreferrer"
-            className="mr-6 inline-flex h-11 shrink-0 items-center gap-2 bg-[#25D366] px-4 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:mr-8 sm:h-12 sm:gap-2.5 sm:px-5 sm:text-xs"
+            className="footer-wa-cta mr-6 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[#25D366] px-5 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:mr-8 sm:h-12 sm:gap-2.5 sm:px-6 sm:text-xs"
           >
             <WhatsAppIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             Atención en línea

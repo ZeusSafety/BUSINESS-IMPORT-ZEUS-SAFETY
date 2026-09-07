@@ -17,7 +17,7 @@ export function Skeleton({ className = '' }: SkeletonProps) {
 
 function LoadingOverlay({ label }: { label: string }) {
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/75 backdrop-blur-[2px]">
+    <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[#f3f5f8]/70 backdrop-blur-[2px]">
       <BrandLoader label={label} />
     </div>
   );
@@ -26,22 +26,22 @@ function LoadingOverlay({ label }: { label: string }) {
 /** Card skeleton alineada al ProductCard del catálogo */
 export function ProductCardSkeleton() {
   return (
-    <div className="flex h-full flex-col overflow-hidden border border-slate-200 bg-white">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="relative aspect-[4/3] bg-slate-50">
-        <Skeleton className="absolute left-0 top-0 h-6 w-24" />
+        <Skeleton className="absolute left-0 top-0 h-6 w-24 rounded-br-xl" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <Skeleton className="h-16 w-16 opacity-60" />
+          <Skeleton className="h-16 w-16 rounded-full opacity-60" />
         </div>
       </div>
       <div className="flex flex-1 flex-col items-center px-3 py-3">
-        <Skeleton className="h-4 w-[80%] max-w-[180px]" />
-        <Skeleton className="mt-2 h-4 w-[55%] max-w-[140px]" />
+        <Skeleton className="h-4 w-[80%] max-w-[180px] rounded-full" />
+        <Skeleton className="mt-2 h-4 w-[55%] max-w-[140px] rounded-full" />
         <div className="mt-3 flex gap-1.5">
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-5 w-24 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
         </div>
-        <Skeleton className="mt-4 h-9 w-[140px]" />
-        <Skeleton className="mt-2 h-10 w-full" />
+        <Skeleton className="mt-4 h-9 w-[140px] rounded-full" />
+        <Skeleton className="mt-2 h-10 w-full rounded-full" />
       </div>
     </div>
   );

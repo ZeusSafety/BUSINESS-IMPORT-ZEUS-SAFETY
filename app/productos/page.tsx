@@ -131,30 +131,43 @@ function ProductsPageContent() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(PRODUCTS_API_URL);
-        
+        const response = await fetch(PRODUCTS_API_URL, {
+          cache: 'no-store',
+        });
+
         if (!response.ok) {
-          throw new Error('Error al cargar los productos');
+          setError(
+            `No se pudo cargar el catálogo (API ${response.status}). Intenta de nuevo en unos minutos.`,
+          );
+          return;
         }
-        
+
         const data = (await response.json()) as ApiProduct[];
+        if (!Array.isArray(data) || data.length === 0) {
+          setError('El catálogo no devolvió productos.');
+          return;
+        }
+
         const catalogProducts = buildCatalogFromApi(data);
         setAllProducts(catalogProducts);
         setProducts(catalogProducts);
-        
-        // Extraer categorías únicas de los productos
+
         const uniqueCategories = Array.from(
           new Set(catalogProducts.map((p) => p.category)),
         ) as string[];
         setCategories(uniqueCategories);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Error de conexión al cargar productos',
+        );
         console.error('Error fetching products:', err);
       } finally {
         setLoading(false);
       }
     }
-    
+
     fetchProducts();
   }, []);
 
@@ -300,11 +313,11 @@ function ProductsPageContent() {
 
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
-      <div className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10">
+      <div className="w-full px-6 py-10 sm:px-8 lg:px-12 lg:py-12 xl:px-16 2xl:px-20">
         {/* Search + columnas */}
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative min-w-0 flex-1">
-            <div className="flex h-12 items-center rounded-xl border border-slate-200 bg-white px-4 transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
+            <div className="flex h-12 items-center rounded-full border border-slate-200 bg-white px-4 shadow-sm transition-colors focus-within:border-[#0b2d60] focus-within:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]">
               <Search className="mr-3 h-4 w-4 shrink-0 text-[#0b2d60]" />
               <Input
                 placeholder="Buscar por nombre, marca o código..."
@@ -334,7 +347,7 @@ function ProductsPageContent() {
 
             <Button
               variant="outline"
-              className="h-12 rounded-xl border-slate-200 lg:hidden"
+              className="h-12 rounded-full border-slate-200 lg:hidden"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
             >
               <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -344,7 +357,7 @@ function ProductsPageContent() {
         </div>
 
         {hasActiveFilters && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border border-[#F5C400]/40 bg-[#fff8db] px-4 py-3">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#F5C400]/40 bg-[#fff8db] px-4 py-3 shadow-sm">
             <div className="flex items-center gap-2 text-sm font-medium text-[#0b2d60]">
               <Filter className="h-4 w-4 text-[#F5C400]" />
               {filteredProducts.length} producto
@@ -354,7 +367,7 @@ function ProductsPageContent() {
             <button
               type="button"
               onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] hover:text-red-600"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-white hover:text-red-600"
             >
               <X className="h-3.5 w-3.5" />
               Limpiar filtros
@@ -365,13 +378,13 @@ function ProductsPageContent() {
         <div className="grid gap-6 lg:grid-cols-[240px_1fr] xl:grid-cols-[260px_1fr]">
           {/* Sidebar */}
           <aside
-            className={`h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24 ${
+            className={`h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_28px_rgba(11,45,96,0.06)] lg:sticky lg:top-24 ${
               showMobileFilters ? 'block' : 'hidden lg:block'
             }`}
           >
             <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
-              <h2 className="flex items-center gap-2 text-base font-bold text-[#0c1427]">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0b2d60] text-white">
+              <h2 className="flex items-center gap-2.5 text-base font-bold text-[#0b2d60]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0b2d60] text-[#F5C400]">
                   <Filter className="h-4 w-4" />
                 </span>
                 Filtros
@@ -379,7 +392,7 @@ function ProductsPageContent() {
               <button
                 type="button"
                 onClick={() => setShowMobileFilters(false)}
-                className="lg:hidden"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 lg:hidden"
                 aria-label="Cerrar filtros"
               >
                 <X className="h-4 w-4 text-slate-500" />
@@ -387,47 +400,59 @@ function ProductsPageContent() {
             </div>
 
             {/* Top products */}
-            <div className="mb-5 rounded-xl border border-slate-100 p-3">
+            <div className="mb-4 rounded-2xl border border-slate-100 bg-[#f7f8fa] p-3.5">
               <div className="mb-3 flex items-center gap-2">
-                <Star className="h-3.5 w-3.5 fill-[#F5C400] text-[#F5C400]" />
-                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5C400]/20">
+                  <Star className="h-3.5 w-3.5 fill-[#F5C400] text-[#F5C400]" />
+                </span>
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                   Productos top
                 </h3>
               </div>
-              <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={showTopProducts}
-                  onChange={(e) => setShowTopProducts(e.target.checked)}
-                  className="h-4 w-4 accent-[#F5C400]"
-                />
+              <label className="group/chk flex cursor-pointer items-center gap-3 text-sm text-slate-700">
+                <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={showTopProducts}
+                    onChange={(e) => setShowTopProducts(e.target.checked)}
+                    className="peer absolute inset-0 z-10 cursor-pointer opacity-0"
+                  />
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-slate-300 bg-white transition-colors peer-checked:border-[#F5C400] peer-checked:bg-[#F5C400] peer-focus-visible:ring-2 peer-focus-visible:ring-[#0b2d60]/20" />
+                  <span className="pointer-events-none absolute h-2 w-2 scale-0 rounded-full bg-[#0b2d60] transition-transform peer-checked:scale-100" />
+                </span>
                 Solo productos estrella
               </label>
             </div>
 
-            {/* Categories — sin scroll feo: mostrar todas o Ver más */}
-            <div className="mb-5 rounded-xl border border-slate-100 p-3">
+            {/* Categories */}
+            <div className="mb-4 rounded-2xl border border-slate-100 bg-[#f7f8fa] p-3.5">
               <div className="mb-3 flex items-center gap-2">
-                <Package className="h-3.5 w-3.5 text-[#0b2d60]" />
-                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b2d60]/10">
+                  <Package className="h-3.5 w-3.5 text-[#0b2d60]" />
+                </span>
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                   Categorías
                 </h3>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {(showAllCategories
                   ? categories
                   : categories.slice(0, 6)
                 ).map((cat) => (
                   <label
                     key={cat}
-                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
+                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 transition-colors hover:text-[#0b2d60]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(cat)}
-                      onChange={() => toggleCategory(cat)}
-                      className="h-4 w-4 shrink-0 accent-[#F5C400]"
-                    />
+                    <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(cat)}
+                        onChange={() => toggleCategory(cat)}
+                        className="peer absolute inset-0 z-10 cursor-pointer opacity-0"
+                      />
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-slate-300 bg-white transition-colors peer-checked:border-[#F5C400] peer-checked:bg-[#F5C400]" />
+                      <span className="pointer-events-none absolute h-2 w-2 scale-0 rounded-full bg-[#0b2d60] transition-transform peer-checked:scale-100" />
+                    </span>
                     <span className="leading-snug">{cat}</span>
                   </label>
                 ))}
@@ -436,56 +461,65 @@ function ProductsPageContent() {
                 <button
                   type="button"
                   onClick={() => setShowAllCategories((v) => !v)}
-                  className="mt-3 text-xs font-bold uppercase tracking-wide text-[#F5C400] transition-colors hover:text-[#0b2d60]"
+                  className="group/btn relative mt-3.5 inline-flex items-center gap-1.5 overflow-hidden rounded-full border border-[#F5C400]/50 bg-white px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:border-[#F5C400]"
                 >
-                  {showAllCategories
-                    ? 'Ver menos'
-                    : `Ver más (${categories.length - 6})`}
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <span className="relative z-10">
+                    {showAllCategories
+                      ? 'Ver menos'
+                      : `Ver más (${categories.length - 6})`}
+                  </span>
                 </button>
               )}
             </div>
 
             {/* Certifications */}
-            <div className="mb-5 rounded-xl border border-slate-100 p-3">
+            <div className="mb-4 rounded-2xl border border-slate-100 bg-[#f7f8fa] p-3.5">
               <div className="mb-3 flex items-center gap-2">
-                <Award className="h-3.5 w-3.5 text-[#0b2d60]" />
-                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b2d60]/10">
+                  <Award className="h-3.5 w-3.5 text-[#0b2d60]" />
+                </span>
+                <h3 className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                   Certificación
                 </h3>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {certifications.map((cert) => (
                   <label
                     key={cert}
-                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 hover:text-[#0b2d60]"
+                    className="flex cursor-pointer items-center gap-3 text-sm text-slate-700 transition-colors hover:text-[#0b2d60]"
                   >
-                    <input
-                      type="checkbox"
-                      checked={selectedCertifications.includes(cert)}
-                      onChange={() => toggleCertification(cert)}
-                      className="h-4 w-4 accent-[#F5C400]"
-                    />
+                    <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedCertifications.includes(cert)}
+                        onChange={() => toggleCertification(cert)}
+                        className="peer absolute inset-0 z-10 cursor-pointer opacity-0"
+                      />
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-slate-300 bg-white transition-colors peer-checked:border-[#F5C400] peer-checked:bg-[#F5C400]" />
+                      <span className="pointer-events-none absolute h-2 w-2 scale-0 rounded-full bg-[#0b2d60] transition-transform peer-checked:scale-100" />
+                    </span>
                     {cert}
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Precio — slider S/ */}
-            <div className="mb-5 rounded-xl border border-slate-100 p-3">
+            {/* Precio */}
+            <div className="mb-4 rounded-2xl border border-slate-100 bg-[#f7f8fa] p-3.5">
               <button
                 type="button"
                 onClick={() => setPriceFilterOpen((v) => !v)}
                 className="mb-1 flex w-full items-center justify-between gap-2"
               >
                 <div className="flex items-center gap-2">
-                  <span
-                    className="flex h-3.5 min-w-[14px] items-center justify-center text-[11px] font-black leading-none text-[#0b2d60]"
-                    aria-hidden
-                  >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b2d60]/10 text-[11px] font-black text-[#0b2d60]">
                     S/
                   </span>
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-[#0c1427]">
+                  <h3 className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
                     Precio
                   </h3>
                 </div>
@@ -499,9 +533,9 @@ function ProductsPageContent() {
               {priceFilterOpen && (
                 <div className="pt-3">
                   <div className="relative h-6">
-                    <div className="absolute left-0 right-0 top-1/2 h-1 -translate-y-1/2 bg-slate-200" />
+                    <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-slate-200" />
                     <div
-                      className="absolute top-1/2 h-1 -translate-y-1/2 bg-[#0b2d60]"
+                      className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#0b2d60]"
                       style={{
                         left: `${
                           ((priceMin - priceBounds.min) /
@@ -543,7 +577,7 @@ function ProductsPageContent() {
                       aria-label="Precio máximo"
                     />
                   </div>
-                  <p className="mt-2 text-center text-sm text-slate-500">
+                  <p className="mt-2 text-center text-sm font-semibold text-[#0b2d60]">
                     S/ {priceMin.toFixed(2)} – S/ {priceMax.toFixed(2)}
                   </p>
                 </div>
@@ -554,7 +588,7 @@ function ProductsPageContent() {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="inline-flex h-10 w-full items-center justify-center gap-2 border border-slate-200 text-xs font-bold uppercase tracking-wide text-slate-600 transition-colors hover:border-red-300 hover:text-red-600"
+                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white text-xs font-bold uppercase tracking-wide text-slate-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
               >
                 <X className="h-3.5 w-3.5" />
                 Limpiar filtros
@@ -567,16 +601,16 @@ function ProductsPageContent() {
             {loading ? (
               <ProductGridSkeleton count={8} columns={4} />
             ) : error ? (
-              <div className="border border-red-200 bg-white p-12 text-center">
+              <div className="rounded-2xl border border-red-200 bg-white p-10 text-center shadow-sm sm:p-12">
                 <Package className="mx-auto mb-4 h-10 w-10 text-red-500" />
-                <h3 className="mb-2 text-lg font-bold text-[#0c1427]">
+                <h3 className="mb-2 text-lg font-bold text-[#0b2d60]">
                   Error al cargar productos
                 </h3>
-                <p className="mb-4 text-sm text-slate-600">{error}</p>
+                <p className="mb-5 text-sm text-slate-600">{error}</p>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
-                  className="inline-flex h-10 items-center border border-red-300 px-4 text-xs font-bold uppercase text-red-600"
+                  className="inline-flex h-11 items-center rounded-full border border-red-300 bg-white px-5 text-xs font-bold uppercase tracking-wide text-red-600 transition-colors hover:bg-red-50"
                 >
                   Reintentar
                 </button>

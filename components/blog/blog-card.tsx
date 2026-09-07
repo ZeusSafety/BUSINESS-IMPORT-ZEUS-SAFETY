@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { blogPosts } from '@/lib/blog-data';
 
 type BlogCardProps = {
@@ -100,8 +100,8 @@ export function BlogCard({
           <span className="relative z-10 transition-colors duration-300 group-hover/btn:text-[#0b2d60]">
             Ver más
           </span>
-          <ChevronRight
-            className="relative z-10 h-3.5 w-3.5 transition-colors duration-300 group-hover/btn:text-[#0b2d60]"
+          <ArrowRight
+            className="relative z-10 h-3.5 w-3.5 transition-all duration-300 group-hover/btn:translate-x-1 group-hover/btn:text-[#0b2d60]"
             strokeWidth={2.5}
           />
         </Link>

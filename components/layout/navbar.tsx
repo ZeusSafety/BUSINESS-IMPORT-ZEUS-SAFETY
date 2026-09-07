@@ -54,6 +54,7 @@ const navLinks: NavLink[] = [
     href: '/asesores',
     label: 'Contáctanos',
     children: [
+      { href: '/asesores#asesores', label: 'Nuestros asesores', icon: Users },
       { href: '/asesores#contacto', label: 'Escríbenos', icon: Mail },
       { href: '/asesores#faq', label: 'Preguntas frecuentes', icon: CircleHelp },
       { href: '/libro-de-reclamaciones', label: 'Libro de reclamaciones', icon: BookOpen },

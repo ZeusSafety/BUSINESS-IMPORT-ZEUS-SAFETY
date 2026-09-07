@@ -16,10 +16,10 @@ export default function Home() {
       <HeroSection />
       <HomeCategoryStrip />
       <HomeShippingMarquee />
+      <HomeFeaturedCategories />
       <HomeFeaturedProducts />
       <HomeBestProducts />
       <HomePromoBanners />
-      <HomeFeaturedCategories />
       <HomeDistributorBanner />
       <HomeCoverageMap />
       <TrustSection />

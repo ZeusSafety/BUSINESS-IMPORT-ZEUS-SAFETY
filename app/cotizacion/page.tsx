@@ -1,14 +1,14 @@
 'use client';
- 
+
 import { FormEvent, useMemo, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   Building2,
   Calculator,
   FileText,
   Mail,
+  Package,
   Phone,
   Plus,
   ShoppingCart,
@@ -125,83 +125,73 @@ export default function QuotePage() {
   };
 
   const fieldClass =
-    'h-11 rounded-none border-slate-200 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
+    'h-11 rounded-full border-slate-200 px-4 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
 
   const fieldError = (ok: boolean) =>
     touched && !ok ? 'border-red-400 focus:border-red-500' : '';
 
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
-      <section className="relative flex h-[220px] items-center justify-center overflow-hidden sm:h-[260px]">
-        <Image
-          src="/7349177659b6abcf56fff60d36e7bff0.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[#0b2d60]/78" />
-        <div className="relative z-10 mx-auto max-w-3xl px-4 text-center">
-          <p className="mb-2 text-sm font-bold uppercase tracking-[0.28em] text-[#F5C400]">
+      <motion.div
+        className="w-full px-6 py-10 sm:px-8 lg:px-12 lg:py-12 xl:px-16 2xl:px-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
             Cotización
           </p>
-          <h1 className="text-4xl font-black uppercase tracking-wide text-white sm:text-5xl">
-            Arma tu <span className="text-[#F5C400]">pedido</span>
+          <h1 className="mt-1 text-2xl font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-3xl">
+            Arma tu pedido
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base">
-            Revisa cantidades y envía tu solicitud. Un asesor responde en
-            minutos.
-          </p>
+          <div className="mt-2 h-1.5 w-14 rounded-full bg-[#F5C400]" />
+          {items.length === 0 && (
+            <p className="mt-2 text-sm text-slate-500">
+              Agrega productos desde el catálogo para cotizar.
+            </p>
+          )}
         </div>
-      </section>
 
-      <motion.div
-        className="w-full px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-10"
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] xl:gap-8">
-          <div className="space-y-4">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,460px)] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(380px,480px)]">
+          <div className="min-w-0 space-y-4">
             {items.length === 0 ? (
               <QuoteEmptyState variant="page" />
             ) : (
               <>
-                <div className="relative overflow-hidden border border-slate-200 bg-white">
-                  <span
-                    aria-hidden
-                    className="absolute left-0 top-0 h-full w-1 bg-[#F5C400]"
-                  />
-                  <div className="flex items-center justify-between gap-3 border-b border-[#F5C400] px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
-                        <ShoppingCart className="h-5 w-5" strokeWidth={2.3} />
-                      </span>
-                      <div>
-                        <h2 className="text-lg font-bold text-[#0c1427]">
-                          Productos en cotización
-                        </h2>
-                        <p className="text-xs text-slate-500">
-                          {totalItems}{' '}
-                          {totalItems === 1 ? 'unidad' : 'unidades'} ·{' '}
-                          {items.length}{' '}
-                          {items.length === 1 ? 'producto' : 'productos'}
-                        </p>
-                      </div>
-                    </div>
+                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_8px_24px_rgba(11,45,96,0.05)]">
+                  <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0b2d60] text-[#F5C400]">
+                      <ShoppingCart className="h-4 w-4" strokeWidth={2.3} />
+                    </span>
+                    <h2 className="truncate text-base font-bold text-[#0b2d60]">
+                      Productos en cotización
+                    </h2>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-[#f4f7fb] px-3 py-1.5 text-xs font-semibold text-[#0b2d60]">
+                      <Package className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
+                      <span className="font-black">{totalItems}</span>
+                      {totalItems === 1 ? 'unidad' : 'unidades'}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-[#f4f7fb] px-3 py-1.5 text-xs font-semibold text-[#0b2d60]">
+                      <ShoppingCart className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
+                      <span className="font-black">{items.length}</span>
+                      {items.length === 1 ? 'producto' : 'productos'}
+                    </span>
                     <button
                       type="button"
                       onClick={clear}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500 transition-colors hover:text-red-600"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                       Vaciar todo
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="grid gap-4">
                   {items.map((item) => (
                     <QuoteLineItem
                       key={item.id}
@@ -216,39 +206,47 @@ export default function QuotePage() {
 
                 <Link
                   href="/productos"
-                  className="inline-flex h-11 items-center gap-2 border border-slate-200 bg-white px-4 text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
+                  className="group/btn relative inline-flex h-11 items-center gap-2 overflow-hidden rounded-full border border-slate-200 bg-white px-5 text-xs font-bold uppercase tracking-wide text-[#0b2d60] shadow-sm transition-all hover:border-[#F5C400] hover:shadow-[0_6px_18px_rgba(245,196,0,0.25)]"
                 >
-                  <Plus className="h-3.5 w-3.5" />
-                  Seguir agregando productos
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#F5C400] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <Plus className="relative z-10 h-3.5 w-3.5" />
+                  <span className="relative z-10">Seguir agregando productos</span>
                 </Link>
               </>
             )}
           </div>
 
-          <div className="lg:sticky lg:top-24 lg:h-fit">
+          <div className="lg:sticky lg:top-28 lg:self-start">
             <form
               onSubmit={handleSubmit}
-              className="relative overflow-hidden border border-slate-200 bg-white shadow-[0_12px_32px_rgba(11,45,96,0.08)]"
+              className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_32px_rgba(11,45,96,0.1)]"
               noValidate
             >
-              <span
-                aria-hidden
-                className="absolute left-0 top-0 z-10 h-full w-1 bg-[#F5C400]"
-              />
-              <div className="relative border-b border-[#F5C400] bg-[#0b2d60] px-5 py-4 sm:px-6">
-                <h2 className="text-lg font-black text-white">
+              <div className="relative overflow-hidden bg-[#0b2d60] px-6 py-6 sm:px-7">
+                <span
+                  aria-hidden
+                  className="absolute bottom-0 left-0 h-1 w-full bg-[#F5C400]"
+                />
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#F5C400]">
+                  Formulario
+                </p>
+                <h2 className="mt-1 text-xl font-black text-white">
                   Datos para la cotización
                 </h2>
-                <p className="mt-1 text-xs text-white/65">
-                  Completa los campos para enviar
+                <p className="mt-1.5 text-xs text-white/65">
+                  Completa los campos para enviar tu pedido
                 </p>
               </div>
 
-              <div className="space-y-4 p-5 sm:p-6">
+              <div className="space-y-4 p-5 sm:p-6 sm:pt-5">
                 <div>
                   <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                     <User className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                    Nombre y apellido *
+                    Nombre y apellido
+                    <span className="text-[#F5C400]">*</span>
                   </label>
                   <Input
                     required
@@ -261,7 +259,8 @@ export default function QuotePage() {
                 <div>
                   <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                     <Building2 className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                    Empresa *
+                    Empresa
+                    <span className="text-[#F5C400]">*</span>
                   </label>
                   <Input
                     required
@@ -275,7 +274,8 @@ export default function QuotePage() {
                   <div>
                     <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                       <FileText className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                      RUC / ID fiscal *
+                      RUC / ID
+                      <span className="text-[#F5C400]">*</span>
                     </label>
                     <Input
                       required
@@ -288,7 +288,8 @@ export default function QuotePage() {
                   <div>
                     <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                       <Phone className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                      Teléfono *
+                      Teléfono
+                      <span className="text-[#F5C400]">*</span>
                     </label>
                     <Input
                       required
@@ -302,7 +303,8 @@ export default function QuotePage() {
                 <div>
                   <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                     <Mail className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                    Correo electrónico *
+                    Correo electrónico
+                    <span className="text-[#F5C400]">*</span>
                   </label>
                   <Input
                     required
@@ -314,14 +316,14 @@ export default function QuotePage() {
                   />
                 </div>
 
-                <div className="relative overflow-hidden border border-slate-200 bg-[#f4f7fb] p-4">
+                <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-[#f4f7fb] p-4">
                   <span
                     aria-hidden
-                    className="absolute left-0 top-0 h-full w-0.5 bg-[#F5C400]"
+                    className="absolute left-0 top-0 h-full w-1.5 bg-[#F5C400]"
                   />
                   <div className="mb-2 flex items-center justify-between gap-3 pl-2">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center bg-[#0b2d60] text-[#F5C400]">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0b2d60] text-[#F5C400]">
                         <Calculator className="h-4 w-4" strokeWidth={2.25} />
                       </span>
                       <span className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
@@ -352,27 +354,41 @@ export default function QuotePage() {
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:bg-[#ffd233] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-[0_6px_18px_rgba(245,196,0,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
                 >
-                  <Mail className="h-4 w-4" />
-                  Cotizar por correo
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-white/40 transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <Mail className="relative z-10 h-4 w-4" />
+                  <span className="relative z-10">Cotizar por correo</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={openWhatsApp}
                   disabled={!canSubmit}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-all hover:shadow-[0_6px_18px_rgba(37,211,102,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
                 >
-                  <WhatsAppIcon className="h-4 w-4" />
-                  Cotizar por WhatsApp
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#20BA5A] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <WhatsAppIcon className="relative z-10 h-4 w-4" />
+                  <span className="relative z-10">Cotizar por WhatsApp</span>
                 </button>
 
                 <Link
                   href="/productos"
-                  className="inline-flex h-11 w-full items-center justify-center border border-slate-200 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-colors hover:border-[#0b2d60]"
+                  className="group/btn relative inline-flex h-11 w-full items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:border-[#0b2d60]"
                 >
-                  Seguir cotizando
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 bg-[#0b2d60] transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                  />
+                  <span className="relative z-10 transition-colors group-hover/btn:text-white">
+                    Seguir cotizando
+                  </span>
                 </Link>
               </div>
             </form>

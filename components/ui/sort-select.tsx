@@ -93,7 +93,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
             role="listbox"
             aria-label="Ordenar productos"
             style={menuStyle}
-            className="overflow-hidden border border-slate-200 bg-white shadow-[0_20px_48px_rgba(11,45,96,0.22)]"
+            className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_20px_48px_rgba(11,45,96,0.18)]"
           >
             {SORT_OPTIONS.map((option) => {
               const selected = option.value === value;
@@ -105,10 +105,10 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
                       onChange(option.value);
                       setOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm transition-colors ${
+                    className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition-colors ${
                       selected
                         ? 'bg-[#0b2d60] font-semibold text-white'
-                        : 'text-[#0c1427] hover:bg-[#F5C400]/25 hover:text-[#0b2d60]'
+                        : 'text-[#0c1427] hover:bg-[#F5C400]/20 hover:text-[#0b2d60]'
                     }`}
                   >
                     <span>{option.label}</span>
@@ -132,7 +132,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-11 w-full items-center justify-between gap-3 border bg-white px-3.5 text-left text-sm font-medium transition-colors ${
+        className={`flex h-11 w-full items-center justify-between gap-3 rounded-full border bg-white px-4 text-left text-sm font-medium shadow-sm transition-colors ${
           open
             ? 'border-[#0b2d60] text-[#0b2d60] shadow-[0_0_0_3px_rgba(11,45,96,0.08)]'
             : 'border-slate-200 text-[#0c1427] hover:border-[#0b2d60]/40'
