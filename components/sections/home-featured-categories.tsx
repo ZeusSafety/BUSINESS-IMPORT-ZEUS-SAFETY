@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type FeaturedItem = {
   title: string;
   href: string;
   image: string;
-  imageFit?: 'cover' | 'contain';
+  bg?: string;
 };
 
 const featured: FeaturedItem[] = [
@@ -37,28 +38,49 @@ const featured: FeaturedItem[] = [
     title: 'Protección Corporal',
     href: '/productos?categoria=Protecci%C3%B3n%20Corporal',
     image: '/producto-imagen-home/proteccion-corporal-zeus.png',
-    imageFit: 'contain',
+    bg: 'bg-[#0b2d60]',
   },
   {
     title: 'Protección Visual',
     href: '/productos?categoria=Protecci%C3%B3n%20Visual',
     image: '/producto-imagen-home/proteccion-visual-zeus.png',
-    imageFit: 'contain',
+    bg: 'bg-[#0b2d60]',
   },
 ];
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.14,
+      delayChildren: 0.06,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: -48 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
 
 export function HomeFeaturedCategories() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   const updateArrows = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    const hasOverflow = el.scrollWidth > el.clientWidth + 2;
-    setCanPrev(hasOverflow && el.scrollLeft > 4);
+    const overflow = el.scrollWidth > el.clientWidth + 2;
+    setHasOverflow(overflow);
+    setCanPrev(overflow && el.scrollLeft > 4);
     setCanNext(
-      hasOverflow && el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+      overflow && el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
     );
   };
 
@@ -81,13 +103,13 @@ export function HomeFeaturedCategories() {
     const el = scrollerRef.current;
     if (!el) return;
     const card = el.querySelector<HTMLElement>('[data-home-feat-cat]');
-    const step = (card?.offsetWidth ?? 320) + 20;
+    const step = (card?.offsetWidth ?? 420) + 16;
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
   return (
-    <section className="bg-[#f3f5f8] py-10 sm:py-12 lg:py-14">
-      <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
+    <section className="bg-[#f3f5f8] py-10 sm:py-12 lg:pb-8 lg:pt-16">
+      <div className="mx-auto max-w-[1680px] px-5 sm:px-8 lg:px-10 xl:px-14">
         <div className="mb-8 text-center sm:mb-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">
             Variedad de productos
@@ -97,67 +119,77 @@ export function HomeFeaturedCategories() {
             <span className="text-[#F5C400]">categorías</span> de seguridad
             industrial
           </h2>
-          <div className="mx-auto mt-3 h-1 w-14 rounded-sm bg-[#F5C400]" />
+          <div className="mx-auto mt-3 h-1 w-14 bg-[#F5C400]" />
         </div>
 
-        <div className="relative">
-          <div
+        <div className="relative px-6 sm:px-8">
+          <motion.div
             ref={scrollerRef}
-            className="flex gap-5 overflow-x-auto scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-6 [&::-webkit-scrollbar]:hidden"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.15 }}
+            className="flex items-start gap-3 overflow-x-auto scroll-smooth pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
           >
             {featured.map((item) => (
-              <Link
+              <motion.div
                 key={item.href}
+                variants={cardVariants}
                 data-home-feat-cat
-                href={item.href}
-                aria-label={item.title}
-                className="group relative w-[min(85vw,340px)] shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_8px_24px_rgba(11,45,96,0.07)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F5C400]/60 hover:shadow-[0_18px_40px_rgba(11,45,96,0.16)] sm:w-[320px] lg:w-[calc((100%-3.75rem)/3)] xl:w-[calc((100%-5rem)/4)]"
+                className="w-[min(92vw,460px)] shrink-0 sm:w-[420px] lg:w-[calc((100%-1.5rem)/2)] xl:w-[calc((100%-2.5rem)/3)]"
               >
-                <span
-                  aria-hidden
-                  className="absolute inset-0 z-20 origin-left scale-x-0 bg-[#F5C400]/12 transition-transform duration-300 ease-out group-hover:scale-x-100"
-                />
-
-                <div
-                  className={`relative aspect-[4/5] overflow-hidden sm:aspect-[3/4] ${
-                    item.imageFit === 'contain' ? 'bg-[#0b2d60]' : 'bg-slate-50'
+                <Link
+                  href={item.href}
+                  aria-label={item.title}
+                  className={`group relative block w-full overflow-hidden border border-slate-300 shadow-[0_10px_28px_rgba(11,45,96,0.1)] transition-shadow duration-300 hover:border-[#F5C400] hover:shadow-[0_18px_40px_rgba(11,45,96,0.18)] ${
+                    item.bg ?? 'bg-white'
                   }`}
                 >
                   <Image
                     src={item.image}
                     alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 85vw, (max-width: 1280px) 320px, 25vw"
-                    className={`transition-transform duration-500 ease-out group-hover:scale-[1.03] ${
-                      item.imageFit === 'contain'
-                        ? 'object-contain p-6 sm:p-8'
-                        : 'object-contain object-center p-2 sm:p-3'
-                    }`}
+                    width={800}
+                    height={1000}
+                    sizes="(max-width: 640px) 88vw, (max-width: 1280px) 360px, 25vw"
+                    className="h-auto w-full transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                     quality={95}
+                    onLoadingComplete={updateArrows}
                   />
-                </div>
-              </Link>
-            ))}
-          </div>
 
-          <button
-            type="button"
-            onClick={() => scrollBy(-1)}
-            disabled={!canPrev}
-            aria-label="Categorías anteriores"
-            className="absolute left-0 top-1/2 z-30 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#0b2d60] shadow-md transition-all hover:border-[#F5C400] hover:bg-[#F5C400] disabled:pointer-events-none disabled:opacity-0"
-          >
-            <ChevronLeft className="h-5 w-5" strokeWidth={2.25} />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollBy(1)}
-            disabled={!canNext}
-            aria-label="Siguientes categorías"
-            className="absolute right-0 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#0b2d60] shadow-md transition-all hover:border-[#F5C400] hover:bg-[#F5C400] disabled:pointer-events-none disabled:opacity-0"
-          >
-            <ChevronRight className="h-5 w-5" strokeWidth={2.25} />
-          </button>
+                  {/* Barrido L→R */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 z-10 origin-left scale-x-0 bg-[#F5C400]/12 transition-transform duration-300 ease-out group-hover:scale-x-100"
+                  />
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {hasOverflow && (
+            <>
+              <button
+                type="button"
+                onClick={() => scrollBy(-1)}
+                disabled={!canPrev}
+                aria-label="Categorías anteriores"
+                className="zeus-arrow-btn absolute left-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#0b2d60] text-white hover:bg-[#103a7b] disabled:pointer-events-none disabled:opacity-35 sm:h-12 sm:w-12"
+                style={{ '--arrow-hover-x': '-3px' } as CSSProperties}
+              >
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollBy(1)}
+                disabled={!canNext}
+                aria-label="Siguientes categorías"
+                className="zeus-arrow-btn absolute right-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#F5C400] text-[#0b2d60] hover:bg-[#ffd233] disabled:pointer-events-none disabled:opacity-35 sm:h-12 sm:w-12"
+                style={{ '--arrow-hover-x': '3px' } as CSSProperties}
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </section>

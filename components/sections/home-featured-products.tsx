@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -37,7 +37,7 @@ function useVisibleCount() {
 }
 
 const AUTO_PLAY_MS = 5000;
-const GAP_PX = 12;
+const GAP_PX = 14;
 
 export function HomeFeaturedProducts() {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -145,85 +145,77 @@ export function HomeFeaturedProducts() {
   return (
     <section
       id="productos-destacados"
-      className="scroll-mt-24 bg-[#f4f6f9] py-6 sm:py-8"
+      className="scroll-mt-24 bg-[#f3f5f8] py-10 sm:py-12 lg:py-14"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="mx-auto max-w-[1600px] px-2 sm:px-3 lg:px-5 xl:px-6">
-        {loading ? (
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            <div className="flex min-h-[360px] items-center justify-center px-5 py-10">
-              <BrandLoader label="Cargando destacados" />
-            </div>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-400">
-            No hay productos destacados disponibles.
-          </div>
-        ) : (
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
-            {/* Encabezado */}
-            <div className="flex items-center justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.03] to-transparent px-4 py-4 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-3">
-                <span className="hidden h-9 w-1.5 rounded-full bg-[#F5C400] sm:block" />
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
-                    Selección Zeus
-                  </p>
-                  <h2 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
-                    Productos destacados
-                  </h2>
-                </div>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
-                {products.length > visibleCount && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={prev}
-                      aria-label="Anterior"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-                    >
-                      <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={next}
-                      aria-label="Siguiente"
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] transition-colors hover:bg-[#ffd233]"
-                    >
-                      <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
-                    </button>
-                  </>
-                )}
-                <Link
-                  href="/productos"
-                  className="group hidden items-center gap-2.5 rounded-full bg-[#F5C400] py-2 pl-4 pr-2 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:bg-[#ffd233] hover:shadow-[0_4px_16px_rgba(245,196,0,0.35)] sm:inline-flex"
-                >
-                  Ver catálogo
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60]">
-                    <ArrowRight className="h-3.5 w-3.5 animate-[bounceX_1s_ease-in-out_infinite]" />
-                  </span>
-                </Link>
+      <div className="mx-auto max-w-[1680px] px-5 sm:px-8 lg:px-10 xl:px-14">
+        <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_12px_40px_rgba(11,45,96,0.08)]">
+          {/* Encabezado */}
+          <div className="flex flex-col gap-4 border-b border-slate-100 bg-gradient-to-r from-[#0b2d60]/[0.04] via-white to-[#F5C400]/[0.06] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 lg:px-8">
+            <div className="flex items-center gap-3">
+              <span className="hidden h-10 w-1.5 rounded-full bg-[#F5C400] sm:block" />
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+                  Selección Zeus
+                </p>
+                <h2 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
+                  Productos destacados
+                </h2>
               </div>
             </div>
 
-            {/* Carrusel */}
-            <div className="relative px-3 py-4 sm:px-4 sm:py-5 lg:px-6">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(11,45,96,0.03)_0%,transparent_55%)]"
-              />
+            <div className="flex shrink-0 items-center gap-2.5">
+              {products.length > visibleCount && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prev}
+                    aria-label="Anterior"
+                    className="zeus-arrow-btn flex h-10 w-10 items-center justify-center rounded-full bg-[#0b2d60] text-white hover:bg-[#103a7b]"
+                    style={{ '--arrow-hover-x': '-3px' } as CSSProperties}
+                  >
+                    <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={next}
+                    aria-label="Siguiente"
+                    className="zeus-arrow-btn flex h-10 w-10 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] hover:bg-[#ffd233]"
+                    style={{ '--arrow-hover-x': '3px' } as CSSProperties}
+                  >
+                    <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
+                  </button>
+                </>
+              )}
+              <Link
+                href="/productos"
+                className="group/btn relative hidden items-center gap-2 overflow-hidden rounded-full bg-[#F5C400] py-2.5 pl-4 pr-2.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-[0_4px_16px_rgba(245,196,0,0.35)] sm:inline-flex"
+              >
+                <span
+                  aria-hidden
+                  className="absolute inset-0 origin-left scale-x-0 bg-white/35 transition-transform duration-300 ease-out group-hover/btn:scale-x-100"
+                />
+                <span className="relative z-10">Ver catálogo</span>
+                <span className="relative z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[#0b2d60] text-[#F5C400]">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </Link>
+            </div>
+          </div>
 
-              <div className="relative">
-                {products.length > visibleCount && (
-                  <>
-                    <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-5 bg-gradient-to-r from-white to-transparent sm:w-8" />
-                    <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-5 bg-gradient-to-l from-white to-transparent sm:w-8" />
-                  </>
-                )}
-
+          {/* Contenido */}
+          <div className="px-4 py-5 sm:px-6 sm:py-6 lg:px-7">
+            {loading ? (
+              <div className="flex min-h-[320px] items-center justify-center">
+                <BrandLoader label="Cargando destacados" />
+              </div>
+            ) : products.length === 0 ? (
+              <p className="py-16 text-center text-slate-400">
+                No hay productos destacados disponibles.
+              </p>
+            ) : (
+              <>
                 <div ref={containerRef} className="relative overflow-hidden">
                   <motion.div
                     className="flex items-stretch"
@@ -234,7 +226,7 @@ export function HomeFeaturedProducts() {
                     {products.map((product) => (
                       <div
                         key={product.groupSlug}
-                        className="shrink-0 py-0.5"
+                        className="shrink-0"
                         style={{
                           width: `calc((100% - ${(visibleCount - 1) * GAP_PX}px) / ${visibleCount})`,
                         }}
@@ -244,46 +236,46 @@ export function HomeFeaturedProducts() {
                     ))}
                   </motion.div>
                 </div>
-              </div>
 
-              {totalPages > 1 && (
-                <div className="relative mt-6 space-y-3 border-t border-slate-100 pt-5">
-                  <div className="h-0.5 w-full overflow-hidden bg-slate-100">
-                    <div
-                      className="h-full bg-[#F5C400] transition-none"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => goTo(i)}
-                        aria-label={`Página ${i + 1}`}
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          i === currentIndex
-                            ? 'w-8 bg-[#0b2d60]'
-                            : 'w-2.5 bg-slate-300 hover:bg-slate-400'
-                        }`}
+                {totalPages > 1 && (
+                  <div className="mt-6 space-y-3 border-t border-slate-100 pt-5">
+                    <div className="h-0.5 w-full overflow-hidden bg-slate-100">
+                      <div
+                        className="h-full bg-[#F5C400] transition-none"
+                        style={{ width: `${progress}%` }}
                       />
-                    ))}
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => goTo(i)}
+                          aria-label={`Página ${i + 1}`}
+                          className={`h-2.5 rounded-full transition-all duration-300 ${
+                            i === currentIndex
+                              ? 'w-8 bg-[#0b2d60]'
+                              : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="mt-4 flex justify-center sm:hidden">
-                <Link
-                  href="/productos"
-                  className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60]"
-                >
-                  Ver catálogo
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </div>
+                <div className="mt-4 flex justify-center sm:hidden">
+                  <Link
+                    href="/productos"
+                    className="group inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#0b2d60]"
+                  >
+                    Ver catálogo
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
