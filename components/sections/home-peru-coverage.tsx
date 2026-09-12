@@ -1,28 +1,35 @@
 'use client';
 
 import { useInView } from 'framer-motion';
-import Image from 'next/image';
 import { useEffect, useId, useRef, useState } from 'react';
+import {
+  AirplaneTilt,
+  Headset,
+  MapPin,
+  MedalMilitary,
+  SealPercent,
+  Truck,
+} from '@phosphor-icons/react';
 import mapData from '@/data/peru-map-data.json';
 
 const benefits = [
   {
-    image: '/segurida-removebg-preview.png',
+    icon: MedalMilitary,
     title: 'Garantía de calidad',
     description: 'EPP certificado y confiable.',
   },
   {
-    image: '/envios-nacionales-removebg-preview.png',
+    icon: Truck,
     title: 'Envíos nacionales',
     description: 'Despacho a todo el Perú.',
   },
   {
-    image: '/monitoreo-removebg-preview.png',
+    icon: Headset,
     title: 'Asesoría personalizada',
     description: 'Equipo experto por industria.',
   },
   {
-    image: '/descuentos-removebg-preview.png',
+    icon: SealPercent,
     title: 'Precios mayoristas',
     description: 'Condiciones por volumen.',
   },
@@ -129,19 +136,6 @@ function spokePath(dest: { x: number; y: number }) {
   const mx = (LIMA.x + dest.x) / 2 + (dest.y - LIMA.y) * 0.12;
   const my = (LIMA.y + dest.y) / 2 - (dest.x - LIMA.x) * 0.12;
   return `M${LIMA.x} ${LIMA.y} Q${mx.toFixed(1)} ${my.toFixed(1)} ${dest.x} ${dest.y}`;
-}
-
-function PlaneMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-    </svg>
-  );
 }
 
 export function HomePeruCoverage() {
@@ -291,30 +285,26 @@ export function HomePeruCoverage() {
       ref={ref}
       className="relative scroll-mt-24 overflow-hidden bg-[#f4f6f9]"
     >
-      <div className="relative mx-auto w-full max-w-[1600px] px-4 py-10 sm:px-6 lg:px-10 lg:py-12 xl:px-12">
-        <div className="mb-7 sm:mb-8">
-          <div className="flex items-center gap-3">
-            <span className="hidden h-9 w-1.5 bg-[#F5C400] sm:block" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
-                Entrega a tiempo
-              </p>
-              <h3 className="text-lg font-black uppercase tracking-[0.04em] text-[#0b2d60] sm:text-xl">
-                Cobertura nacional de envíos
-              </h3>
-              <p className="mt-1 max-w-2xl text-xs text-slate-500 sm:text-sm">
-                Desde nuestro hub en Lima despachamos a todo el Perú. Selecciona
-                una ciudad en el mapa y cotiza tu envío de EPP.
-              </p>
-            </div>
-          </div>
+      <div className="relative mx-auto w-full max-w-[1600px] px-4 py-12 sm:px-6 lg:px-8 lg:py-14 xl:px-10">
+        <div className="mb-8 text-center sm:mb-10">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
+            Entrega a tiempo
+          </p>
+          <h3 className="mt-2 text-xl font-black tracking-tight text-[#0b2d60] sm:text-2xl lg:text-[1.75rem]">
+            Cobertura nacional de envíos
+          </h3>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-[15px]">
+            Desde nuestro hub en Lima despachamos a todo el Perú. Selecciona
+            una ciudad en el mapa y cotiza tu envío de EPP.
+          </p>
+          <div className="mx-auto mt-4 h-1.5 w-14 rounded-full bg-[#F5C400]" />
         </div>
 
-        <div className="mx-auto flex w-full max-w-[1100px] flex-col items-stretch gap-5 lg:flex-row lg:gap-5">
-          <div className="w-full min-w-0 flex-1 lg:max-w-[520px]">
-            <div className="relative overflow-hidden rounded-xl border border-[#0b2d60]/15 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
-              <div className="pointer-events-none absolute left-3 top-3 z-10">
-                <div className="border border-white/15 bg-[#071f45]/95 px-3 py-2">
+        <div className="mx-auto flex w-full flex-col items-stretch gap-4 lg:flex-row lg:gap-5">
+          <div className="w-full min-w-0 flex-1">
+            <div className="relative overflow-hidden rounded-[1.35rem] border border-[#0b2d60]/12 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)]">
+              <div className="pointer-events-none absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
+                <div className="rounded-xl border border-white/15 bg-[#071f45]/95 px-3 py-2">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#F5C400]">
                     {phase === 'pulse'
                       ? 'Hub'
@@ -334,7 +324,7 @@ export function HomePeruCoverage() {
                 </div>
               </div>
 
-              <div className="relative mx-auto aspect-[520/780] w-full">
+              <div className="relative mx-auto aspect-[4/5] w-full max-h-[720px] sm:aspect-[5/6] lg:aspect-[4/5] xl:max-h-[760px]">
                 <svg
                   viewBox={`0 0 ${VB_W} ${VB_H}`}
                   className="absolute inset-0 h-full w-full"
@@ -475,43 +465,51 @@ export function HomePeruCoverage() {
                 </svg>
 
                 <div
-                  className="pointer-events-none absolute left-0 top-0 h-full w-full"
+                  className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden"
                   aria-hidden
                 >
-                  <div
-                    className="absolute"
-                    style={{
-                      left: `${(flying.x / VB_W) * 100}%`,
-                      top: `${(flying.y / VB_H) * 100}%`,
-                      transform: `translate(-50%, -50%) rotate(${planeAngle}deg)`,
-                    }}
-                  >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] shadow-[0_10px_28px_rgba(0,0,0,0.45)] ring-[3px] ring-white sm:h-12 sm:w-12">
-                      <PlaneMark className="h-6 w-6 sm:h-7 sm:w-7" />
-                    </span>
-                  </div>
+                  {(phase === 'out' || phase === 'back') && (
+                    <div
+                      className="absolute transition-[left,top] duration-75 ease-linear"
+                      style={{
+                        left: `${(flying.x / VB_W) * 100}%`,
+                        top: `${(flying.y / VB_H) * 100}%`,
+                        transform: `translate(-50%, -50%) rotate(${planeAngle}deg)`,
+                      }}
+                    >
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5C400] text-[#0b2d60] shadow-[0_6px_16px_rgba(0,0,0,0.4)] ring-2 ring-white sm:h-9 sm:w-9">
+                        <AirplaneTilt size={18} weight="fill" />
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
               {cityMeta.map((city) => {
                 const active = activeCity === city.id;
                 const lit = reached.has(city.id);
                 const quoted = quoteCity === city.id;
+                const selected = active || quoted;
                 return (
                   <button
                     key={city.id}
                     type="button"
                     onClick={() => flyToCity(city.id)}
-                    className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide transition-colors ${
-                      active || quoted
-                        ? 'bg-[#F5C400] text-[#0b2d60]'
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide transition-colors ${
+                      selected
+                        ? 'bg-[#F5C400] text-[#0b2d60] shadow-[0_4px_14px_rgba(245,196,0,0.35)]'
                         : lit
                           ? 'bg-[#0b2d60] text-white'
-                          : 'border border-slate-200 bg-[#f8fafc] text-slate-500 hover:border-[#0b2d60]/30'
+                          : 'border border-slate-200 bg-white text-slate-500 hover:border-[#0b2d60]/30 hover:text-[#0b2d60]'
                     }`}
                   >
+                    <MapPin
+                      size={13}
+                      weight={selected || lit ? 'fill' : 'bold'}
+                      className="shrink-0"
+                    />
                     {city.label}
                   </button>
                 );
@@ -519,7 +517,7 @@ export function HomePeruCoverage() {
             </div>
           </div>
 
-          <aside className="flex w-full flex-col border border-[#0b2d60]/15 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)] lg:w-[440px] lg:shrink-0">
+          <aside className="flex w-full flex-col overflow-hidden rounded-[1.35rem] border border-[#0b2d60]/12 bg-[#0b2d60] shadow-[0_16px_40px_rgba(11,45,96,0.12)] lg:w-[min(42%,480px)] lg:shrink-0">
             <div className="border-b border-white/10 px-6 py-5">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
                 Por qué Zeus
@@ -589,7 +587,7 @@ export function HomePeruCoverage() {
               <button
                 type="button"
                 onClick={openQuoteWhatsApp}
-                className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 bg-[#25D366] px-4 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#1ebe57]"
+                className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#1ebe57]"
               >
                 <WhatsAppIcon className="h-4 w-4" />
                 Cotizar envío
@@ -609,40 +607,39 @@ function BenefitCard({
   item: (typeof benefits)[number];
   unlocked: boolean;
 }) {
+  const Icon = item.icon;
+
   return (
     <article
-      className={`flex items-center gap-4 border px-4 py-4 transition-all duration-300 sm:gap-4 sm:px-5 sm:py-4 ${
+      className={`group/card flex items-center gap-4 rounded-2xl border px-4 py-3.5 transition-all duration-300 sm:gap-4 sm:px-5 sm:py-4 ${
         unlocked
-          ? 'border-[#F5C400] bg-white opacity-100 shadow-[0_6px_18px_rgba(0,0,0,0.18)]'
-          : 'border-white/15 bg-white/[0.07] opacity-80'
+          ? 'border-[#F5C400]/55 bg-[#071f45] shadow-[0_8px_22px_rgba(0,0,0,0.2)]'
+          : 'border-white/12 bg-white/[0.06]'
       }`}
     >
-      <div
-        className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full p-2 ring-2 sm:h-16 sm:w-16 ${
-          unlocked
-            ? 'bg-[#f8fafc] ring-[#F5C400]'
-            : 'bg-white/10 ring-white/25'
-        }`}
-      >
-        <Image
-          src={item.image}
-          alt=""
-          width={64}
-          height={64}
-          className="h-full w-full object-contain"
-        />
-      </div>
+      <span className="zeus-stat-ring relative flex h-14 w-14 shrink-0 items-center justify-center transition-transform duration-300 group-hover/card:scale-105 sm:h-16 sm:w-16">
+        <span aria-hidden className="zeus-stat-ring__border" />
+        <span
+          className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-11 sm:w-11 ${
+            unlocked
+              ? 'bg-[#F5C400] text-[#0b2d60]'
+              : 'bg-white/10 text-[#F5C400]'
+          }`}
+        >
+          <Icon size={22} weight="duotone" />
+        </span>
+      </span>
       <div className="min-w-0 flex-1 pr-1">
         <h4
           className={`text-xs font-black uppercase leading-snug tracking-wide sm:text-sm ${
-            unlocked ? 'text-[#0b2d60]' : 'text-white/85'
+            unlocked ? 'text-white' : 'text-white/70'
           }`}
         >
           {item.title}
         </h4>
         <p
           className={`mt-1 text-xs leading-relaxed sm:text-[13px] ${
-            unlocked ? 'text-slate-500' : 'text-white/50'
+            unlocked ? 'text-white/70' : 'text-white/45'
           }`}
         >
           {item.description}

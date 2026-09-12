@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -49,11 +49,26 @@ export default function QuotePage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [touched, setTouched] = useState(false);
+  const [totalFlash, setTotalFlash] = useState<'up' | 'down' | null>(null);
+  const prevTotalRef = useRef<number | null>(null);
 
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
   );
+
+  useEffect(() => {
+    if (prevTotalRef.current === null) {
+      prevTotalRef.current = total;
+      return;
+    }
+    if (total === prevTotalRef.current) return;
+    const dir = total > prevTotalRef.current ? 'up' : 'down';
+    prevTotalRef.current = total;
+    setTotalFlash(dir);
+    const t = window.setTimeout(() => setTotalFlash(null), 500);
+    return () => window.clearTimeout(t);
+  }, [total]);
 
   const formValid = useMemo(() => {
     return (
@@ -125,7 +140,7 @@ export default function QuotePage() {
   };
 
   const fieldClass =
-    'h-11 rounded-full border-slate-200 px-4 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
+    'h-11 rounded-xl border-slate-200 px-3.5 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
 
   const fieldError = (ok: boolean) =>
     touched && !ok ? 'border-red-400 focus:border-red-500' : '';
@@ -222,18 +237,18 @@ export default function QuotePage() {
           <div className="lg:sticky lg:top-28 lg:self-start">
             <form
               onSubmit={handleSubmit}
-              className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_32px_rgba(11,45,96,0.1)]"
+              className="relative overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-[0_10px_32px_rgba(11,45,96,0.1)]"
               noValidate
             >
               <div className="relative overflow-hidden bg-[#0b2d60] px-6 py-6 sm:px-7">
                 <span
                   aria-hidden
-                  className="absolute bottom-0 left-0 h-1 w-full bg-[#F5C400]"
+                  className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-[#0b2d60] via-[#F5C400] to-[#0b2d60]"
                 />
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#F5C400]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#F5C400]">
                   Formulario
                 </p>
-                <h2 className="mt-1 text-xl font-black text-white">
+                <h2 className="mt-1 text-xl font-black tracking-tight text-white">
                   Datos para la cotización
                 </h2>
                 <p className="mt-1.5 text-xs text-white/65">
@@ -253,7 +268,7 @@ export default function QuotePage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej. Ana Pérez"
-                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(name.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(name.trim().length > 1)}`}
                   />
                 </div>
                 <div>
@@ -267,7 +282,7 @@ export default function QuotePage() {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Razón social"
-                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(company.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(company.trim().length > 1)}`}
                   />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -282,7 +297,7 @@ export default function QuotePage() {
                       value={ruc}
                       onChange={(e) => setRuc(e.target.value)}
                       placeholder="12345678901"
-                      className={`${fieldClass} bg-[#f7f8fa] ${fieldError(ruc.trim().length >= 8)}`}
+                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError(ruc.trim().length >= 8)}`}
                     />
                   </div>
                   <div>
@@ -296,7 +311,7 @@ export default function QuotePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+51 999 999 999"
-                      className={`${fieldClass} bg-[#f7f8fa] ${fieldError(phone.trim().length >= 6)}`}
+                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError(phone.trim().length >= 6)}`}
                     />
                   </div>
                 </div>
@@ -312,32 +327,64 @@ export default function QuotePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="correo@empresa.com"
-                    className={`${fieldClass} bg-[#f7f8fa] ${fieldError(isValidEmail(email))}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(isValidEmail(email))}`}
                   />
                 </div>
 
-                <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-[#f4f7fb] p-4">
+                <div
+                  className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
+                    totalFlash === 'up'
+                      ? 'border-emerald-300 bg-emerald-50'
+                      : totalFlash === 'down'
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-[#0b2d60]/10 bg-[#f3f5f8]'
+                  }`}
+                >
                   <span
                     aria-hidden
-                    className="absolute left-0 top-0 h-full w-1.5 bg-[#F5C400]"
+                    className={`absolute left-0 top-0 h-full w-1.5 transition-colors duration-300 ${
+                      totalFlash === 'up'
+                        ? 'bg-emerald-500'
+                        : totalFlash === 'down'
+                          ? 'bg-red-500'
+                          : 'bg-[#F5C400]'
+                    }`}
                   />
-                  <div className="mb-2 flex items-center justify-between gap-3 pl-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0b2d60] text-[#F5C400]">
-                        <Calculator className="h-4 w-4" strokeWidth={2.25} />
-                      </span>
-                      <span className="text-xs font-bold uppercase tracking-wide text-[#0b2d60]">
-                        Total referencial
-                      </span>
-                    </div>
-                    <span className="text-2xl font-black text-[#0b2d60]">
-                      S/ {total.toFixed(2)}
+
+                  <div className="flex items-center gap-3 px-4 py-3.5 pl-5">
+                    <span
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+                        totalFlash === 'up'
+                          ? 'bg-emerald-500 text-white'
+                          : totalFlash === 'down'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-[#0b2d60] text-[#F5C400]'
+                      }`}
+                    >
+                      <Calculator className="h-5 w-5" strokeWidth={2.25} />
                     </span>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                        Total referencial
+                      </p>
+                      <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+                        Monto estimado según tu pedido
+                      </p>
+                    </div>
+
+                    <p
+                      className={`shrink-0 text-2xl font-black tabular-nums transition-all duration-300 ${
+                        totalFlash === 'up'
+                          ? 'scale-105 text-emerald-600'
+                          : totalFlash === 'down'
+                            ? 'scale-105 text-red-600'
+                            : 'scale-100 text-[#0b2d60]'
+                      }`}
+                    >
+                      S/ {total.toFixed(2)}
+                    </p>
                   </div>
-                  <p className="pl-2 text-[11px] leading-relaxed text-slate-500">
-                    Los montos finales se ajustan según volumen, disponibilidad
-                    y condiciones comerciales.
-                  </p>
                 </div>
 
                 {touched && !formValid && (

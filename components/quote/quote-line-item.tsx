@@ -43,7 +43,7 @@ export function QuoteLineItem({
 
   const qtyControl = (
     <div
-      className={`inline-flex h-9 items-center overflow-hidden rounded-full border bg-white transition-colors duration-300 ${
+      className={`inline-flex h-9 items-center overflow-hidden rounded-xl border bg-white transition-colors duration-300 ${
         qtyFlash === 'up'
           ? 'border-emerald-400'
           : qtyFlash === 'down'
@@ -143,7 +143,15 @@ export function QuoteLineItem({
             <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-2">
               {qtyControl}
               <div className="text-right">
-                <p className="text-sm font-black text-[#0b2d60]">
+                <p
+                  className={`text-sm font-black transition-colors duration-300 ${
+                    qtyFlash === 'up'
+                      ? 'text-emerald-600'
+                      : qtyFlash === 'down'
+                        ? 'text-red-600'
+                        : 'text-[#0b2d60]'
+                  }`}
+                >
                   S/ {lineTotal.toFixed(2)}
                 </p>
                 <p className="text-[10px] text-slate-500">
@@ -158,84 +166,97 @@ export function QuoteLineItem({
   }
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:shadow-[0_14px_36px_rgba(11,45,96,0.12)] sm:px-5">
+    <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:shadow-[0_14px_36px_rgba(11,45,96,0.12)] sm:px-5">
       <span
         aria-hidden
         className="absolute left-0 top-0 h-full w-1 bg-[#F5C400] opacity-70 transition-opacity group-hover:opacity-100"
       />
 
-      <div className="flex items-center gap-3 sm:gap-5">
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-[#f4f7fb] transition-transform duration-300 group-hover:scale-[1.02] sm:h-24 sm:w-24">
-          {imageSrc ? (
-            <Image
-              src={imageSrc}
-              alt={item.name}
-              fill
-              className="object-contain p-1.5"
-              sizes="96px"
-              unoptimized
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <Package className="h-7 w-7 text-slate-300" />
-            </div>
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <Link
-            href={`/productos?categoria=${encodeURIComponent(item.category)}`}
-            className="mb-1 inline-block rounded-md bg-[#0b2d60] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
-          >
-            {item.category}
-          </Link>
-          <Link
-            href={`/productos/${item.slug}`}
-            className="line-clamp-2 block text-sm font-bold leading-snug text-[#0b2d60] transition-colors group-hover:text-[#0a2552] sm:text-[15px]"
-          >
-            {item.name}
-          </Link>
-        </div>
-
-        <div className="hidden shrink-0 sm:block">
-          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-            Cantidad
-          </p>
-          {qtyControl}
-        </div>
-
-        <div className="hidden shrink-0 text-center md:block">
-          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-            Precio u.
-          </p>
-          <p className="text-sm font-bold text-[#0b2d60]">
-            S/ {item.price.toFixed(2)}
-          </p>
-        </div>
-
-        <div className="hidden shrink-0 text-right lg:block">
-          <p className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-            Subtotal
-          </p>
-          <p className="text-lg font-black text-[#0b2d60]">
-            S/ {lineTotal.toFixed(2)}
-          </p>
-        </div>
-
-        <div className="ml-auto flex shrink-0 flex-col items-end gap-2 sm:ml-0 sm:flex-row sm:items-center sm:gap-3">
-          <div className="sm:hidden">{qtyControl}</div>
-          <div className="text-right lg:hidden">
-            <p className="text-base font-black text-[#0b2d60]">
-              S/ {lineTotal.toFixed(2)}
-            </p>
-            <p className="text-[10px] text-slate-500 md:hidden">
-              S/ {item.price.toFixed(2)} c/u
-            </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-[#f4f7fb] transition-transform duration-300 group-hover:scale-[1.02] sm:h-24 sm:w-24">
+            {imageSrc ? (
+              <Image
+                src={imageSrc}
+                alt={item.name}
+                fill
+                className="object-contain p-1.5"
+                sizes="96px"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <Package className="h-7 w-7 text-slate-300" />
+              </div>
+            )}
           </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2 sm:block">
+              <div className="min-w-0">
+                <Link
+                  href={`/productos?categoria=${encodeURIComponent(item.category)}`}
+                  className="mb-1 inline-block rounded-md bg-[#0b2d60] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#F5C400] hover:text-[#0b2d60]"
+                >
+                  {item.category}
+                </Link>
+                <Link
+                  href={`/productos/${item.slug}`}
+                  className="line-clamp-2 block text-sm font-bold leading-snug text-[#0b2d60] transition-colors group-hover:text-[#0a2552] sm:text-[15px]"
+                >
+                  {item.name}
+                </Link>
+              </div>
+              <button
+                type="button"
+                onClick={onRemove}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 sm:hidden"
+                aria-label={`Eliminar ${item.name}`}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-3 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-100 bg-[#f8fafc] sm:flex-none sm:min-w-[320px] lg:min-w-[360px]">
+            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-2.5 sm:px-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Cantidad
+              </p>
+              {qtyControl}
+            </div>
+            <div className="flex flex-col items-center justify-center gap-1 px-2 py-2.5 sm:px-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Precio u.
+              </p>
+              <p className="text-sm font-bold text-[#0b2d60]">
+                S/ {item.price.toFixed(2)}
+              </p>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-1 px-2 py-2.5 sm:px-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                Subtotal
+              </p>
+              <p
+                className={`text-base font-black transition-all duration-300 ${
+                  qtyFlash === 'up'
+                    ? 'scale-110 text-emerald-600'
+                    : qtyFlash === 'down'
+                      ? 'scale-110 text-red-600'
+                      : 'scale-100 text-[#0b2d60]'
+                }`}
+              >
+                S/ {lineTotal.toFixed(2)}
+              </p>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={onRemove}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 sm:flex"
             aria-label={`Eliminar ${item.name}`}
           >
             <Trash2 className="h-3.5 w-3.5" />

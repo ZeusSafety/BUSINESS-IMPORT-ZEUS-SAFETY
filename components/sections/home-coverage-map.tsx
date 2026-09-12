@@ -99,9 +99,9 @@ const cities: City[] = [
   },
 ];
 
-/** Mapa colorido y moderno (Carto Voyager) */
+/** Tiles libres sin API key (Carto ahora exige apikey) */
 const MAP_TILES =
-  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}';
 
 type LeafletBundle = {
   MapContainer: ComponentType<any>;
@@ -175,7 +175,11 @@ function MapReady({
 }) {
   const map = useMap();
   useEffect(() => {
-    if (map) onReady(map);
+    if (!map) return;
+    onReady(map);
+    // Leaflet necesita recalcular tamaño si el contenedor era absolute/flex
+    const t = window.setTimeout(() => map.invalidateSize(), 80);
+    return () => window.clearTimeout(t);
   }, [map, onReady]);
   return null;
 }
@@ -239,10 +243,9 @@ function CoverageLeafletMap({
       style={{ height: '100%', width: '100%', zIndex: 0 }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+        attribution='&copy; <a href="https://www.esri.com/">Esri</a> &copy; OpenStreetMap'
         url={MAP_TILES}
-        subdomains="abcd"
-        maxZoom={20}
+        maxZoom={18}
       />
       <MapFlyTo city={activeCity} useMap={useMap} />
       <MapReady useMap={useMap} onReady={onMapReady} />
@@ -348,7 +351,7 @@ export function HomeCoverageMap() {
   return (
     <section
       id="cobertura-envios"
-      className="relative w-full scroll-mt-20 overflow-hidden bg-[#f3f5f8]"
+      className="relative w-full scroll-mt-20 overflow-hidden bg-[#0b2d60]"
     >
       {/* Header */}
       <div className="relative z-20 w-full bg-[#0b2d60]">
@@ -422,29 +425,30 @@ export function HomeCoverageMap() {
         </div>
       </div>
 
-      {/* Mapa + sidebar */}
-      <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 lg:px-10 lg:py-6 xl:px-12">
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_16px_48px_rgba(11,45,96,0.1)] lg:grid lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="relative h-[480px] w-full overflow-hidden sm:h-[560px] lg:h-[640px]">
+      {/* Mapa + sidebar — full bleed a los lados */}
+      <div className="grid w-full lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-stretch">
+          <div className="relative isolate min-h-[480px] w-full overflow-hidden sm:min-h-[560px] lg:min-h-[640px] lg:h-auto">
             {!bundle ? (
-              <div className="flex h-full w-full items-center justify-center bg-[#e8eef6] text-[#0b2d60]">
+              <div className="absolute inset-0 flex items-center justify-center bg-[#e8eef6] text-[#0b2d60]">
                 <div className="text-center">
                   <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-[3px] border-[#0b2d60]/15 border-t-[#F5C400]" />
                   <p className="text-sm font-semibold">Cargando mapa…</p>
                 </div>
               </div>
             ) : (
-              <CoverageLeafletMap
-                bundle={bundle}
-                activeId={activeId}
-                activeCity={activeCity}
-                onSelect={setActiveId}
-                onMapReady={setMapInstance}
-              />
+              <div className="absolute inset-0">
+                <CoverageLeafletMap
+                  bundle={bundle}
+                  activeId={activeId}
+                  activeCity={activeCity}
+                  onSelect={setActiveId}
+                  onMapReady={setMapInstance}
+                />
+              </div>
             )}
 
-            {/* Controles zoom */}
-            <div className="pointer-events-none absolute inset-0 z-10">
+            {/* Controles / chips — siempre dentro del mapa */}
+            <div className="pointer-events-none absolute inset-0 z-[400]">
               <div className="pointer-events-auto absolute bottom-4 left-4 flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(11,45,96,0.18)] sm:bottom-5 sm:left-5">
                 <button
                   type="button"
@@ -464,7 +468,6 @@ export function HomeCoverageMap() {
                 </button>
               </div>
 
-              {/* Chip ciudad activa */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeCity.id}
@@ -472,7 +475,7 @@ export function HomeCoverageMap() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.25 }}
-                  className="pointer-events-none absolute left-4 top-4 max-w-[240px] rounded-2xl border border-white/80 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:left-5 sm:top-5"
+                  className="pointer-events-none absolute left-4 top-4 max-w-[min(240px,calc(100%-2rem))] rounded-2xl border border-white/80 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:left-5 sm:top-5"
                 >
                   <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#F5C400]">
                     {activeCity.hub ? 'Hub central' : 'Destino activo'}
@@ -486,7 +489,7 @@ export function HomeCoverageMap() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="absolute bottom-4 right-4 hidden rounded-2xl border border-white/90 bg-white/95 px-3 py-2.5 shadow-lg backdrop-blur-sm sm:block">
+              <div className="absolute bottom-4 right-4 hidden max-w-[calc(100%-5.5rem)] rounded-2xl border border-white/90 bg-white/95 px-3 py-2.5 shadow-lg backdrop-blur-sm sm:block">
                 <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#0b2d60]/50">
                   Leyenda
                 </p>
@@ -508,7 +511,7 @@ export function HomeCoverageMap() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
-            className="flex h-[340px] flex-col border-t border-slate-200 bg-[#071a3a] lg:h-[640px] lg:border-l lg:border-t-0"
+            className="relative z-10 flex min-h-[340px] w-full flex-col border-t border-white/10 bg-[#071a3a] lg:min-h-[640px] lg:h-full lg:border-l lg:border-t-0"
           >
             <div className="shrink-0 border-b border-white/10 bg-[#0b2d60] px-4 py-4">
               <div className="flex items-center gap-2.5">
@@ -626,7 +629,6 @@ export function HomeCoverageMap() {
               </a>
             </div>
           </motion.aside>
-        </div>
       </div>
     </section>
   );

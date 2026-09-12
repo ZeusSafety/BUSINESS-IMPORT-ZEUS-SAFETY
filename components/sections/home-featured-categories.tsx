@@ -67,21 +67,34 @@ const cardVariants = {
   },
 };
 
+const AUTO_SCROLL_MS = 3200;
+
 export function HomeFeaturedCategories() {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const updateArrows = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    const overflow = el.scrollWidth > el.clientWidth + 2;
-    setHasOverflow(overflow);
-    setCanPrev(overflow && el.scrollLeft > 4);
-    setCanNext(
-      overflow && el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
-    );
+    setHasOverflow(el.scrollWidth > el.clientWidth + 2);
+  };
+
+  const scrollBy = (dir: -1 | 1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>('[data-home-feat-cat]');
+    const step = (card?.offsetWidth ?? 420) + 16;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (dir === 1 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 8) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+    if (dir === -1 && el.scrollLeft <= 4) {
+      el.scrollTo({ left: maxScroll, behavior: 'smooth' });
+      return;
+    }
+    el.scrollBy({ left: dir * step, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -99,13 +112,11 @@ export function HomeFeaturedCategories() {
     };
   }, []);
 
-  const scrollBy = (dir: -1 | 1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>('[data-home-feat-cat]');
-    const step = (card?.offsetWidth ?? 420) + 16;
-    el.scrollBy({ left: dir * step, behavior: 'smooth' });
-  };
+  useEffect(() => {
+    if (paused || !hasOverflow) return;
+    const id = window.setInterval(() => scrollBy(1), AUTO_SCROLL_MS);
+    return () => window.clearInterval(id);
+  }, [paused, hasOverflow]);
 
   return (
     <section className="bg-[#f3f5f8] py-10 sm:py-12 lg:pb-8 lg:pt-16">
@@ -122,7 +133,13 @@ export function HomeFeaturedCategories() {
           <div className="mx-auto mt-3 h-1 w-14 bg-[#F5C400]" />
         </div>
 
-        <div className="relative px-6 sm:px-8">
+        <div
+          className="relative px-6 sm:px-8"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocusCapture={() => setPaused(true)}
+          onBlurCapture={() => setPaused(false)}
+        >
           <motion.div
             ref={scrollerRef}
             variants={containerVariants}
@@ -171,9 +188,8 @@ export function HomeFeaturedCategories() {
               <button
                 type="button"
                 onClick={() => scrollBy(-1)}
-                disabled={!canPrev}
                 aria-label="Categorías anteriores"
-                className="zeus-arrow-btn absolute left-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#0b2d60] text-white hover:bg-[#103a7b] disabled:pointer-events-none disabled:opacity-35 sm:h-12 sm:w-12"
+                className="zeus-arrow-btn absolute left-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#0b2d60] text-white hover:bg-[#103a7b] sm:h-12 sm:w-12"
                 style={{ '--arrow-hover-x': '-3px' } as CSSProperties}
               >
                 <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />
@@ -181,9 +197,8 @@ export function HomeFeaturedCategories() {
               <button
                 type="button"
                 onClick={() => scrollBy(1)}
-                disabled={!canNext}
                 aria-label="Siguientes categorías"
-                className="zeus-arrow-btn absolute right-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#F5C400] text-[#0b2d60] hover:bg-[#ffd233] disabled:pointer-events-none disabled:opacity-35 sm:h-12 sm:w-12"
+                className="zeus-arrow-btn absolute right-0 top-1/2 z-30 h-11 w-11 -translate-y-1/2 rounded-full bg-[#F5C400] text-[#0b2d60] hover:bg-[#ffd233] sm:h-12 sm:w-12"
                 style={{ '--arrow-hover-x': '3px' } as CSSProperties}
               >
                 <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.5} />

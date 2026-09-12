@@ -547,3 +547,34 @@
   animation: none;
 }
 
+/* Anillo giratorio — stats Nosotros */
+@keyframes zeus-stat-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.zeus-stat-ring {
+  position: relative;
+}
+
+.zeus-stat-ring__border {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  border-top-color: #f5c400;
+  border-right-color: rgba(245, 196, 0, 0.35);
+  border-bottom-color: rgba(245, 196, 0, 0.15);
+  border-left-color: rgba(245, 196, 0, 0.55);
+  animation: zeus-stat-ring-spin 2.4s linear infinite;
+}
+
+.zeus-stat-ring::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 196, 0, 0.25);
+}
+

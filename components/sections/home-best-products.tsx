@@ -36,7 +36,7 @@ const FILTERS: {
 ];
 
 const VISIBLE = 5;
-const AUTO_MS = 5500;
+const AUTO_MS = 2800;
 
 function hasImage(url?: string) {
   return Boolean(url && url.trim());

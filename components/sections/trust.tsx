@@ -62,7 +62,7 @@ function LogoItem({
         src={src}
         alt={name}
         fill
-        className="object-contain brightness-0 invert transition-[filter,transform] duration-300 group-hover/logo:scale-110 group-hover/logo:brightness-100 group-hover/logo:invert-0"
+        className="object-contain transition-transform duration-300 group-hover/logo:scale-110"
         sizes="120px"
       />
     </div>
@@ -85,7 +85,7 @@ function OneByOneCarousel({
 
   return (
     <div className="w-full">
-      <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+      <p className="mb-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-[#0b2d60]/45">
         {label}
       </p>
       <div className="relative flex min-h-[80px] items-center justify-center gap-4 sm:gap-6 lg:gap-8">
@@ -149,23 +149,23 @@ export function TrustSection() {
           />
         </div>
 
-        {/* Contenido — derecha azul */}
-        <div className="relative flex w-full flex-col justify-center bg-[#0b2d60] px-6 py-12 sm:px-10 sm:py-14 lg:px-14 lg:py-16 xl:px-16">
+        {/* Contenido — derecha blanco */}
+        <div className="relative flex w-full flex-col justify-center bg-white px-6 py-12 sm:px-10 sm:py-14 lg:px-14 lg:py-16 xl:px-16">
           <div className="mx-auto w-full max-w-lg text-center">
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#F5C400]">
               Respaldo Zeus
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-[2rem] lg:leading-tight">
+            <h2 className="mt-2 text-2xl font-black tracking-tight text-[#0b2d60] sm:text-3xl lg:text-[2rem] lg:leading-tight">
               Contamos con <span className="text-[#F5C400]">Marcas</span>{' '}
               Reconocidas
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/65 sm:text-[15px]">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600 sm:text-[15px]">
               Trabajamos con marcas líderes en innovación para brindarte
               productos que cumplen con los más altos estándares de seguridad y
               rendimiento.
             </p>
 
-            <div className="mt-8 space-y-8 border-t border-white/15 pt-8">
+            <div className="mt-8 space-y-8 border-t border-slate-200 pt-8">
               <OneByOneCarousel items={brands} label="Marcas aliadas" />
               <OneByOneCarousel
                 items={certifications}

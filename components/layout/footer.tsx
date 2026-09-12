@@ -124,23 +124,26 @@ export function Footer() {
     <footer className="relative bg-[#f3f5f8] pt-16 text-slate-100 sm:pt-20">
       {/* Cinta CTA centrada en el borde gris / navy */}
       <div className="pointer-events-none absolute inset-x-0 top-16 z-20 flex -translate-y-1/2 justify-center px-4 sm:top-20">
-        <div
-          className="pointer-events-auto flex w-full max-w-[1120px] items-center justify-between gap-4 bg-[#F5C400] py-5 pl-6 pr-5 shadow-[0_14px_40px_rgba(11,45,96,0.3)] sm:gap-6 sm:py-6 sm:pl-8 sm:pr-6 lg:pl-10 lg:pr-7"
-          style={{
-            clipPath:
-              'polygon(0 0, calc(100% - 52px) 0, 100% 50%, calc(100% - 52px) 100%, 0 100%)',
-          }}
-        >
-          <FooterCtaTypewriter />
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="footer-wa-cta mr-6 inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[#25D366] px-5 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:mr-8 sm:h-12 sm:gap-2.5 sm:px-6 sm:text-xs"
-          >
-            <WhatsAppIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            Atención en línea
-          </a>
+        <div className="pointer-events-auto flex w-full max-w-[1120px] items-stretch bg-transparent [filter:drop-shadow(0_14px_28px_rgba(11,45,96,0.35))]">
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-4 rounded-l-full bg-[#F5C400] py-4 pl-6 pr-4 sm:gap-6 sm:py-5 sm:pl-8 sm:pr-5 lg:pl-10 lg:pr-6">
+            <FooterCtaTypewriter />
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="footer-wa-cta inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-[#25D366] px-5 text-[11px] font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#20BA5A] sm:h-12 sm:gap-2.5 sm:px-6 sm:text-xs"
+            >
+              <WhatsAppIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              Atención en línea
+            </a>
+          </div>
+          <span
+            aria-hidden
+            className="w-10 shrink-0 bg-[#F5C400] sm:w-12 lg:w-[52px]"
+            style={{
+              clipPath: 'polygon(0 0, 100% 50%, 0 100%)',
+            }}
+          />
         </div>
       </div>
 

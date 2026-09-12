@@ -43,7 +43,7 @@ const navLinks: NavLink[] = [
       { href: '/sobre-nosotros#empresa', label: 'Quiénes somos', icon: Users },
       { href: '/sobre-nosotros#nosotros', label: 'La empresa', icon: Building2 },
       { href: '/sobre-nosotros#confia', label: 'Confía en Zeus', icon: ShieldCheck },
-      { href: '/sobre-nosotros#cobertura-envios', label: 'Cobertura y envíos', icon: Plane },
+      { href: '/#cobertura-envios', label: 'Cobertura y envíos', icon: Plane },
       { href: '/sobre-nosotros#import-asia', label: 'Importación Asia', icon: Globe },
     ],
   },
