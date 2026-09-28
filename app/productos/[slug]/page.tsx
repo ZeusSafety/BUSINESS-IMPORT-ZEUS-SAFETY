@@ -27,6 +27,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useQuoteStore } from '@/store/quoteStore';
 import { ProductCard } from '@/components/products/product-card';
+import { UnitSelect } from '@/components/quote/unit-select';
+import { DEFAULT_QUOTE_UNIT, type QuoteUnit } from '@/lib/quote-units';
 import {
   ArrowLeft,
   ChevronRight,
@@ -126,6 +128,7 @@ export default function ProductDetailPage({ params }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [unit, setUnit] = useState<QuoteUnit>(DEFAULT_QUOTE_UNIT);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [openSection, setOpenSection] = useState<'info' | 'ship' | null>(null);
@@ -145,15 +148,15 @@ export default function ProductDetailPage({ params }: Props) {
 
   const handleAddToCart = useCallback(() => {
     if (!product) return;
-    addItem(product, quantity);
+    addItem(product, quantity, unit);
     setShowToast(true);
-  }, [addItem, product, quantity]);
+  }, [addItem, product, quantity, unit]);
 
   const handleQuoteNow = useCallback(() => {
     if (!product) return;
-    addItem(product, quantity);
+    addItem(product, quantity, unit);
     router.push('/cotizacion');
-  }, [addItem, product, quantity, router]);
+  }, [addItem, product, quantity, unit, router]);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -161,6 +164,7 @@ export default function ProductDetailPage({ params }: Props) {
         setLoading(true);
         setError(null);
         setQuantity(1);
+        setUnit(DEFAULT_QUOTE_UNIT);
         setOpenSection(null);
         setSelectedColor(null);
         setSelectedSize(null);
@@ -342,26 +346,34 @@ export default function ProductDetailPage({ params }: Props) {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="flex h-12 w-full max-w-[140px] shrink-0 items-center overflow-hidden rounded-full border border-slate-300">
-                <button
-                  type="button"
-                  aria-label="Disminuir cantidad"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-full w-11 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                >
-                  <Minus className="h-4 w-4" />
-                </button>
-                <span className="flex-1 text-center text-base font-bold text-[#0b2d60]">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  aria-label="Aumentar cantidad"
-                  onClick={() => setQuantity((q) => q + 1)}
-                  className="flex h-full w-11 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
-                >
-                  <Plus className="h-4 w-4" />
-                </button>
+              <div className="flex gap-3">
+                <div className="flex h-12 w-[140px] shrink-0 items-center overflow-hidden rounded-full border border-slate-300">
+                  <button
+                    type="button"
+                    aria-label="Disminuir cantidad"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="flex h-full w-11 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="flex-1 text-center text-base font-bold text-[#0b2d60]">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Aumentar cantidad"
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="flex h-full w-11 items-center justify-center text-[#0b2d60] hover:bg-slate-50"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                <UnitSelect
+                  size="lg"
+                  value={unit}
+                  onChange={setUnit}
+                  className="w-[150px] shrink-0"
+                />
               </div>
 
               <button

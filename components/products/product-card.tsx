@@ -8,6 +8,8 @@ import { Minus, Package, Plus, ShoppingCart, Truck, Store } from 'lucide-react';
 import { useQuoteStore } from '@/store/quoteStore';
 import { useCallback, useState } from 'react';
 import { Toast } from '@/components/ui/toast';
+import { UnitSelect } from '@/components/quote/unit-select';
+import { DEFAULT_QUOTE_UNIT, type QuoteUnit } from '@/lib/quote-units';
 
 interface ProductCardProps {
   product: Product | CatalogProduct;
@@ -16,6 +18,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useQuoteStore((state) => state.addItem);
   const [qty, setQty] = useState(1);
+  const [unit, setUnit] = useState<QuoteUnit>(DEFAULT_QUOTE_UNIT);
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [qtyFlash, setQtyFlash] = useState<'up' | 'down' | null>(null);
@@ -27,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToQuote = () => {
     try {
-      addItem(product, qty);
+      addItem(product, qty, unit);
       setIsAdding(true);
       setShowToast(true);
       window.setTimeout(() => setIsAdding(false), 1200);
@@ -115,61 +118,69 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
 
           <div className="mt-auto space-y-2 pt-3">
-            <div
-              className={`mx-auto flex h-9 w-full max-w-[140px] items-center overflow-hidden rounded-full border transition-all duration-300 ${
-                qtyFlash === 'up'
-                  ? 'scale-105 border-emerald-400 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.25)]'
-                  : qtyFlash === 'down'
-                    ? 'scale-105 border-red-400 bg-red-50 shadow-[0_0_0_3px_rgba(239,68,68,0.22)]'
-                    : 'border-slate-200 bg-white'
-              }`}
-            >
-              <button
-                type="button"
-                aria-label="Menos"
-                onClick={() => {
-                  setQty((q) => {
-                    if (q <= 1) return 1;
-                    setQtyFlash('down');
-                    window.setTimeout(() => setQtyFlash(null), 420);
-                    return q - 1;
-                  });
-                }}
-                className={`flex h-full w-9 items-center justify-center transition-colors ${
-                  qtyFlash === 'down'
-                    ? 'bg-red-500 text-white'
-                    : 'text-[#0b2d60] hover:bg-slate-50'
-                }`}
-              >
-                <Minus className="h-3.5 w-3.5" />
-              </button>
-              <span
-                className={`flex-1 text-center text-sm font-bold transition-colors duration-300 ${
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <div
+                className={`flex h-9 w-[100px] shrink-0 items-center overflow-hidden rounded-full border transition-all duration-300 ${
                   qtyFlash === 'up'
-                    ? 'text-emerald-700'
+                    ? 'scale-105 border-emerald-400 bg-emerald-50 shadow-[0_0_0_3px_rgba(16,185,129,0.25)]'
                     : qtyFlash === 'down'
-                      ? 'text-red-600'
-                      : 'text-[#0b2d60]'
+                      ? 'scale-105 border-red-400 bg-red-50 shadow-[0_0_0_3px_rgba(239,68,68,0.22)]'
+                      : 'border-slate-200 bg-white'
                 }`}
               >
-                {qty}
-              </span>
-              <button
-                type="button"
-                aria-label="Más"
-                onClick={() => {
-                  setQty((q) => q + 1);
-                  setQtyFlash('up');
-                  window.setTimeout(() => setQtyFlash(null), 420);
-                }}
-                className={`flex h-full w-9 items-center justify-center transition-colors ${
-                  qtyFlash === 'up'
-                    ? 'bg-emerald-500 text-white'
-                    : 'text-[#0b2d60] hover:bg-slate-50'
-                }`}
-              >
-                <Plus className="h-3.5 w-3.5" />
-              </button>
+                <button
+                  type="button"
+                  aria-label="Menos"
+                  onClick={() => {
+                    setQty((q) => {
+                      if (q <= 1) return 1;
+                      setQtyFlash('down');
+                      window.setTimeout(() => setQtyFlash(null), 420);
+                      return q - 1;
+                    });
+                  }}
+                  className={`flex h-full w-9 items-center justify-center transition-colors ${
+                    qtyFlash === 'down'
+                      ? 'bg-red-500 text-white'
+                      : 'text-[#0b2d60] hover:bg-slate-50'
+                  }`}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span
+                  className={`flex-1 text-center text-sm font-bold transition-colors duration-300 ${
+                    qtyFlash === 'up'
+                      ? 'text-emerald-700'
+                      : qtyFlash === 'down'
+                        ? 'text-red-600'
+                        : 'text-[#0b2d60]'
+                  }`}
+                >
+                  {qty}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Más"
+                  onClick={() => {
+                    setQty((q) => q + 1);
+                    setQtyFlash('up');
+                    window.setTimeout(() => setQtyFlash(null), 420);
+                  }}
+                  className={`flex h-full w-9 items-center justify-center transition-colors ${
+                    qtyFlash === 'up'
+                      ? 'bg-emerald-500 text-white'
+                      : 'text-[#0b2d60] hover:bg-slate-50'
+                  }`}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <UnitSelect
+                size="sm"
+                value={unit}
+                onChange={setUnit}
+                className="min-w-[104px] max-w-[124px] flex-1"
+              />
             </div>
             <button
               type="button"

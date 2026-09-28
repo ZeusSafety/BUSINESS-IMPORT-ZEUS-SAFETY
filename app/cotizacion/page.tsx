@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Building2,
-  Calculator,
+  ClipboardList,
   FileText,
   Mail,
   Package,
@@ -19,9 +19,12 @@ import { useQuoteStore } from '@/store/quoteStore';
 import { Input } from '@/components/ui/input';
 import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
-
-const WA_NUMBER = '51916532849';
-const QUOTE_EMAIL = 'zeus.safety2020@gmail.com';
+import {
+  QUOTE_EMAIL,
+  buildQuoteMessage,
+  emailQuoteUrls,
+  whatsappQuoteUrl,
+} from '@/lib/quote-message';
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -40,8 +43,12 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
+const digitsOnly = (value: string) => value.replace(/\D/g, '');
+
+type FieldKey = 'name' | 'company' | 'ruc' | 'phone' | 'email';
+
 export default function QuotePage() {
-  const { items, updateQuantity, removeItem, clear, totalItems } =
+  const { items, updateQuantity, updateUnit, removeItem, clear } =
     useQuoteStore();
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
@@ -49,101 +56,82 @@ export default function QuotePage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [touched, setTouched] = useState(false);
-  const [totalFlash, setTotalFlash] = useState<'up' | 'down' | null>(null);
-  const prevTotalRef = useRef<number | null>(null);
-
-  const total = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0,
-  );
+  const [emailSent, setEmailSent] = useState(false);
+  const [countFlash, setCountFlash] = useState<'up' | 'down' | null>(null);
+  const prevCountRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (prevTotalRef.current === null) {
-      prevTotalRef.current = total;
+    const count = items.length;
+    if (prevCountRef.current === null) {
+      prevCountRef.current = count;
       return;
     }
-    if (total === prevTotalRef.current) return;
-    const dir = total > prevTotalRef.current ? 'up' : 'down';
-    prevTotalRef.current = total;
-    setTotalFlash(dir);
-    const t = window.setTimeout(() => setTotalFlash(null), 500);
+    if (count === prevCountRef.current) return;
+    const dir = count > prevCountRef.current ? 'up' : 'down';
+    prevCountRef.current = count;
+    setCountFlash(dir);
+    const t = window.setTimeout(() => setCountFlash(null), 500);
     return () => window.clearTimeout(t);
-  }, [total]);
+  }, [items.length]);
 
-  const formValid = useMemo(() => {
-    return (
-      name.trim().length > 1 &&
-      company.trim().length > 1 &&
-      ruc.trim().length >= 8 &&
-      phone.trim().length >= 6 &&
-      isValidEmail(email)
-    );
+  const errors = useMemo(() => {
+    const rucDigits = digitsOnly(ruc).length;
+    const result: Partial<Record<FieldKey, string>> = {};
+    if (name.trim().length < 2) result.name = 'Ingresa tu nombre y apellido';
+    if (company.trim().length < 2) result.company = 'Ingresa el nombre de tu empresa';
+    if (rucDigits !== 8 && rucDigits !== 11)
+      result.ruc = 'DNI de 8 dígitos o RUC de 11 dígitos';
+    if (digitsOnly(phone).length < 7) result.phone = 'Ingresa un teléfono válido';
+    if (!isValidEmail(email)) result.email = 'Ingresa un correo válido (ej. correo@empresa.com)';
+    return result;
   }, [name, company, ruc, phone, email]);
 
+  const formValid = Object.keys(errors).length === 0;
   const canSubmit = items.length > 0 && formValid;
 
-  const handleQuantityChange = (id: string, change: number) => {
-    const item = items.find((i) => i.id === id);
+  const handleQuantityChange = (lineId: string, change: number) => {
+    const item = items.find((i) => i.lineId === lineId);
     if (item) {
-      updateQuantity(id, Math.max(1, item.quantity + change));
+      updateQuantity(lineId, Math.max(1, item.quantity + change));
     }
   };
 
-  const buildMessage = () => {
-    const lines = items.map(
-      (item, i) =>
-        `${i + 1}. ${item.name} x${item.quantity} (S/ ${item.price.toFixed(2)} c/u)`,
-    );
-    return [
-      'Hola Zeus Safety 👋',
-      'Solicito cotización con estos datos:',
-      '',
-      `Nombre: ${name.trim()}`,
-      `Empresa: ${company.trim()}`,
-      `RUC: ${ruc.trim()}`,
-      `Teléfono: ${phone.trim()}`,
-      `Correo: ${email.trim()}`,
-      '',
-      'Productos:',
-      ...lines,
-      '',
-      `Total referencial: S/ ${total.toFixed(2)}`,
-    ].join('\n');
+  const buildMessage = () =>
+    buildQuoteMessage(items, { name, company, ruc, phone, email });
+
+  const validate = () => {
+    setTouched(true);
+    return canSubmit;
   };
+
+  const emailSubject = `Cotización Zeus Safety — ${company.trim() || name.trim()}`;
 
   const openWhatsApp = () => {
-    if (!canSubmit) {
-      setTouched(true);
-      return;
-    }
-    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(buildMessage())}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    if (!validate()) return;
+    window.open(whatsappQuoteUrl(buildMessage()), '_blank', 'noopener,noreferrer');
   };
 
   const openEmail = () => {
-    if (!canSubmit) {
-      setTouched(true);
-      return;
-    }
-    const subject = encodeURIComponent(
-      `Cotización Zeus Safety — ${company.trim() || name.trim()}`,
-    );
-    const body = encodeURIComponent(buildMessage());
-    window.location.href = `mailto:${QUOTE_EMAIL}?subject=${subject}&body=${body}`;
+    if (!validate()) return;
+    window.location.href = emailQuoteUrls(emailSubject, buildMessage()).mailto;
+    setEmailSent(true);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setTouched(true);
-    if (!canSubmit) return;
     openEmail();
   };
 
   const fieldClass =
     'h-11 rounded-xl border-slate-200 px-3.5 text-sm text-[#0c1427] transition-colors focus:border-[#0b2d60] focus-visible:ring-0 focus-visible:shadow-[0_0_0_3px_rgba(11,45,96,0.08)]';
 
-  const fieldError = (ok: boolean) =>
-    touched && !ok ? 'border-red-400 focus:border-red-500' : '';
+  const fieldError = (key: FieldKey) =>
+    touched && errors[key] ? 'border-red-400 focus:border-red-500' : '';
+
+  const errorText = (key: FieldKey) =>
+    touched && errors[key] ? (
+      <p className="mt-1 text-[11px] font-medium text-red-600">{errors[key]}</p>
+    ) : null;
 
   return (
     <div className="min-h-screen bg-[#f3f5f8]">
@@ -187,11 +175,6 @@ export default function QuotePage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-[#f4f7fb] px-3 py-1.5 text-xs font-semibold text-[#0b2d60]">
                       <Package className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                      <span className="font-black">{totalItems}</span>
-                      {totalItems === 1 ? 'unidad' : 'unidades'}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-[#f4f7fb] px-3 py-1.5 text-xs font-semibold text-[#0b2d60]">
-                      <ShoppingCart className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
                       <span className="font-black">{items.length}</span>
                       {items.length === 1 ? 'producto' : 'productos'}
                     </span>
@@ -209,12 +192,13 @@ export default function QuotePage() {
                 <div className="grid gap-4">
                   {items.map((item) => (
                     <QuoteLineItem
-                      key={item.id}
+                      key={item.lineId}
                       item={item}
                       variant="page"
-                      onDecrease={() => handleQuantityChange(item.id, -1)}
-                      onIncrease={() => handleQuantityChange(item.id, 1)}
-                      onRemove={() => removeItem(item.id)}
+                      onDecrease={() => handleQuantityChange(item.lineId, -1)}
+                      onIncrease={() => handleQuantityChange(item.lineId, 1)}
+                      onUnitChange={(unit) => updateUnit(item.lineId, unit)}
+                      onRemove={() => removeItem(item.lineId)}
                     />
                   ))}
                 </div>
@@ -268,8 +252,9 @@ export default function QuotePage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ej. Ana Pérez"
-                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(name.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError('name')}`}
                   />
+                  {errorText('name')}
                 </div>
                 <div>
                   <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
@@ -282,23 +267,27 @@ export default function QuotePage() {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Razón social"
-                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(company.trim().length > 1)}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError('company')}`}
                   />
+                  {errorText('company')}
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
                       <FileText className="h-3.5 w-3.5 text-[#F5C400]" strokeWidth={2.25} />
-                      RUC / ID
+                      RUC / DNI
                       <span className="text-[#F5C400]">*</span>
                     </label>
                     <Input
                       required
+                      inputMode="numeric"
+                      maxLength={11}
                       value={ruc}
-                      onChange={(e) => setRuc(e.target.value)}
-                      placeholder="12345678901"
-                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError(ruc.trim().length >= 8)}`}
+                      onChange={(e) => setRuc(digitsOnly(e.target.value))}
+                      placeholder="20123456789"
+                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError('ruc')}`}
                     />
+                    {errorText('ruc')}
                   </div>
                   <div>
                     <label className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0b2d60]/70">
@@ -308,11 +297,14 @@ export default function QuotePage() {
                     </label>
                     <Input
                       required
+                      type="tel"
+                      inputMode="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+51 999 999 999"
-                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError(phone.trim().length >= 6)}`}
+                      className={`${fieldClass} bg-[#f3f5f8] ${fieldError('phone')}`}
                     />
+                    {errorText('phone')}
                   </div>
                 </div>
                 <div>
@@ -327,15 +319,16 @@ export default function QuotePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="correo@empresa.com"
-                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError(isValidEmail(email))}`}
+                    className={`${fieldClass} bg-[#f3f5f8] ${fieldError('email')}`}
                   />
+                  {errorText('email')}
                 </div>
 
                 <div
                   className={`relative overflow-hidden rounded-2xl border transition-all duration-300 ${
-                    totalFlash === 'up'
+                    countFlash === 'up'
                       ? 'border-emerald-300 bg-emerald-50'
-                      : totalFlash === 'down'
+                      : countFlash === 'down'
                         ? 'border-red-300 bg-red-50'
                         : 'border-[#0b2d60]/10 bg-[#f3f5f8]'
                   }`}
@@ -343,9 +336,9 @@ export default function QuotePage() {
                   <span
                     aria-hidden
                     className={`absolute left-0 top-0 h-full w-1.5 transition-colors duration-300 ${
-                      totalFlash === 'up'
+                      countFlash === 'up'
                         ? 'bg-emerald-500'
-                        : totalFlash === 'down'
+                        : countFlash === 'down'
                           ? 'bg-red-500'
                           : 'bg-[#F5C400]'
                     }`}
@@ -354,42 +347,42 @@ export default function QuotePage() {
                   <div className="flex items-center gap-3 px-4 py-3.5 pl-5">
                     <span
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
-                        totalFlash === 'up'
+                        countFlash === 'up'
                           ? 'bg-emerald-500 text-white'
-                          : totalFlash === 'down'
+                          : countFlash === 'down'
                             ? 'bg-red-500 text-white'
                             : 'bg-[#0b2d60] text-[#F5C400]'
                       }`}
                     >
-                      <Calculator className="h-5 w-5" strokeWidth={2.25} />
+                      <ClipboardList className="h-5 w-5" strokeWidth={2.25} />
                     </span>
 
                     <div className="min-w-0 flex-1">
                       <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                        Total referencial
+                        Productos a cotizar
                       </p>
                       <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
-                        Monto estimado según tu pedido
+                        Te enviaremos precios y disponibilidad
                       </p>
                     </div>
 
                     <p
                       className={`shrink-0 text-2xl font-black tabular-nums transition-all duration-300 ${
-                        totalFlash === 'up'
+                        countFlash === 'up'
                           ? 'scale-105 text-emerald-600'
-                          : totalFlash === 'down'
+                          : countFlash === 'down'
                             ? 'scale-105 text-red-600'
                             : 'scale-100 text-[#0b2d60]'
                       }`}
                     >
-                      S/ {total.toFixed(2)}
+                      {items.length}
                     </p>
                   </div>
                 </div>
 
                 {touched && !formValid && (
                   <p className="text-center text-xs font-medium text-red-600">
-                    Completa todos los campos requeridos para continuar
+                    Revisa los campos marcados en rojo para continuar
                   </p>
                 )}
                 {touched && formValid && items.length === 0 && (
@@ -400,8 +393,9 @@ export default function QuotePage() {
 
                 <button
                   type="submit"
-                  disabled={!canSubmit}
-                  className="group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-[0_6px_18px_rgba(245,196,0,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
+                  className={`group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F5C400] text-xs font-bold uppercase tracking-wide text-[#0b2d60] transition-all hover:shadow-[0_6px_18px_rgba(245,196,0,0.35)] ${
+                    canSubmit ? '' : 'opacity-70'
+                  }`}
                 >
                   <span
                     aria-hidden
@@ -414,8 +408,9 @@ export default function QuotePage() {
                 <button
                   type="button"
                   onClick={openWhatsApp}
-                  disabled={!canSubmit}
-                  className="group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-all hover:shadow-[0_6px_18px_rgba(37,211,102,0.35)] disabled:cursor-not-allowed disabled:opacity-45"
+                  className={`group/btn relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#25D366] text-xs font-bold uppercase tracking-wide text-white transition-all hover:shadow-[0_6px_18px_rgba(37,211,102,0.35)] ${
+                    canSubmit ? '' : 'opacity-70'
+                  }`}
                 >
                   <span
                     aria-hidden
@@ -424,6 +419,22 @@ export default function QuotePage() {
                   <WhatsAppIcon className="relative z-10 h-4 w-4" />
                   <span className="relative z-10">Cotizar por WhatsApp</span>
                 </button>
+
+                {emailSent && canSubmit && (
+                  <p className="rounded-xl bg-[#f3f5f8] px-3 py-2.5 text-center text-[11px] leading-relaxed text-slate-600">
+                    ¿No se abrió tu aplicación de correo?{' '}
+                    <a
+                      href={emailQuoteUrls(emailSubject, buildMessage()).gmail}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-bold text-[#0b2d60] underline underline-offset-2"
+                    >
+                      Enviar desde Gmail
+                    </a>{' '}
+                    o escríbenos a{' '}
+                    <span className="font-semibold text-[#0b2d60]">{QUOTE_EMAIL}</span>
+                  </p>
+                )}
 
                 <Link
                   href="/productos"

@@ -115,7 +115,7 @@ export function HomeShippingMarquee({ variant = 'default' }: Props) {
       aria-label="Beneficios Zeus Safety"
       className={`group/marquee topbar-wrapper overflow-hidden bg-[#0b2d60] ${
         isTopbar
-          ? 'border-b border-[#F5C400]/20 py-2'
+          ? 'box-border flex h-9 items-center border-b border-[#F5C400]/20'
           : 'border-y border-[#071a3a] py-3 sm:py-3.5'
       }`}
     >

@@ -8,8 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { QuoteLineItem } from '@/components/quote/quote-line-item';
 import { QuoteEmptyState } from '@/components/quote/quote-empty-state';
 import { useQuoteStore } from '@/store/quoteStore';
-
-const WA_NUMBER = '51916532849';
+import { buildQuoteMessage, whatsappQuoteUrl } from '@/lib/quote-message';
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -24,27 +23,10 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-function buildWhatsAppQuoteMessage(
-  items: { name: string; quantity: number; price: number }[],
-) {
-  const lines = items.map(
-    (item, i) =>
-      `${i + 1}. ${item.name} x${item.quantity} (S/ ${item.price.toFixed(2)})`,
-  );
-  return [
-    'Hola Zeus Safety 👋',
-    'Quiero cotizar estos productos:',
-    '',
-    ...lines,
-    '',
-    '¿Me pueden ayudar con disponibilidad y entrega?',
-  ].join('\n');
-}
-
 export function QuoteCartDrawer() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { items, totalItems, updateQuantity, removeItem } = useQuoteStore();
+  const { items, updateQuantity, updateUnit, removeItem } = useQuoteStore();
 
   useEffect(() => {
     setMounted(true);
@@ -66,9 +48,11 @@ export function QuoteCartDrawer() {
 
   const openWhatsAppQuote = () => {
     if (items.length === 0) return;
-    const text = buildWhatsAppQuoteMessage(items);
-    const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(
+      whatsappQuoteUrl(buildQuoteMessage(items)),
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   if (!mounted) return null;
@@ -84,7 +68,7 @@ export function QuoteCartDrawer() {
       >
         <ShoppingCart className="h-6 w-6" strokeWidth={2.4} />
         <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#0b2d60] px-1.5 text-[11px] font-black text-white shadow-md">
-          {totalItems > 99 ? '99+' : totalItems}
+          {items.length > 99 ? '99+' : items.length}
         </span>
       </button>
 
@@ -122,8 +106,8 @@ export function QuoteCartDrawer() {
                         Carrito cotizador
                       </h2>
                       <p className="text-xs text-white/70">
-                        {totalItems}{' '}
-                        {totalItems === 1 ? 'unidad' : 'unidades'}
+                        {items.length}{' '}
+                        {items.length === 1 ? 'producto' : 'productos'}
                       </p>
                     </div>
                   </div>
@@ -148,17 +132,18 @@ export function QuoteCartDrawer() {
                 ) : (
                   <ul className="space-y-3">
                     {items.map((item) => (
-                      <li key={item.id}>
+                      <li key={item.lineId}>
                         <QuoteLineItem
                           item={item}
                           variant="drawer"
                           onDecrease={() =>
-                            updateQuantity(item.id, item.quantity - 1)
+                            updateQuantity(item.lineId, item.quantity - 1)
                           }
                           onIncrease={() =>
-                            updateQuantity(item.id, item.quantity + 1)
+                            updateQuantity(item.lineId, item.quantity + 1)
                           }
-                          onRemove={() => removeItem(item.id)}
+                          onUnitChange={(unit) => updateUnit(item.lineId, unit)}
+                          onRemove={() => removeItem(item.lineId)}
                         />
                       </li>
                     ))}

@@ -23,7 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 type NavChild = { href: string; label: string; icon: LucideIcon };
@@ -40,8 +40,8 @@ const navLinks: NavLink[] = [
     href: '/sobre-nosotros',
     label: 'Nosotros',
     children: [
-      { href: '/sobre-nosotros#empresa', label: 'Quiénes somos', icon: Users },
-      { href: '/sobre-nosotros#nosotros', label: 'La empresa', icon: Building2 },
+      { href: '/sobre-nosotros', label: 'Quiénes somos', icon: Users },
+      { href: '/sobre-nosotros#empresa', label: 'Misión y visión', icon: Building2 },
       { href: '/sobre-nosotros#confia', label: 'Confía en Zeus', icon: ShieldCheck },
       { href: '/#cobertura-envios', label: 'Cobertura y envíos', icon: Plane },
       { href: '/sobre-nosotros#import-asia', label: 'Importación Asia', icon: Globe },
@@ -81,8 +81,9 @@ function NavDropdown({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <button
-        type="button"
+      <Link
+        href={link.href}
+        onClick={() => setOpen(false)}
         className={`${navItemClass} ${
           active ? 'text-[#F5C400]' : 'text-[#0c1427] hover:text-[#F5C400]'
         }`}
@@ -100,7 +101,7 @@ function NavDropdown({
             active || open ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
           }`}
         />
-      </button>
+      </Link>
 
       <div
         className={`absolute left-0 top-full z-50 min-w-[240px] transition-all duration-200 ${
@@ -114,9 +115,10 @@ function NavDropdown({
           {link.children.map((child) => {
             const Icon = child.icon;
             return (
-              <Link
+                <Link
                 key={child.href}
                 href={child.href}
+                onClick={() => setOpen(false)}
                 className="group/item relative flex items-center gap-2.5 overflow-hidden border-b border-slate-100 px-5 py-3.5 text-[11px] font-bold uppercase tracking-wide text-[#0b2d60] last:border-b-0"
               >
                 {/* Barrido amarillo izquierda → derecha */}
@@ -145,13 +147,8 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [hideTopBar, setHideTopBar] = useState(false);
   const pathname = usePathname();
-
-  const total = useMemo(
-    () => items.reduce((acc, item) => acc + item.quantity, 0),
-    [items],
-  );
+  const total = items.length;
 
   const isActive = (href: string, children?: NavChild[]) => {
     if (href === '/') return pathname === '/';
@@ -170,30 +167,20 @@ export function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 8);
-      setHideTopBar(y > 60);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 36);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
+    /* -top-9 = alto de la barra azul: sale con el scroll sin cambiar la altura del header */
     <header
-      className={`sticky top-0 z-50 w-full bg-white transition-shadow duration-300 ${
+      className={`sticky -top-9 z-50 w-full bg-white transition-shadow duration-300 ${
         scrolled ? 'shadow-[0_8px_28px_rgba(11,45,96,0.1)]' : 'shadow-none'
       }`}
     >
-      {/* Top bar */}
-      <div
-        className={`transition-all duration-300 ${
-          hideTopBar ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-12 opacity-100'
-        }`}
-      >
-        <NavbarTopBar />
-      </div>
+      <NavbarTopBar />
 
       {/* Header versión anterior: logo + menú + iconos + CTA */}
       <div className="border-b border-slate-200/80 bg-white">

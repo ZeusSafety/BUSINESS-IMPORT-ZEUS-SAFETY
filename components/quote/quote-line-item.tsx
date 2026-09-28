@@ -5,12 +5,15 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Minus, Package, Plus, Trash2 } from 'lucide-react';
 import type { QuoteItem } from '@/store/quoteStore';
+import type { QuoteUnit } from '@/lib/quote-units';
+import { UnitSelect } from '@/components/quote/unit-select';
 
 type QuoteLineItemProps = {
   item: QuoteItem;
   variant?: 'page' | 'drawer';
   onDecrease: () => void;
   onIncrease: () => void;
+  onUnitChange: (unit: QuoteUnit) => void;
   onRemove: () => void;
 };
 
@@ -19,11 +22,11 @@ export function QuoteLineItem({
   variant = 'page',
   onDecrease,
   onIncrease,
+  onUnitChange,
   onRemove,
 }: QuoteLineItemProps) {
   const compact = variant === 'drawer';
   const imageSrc = item.image?.trim() || null;
-  const lineTotal = item.price * item.quantity;
   const [qtyFlash, setQtyFlash] = useState<'up' | 'down' | null>(null);
 
   const flash = (dir: 'up' | 'down') => {
@@ -140,24 +143,14 @@ export function QuoteLineItem({
               </button>
             </div>
 
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2">
               {qtyControl}
-              <div className="text-right">
-                <p
-                  className={`text-sm font-black transition-colors duration-300 ${
-                    qtyFlash === 'up'
-                      ? 'text-emerald-600'
-                      : qtyFlash === 'down'
-                        ? 'text-red-600'
-                        : 'text-[#0b2d60]'
-                  }`}
-                >
-                  S/ {lineTotal.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-slate-500">
-                  S/ {item.price.toFixed(2)} c/u
-                </p>
-              </div>
+              <UnitSelect
+                size="sm"
+                value={item.unit}
+                onChange={onUnitChange}
+                className="w-[124px]"
+              />
             </div>
           </div>
         </div>
@@ -166,15 +159,15 @@ export function QuoteLineItem({
   }
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:shadow-[0_14px_36px_rgba(11,45,96,0.12)] sm:px-5">
+    <article className="@container group relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F5C400]/50 hover:shadow-[0_14px_36px_rgba(11,45,96,0.12)] @3xl:px-5">
       <span
         aria-hidden
         className="absolute left-0 top-0 h-full w-1 bg-[#F5C400] opacity-70 transition-opacity group-hover:opacity-100"
       />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
-          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-[#f4f7fb] transition-transform duration-300 group-hover:scale-[1.02] sm:h-24 sm:w-24">
+      <div className="flex flex-col gap-3 @3xl:flex-row @3xl:items-center @3xl:gap-4">
+        <div className="flex min-w-0 flex-1 items-start gap-3 @3xl:items-center @3xl:gap-4">
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-[#f4f7fb] transition-transform duration-300 group-hover:scale-[1.02] @3xl:h-24 @3xl:w-24">
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -192,7 +185,7 @@ export function QuoteLineItem({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2 sm:block">
+            <div className="flex items-start justify-between gap-2 @3xl:block">
               <div className="min-w-0">
                 <Link
                   href={`/productos?categoria=${encodeURIComponent(item.category)}`}
@@ -202,7 +195,7 @@ export function QuoteLineItem({
                 </Link>
                 <Link
                   href={`/productos/${item.slug}`}
-                  className="line-clamp-2 block text-sm font-bold leading-snug text-[#0b2d60] transition-colors group-hover:text-[#0a2552] sm:text-[15px]"
+                  className="line-clamp-2 block text-sm font-bold leading-snug text-[#0b2d60] transition-colors group-hover:text-[#0a2552] @3xl:text-[15px]"
                 >
                   {item.name}
                 </Link>
@@ -210,7 +203,7 @@ export function QuoteLineItem({
               <button
                 type="button"
                 onClick={onRemove}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 sm:hidden"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 @3xl:hidden"
                 aria-label={`Eliminar ${item.name}`}
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -219,44 +212,31 @@ export function QuoteLineItem({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <div className="grid min-w-0 flex-1 grid-cols-3 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-100 bg-[#f8fafc] sm:flex-none sm:min-w-[320px] lg:min-w-[360px]">
-            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-2.5 sm:px-3">
+        <div className="flex shrink-0 items-center gap-2 @3xl:gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-2 divide-x divide-slate-200 overflow-hidden rounded-xl border border-slate-100 bg-[#f8fafc] @3xl:flex-none @3xl:min-w-[340px]">
+            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-2.5 @3xl:px-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
                 Cantidad
               </p>
               {qtyControl}
             </div>
-            <div className="flex flex-col items-center justify-center gap-1 px-2 py-2.5 sm:px-3">
+            <div className="flex flex-col items-center justify-center gap-1.5 px-2 py-2.5 @3xl:px-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                Precio u.
+                Unidad de medida
               </p>
-              <p className="text-sm font-bold text-[#0b2d60]">
-                S/ {item.price.toFixed(2)}
-              </p>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-1 px-2 py-2.5 sm:px-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                Subtotal
-              </p>
-              <p
-                className={`text-base font-black transition-all duration-300 ${
-                  qtyFlash === 'up'
-                    ? 'scale-110 text-emerald-600'
-                    : qtyFlash === 'down'
-                      ? 'scale-110 text-red-600'
-                      : 'scale-100 text-[#0b2d60]'
-                }`}
-              >
-                S/ {lineTotal.toFixed(2)}
-              </p>
+              <UnitSelect
+                size="sm"
+                value={item.unit}
+                onChange={onUnitChange}
+                className="w-[124px]"
+              />
             </div>
           </div>
 
           <button
             type="button"
             onClick={onRemove}
-            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 sm:flex"
+            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 @3xl:flex"
             aria-label={`Eliminar ${item.name}`}
           >
             <Trash2 className="h-3.5 w-3.5" />
