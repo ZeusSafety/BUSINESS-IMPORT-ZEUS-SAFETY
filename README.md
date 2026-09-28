@@ -4,7 +4,7 @@ Aplicación web moderna para la venta de Equipos de Protección Personal (EPP) y
 
 ## 🚀 Tecnologías
 
-- **Next.js 14** (App Router)
+- **Next.js 16** (App Router)
 - **Tailwind CSS**
 - **Framer Motion**
 - **Zustand**
@@ -12,14 +12,17 @@ Aplicación web moderna para la venta de Equipos de Protección Personal (EPP) y
 
 ## 📦 Instalación
 
+Este proyecto usa **pnpm** (no npm ni yarn).
+
 ```bash
-npm install
+corepack enable
+pnpm install
 ```
 
 ## 🛠️ Desarrollo
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
@@ -28,15 +31,15 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 1. Crea una cuenta en Vercel y vincula tu repositorio de GitHub.
 2. Importa el proyecto desde el dashboard de Vercel.
-3. Vercel detectará automáticamente que es un proyecto **Next.js** y usará:
-   - Comando de build: `npm run build`
+3. Vercel detectará automáticamente que es un proyecto **Next.js** con `pnpm-lock.yaml` y usará:
+   - Comando de instalación: `pnpm install`
+   - Comando de build: `pnpm build`
    - Directorio de salida: `.vercel/output` (manejado internamente por Vercel)
 4. Cada push a la rama configurada (por defecto `main`) generará un nuevo despliegue.
 
 Para probar localmente la build de producción:
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
-

@@ -2,6 +2,10 @@
   "name": "zeus-safety-next",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "npm": "please-use-pnpm"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,9 +22,9 @@
     "framer-motion": "^12.23.26",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.560.0",
-    "next": "16.0.8",
-    "react": "19.2.1",
-    "react-dom": "19.2.1",
+    "next": "16.0.11",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "react-leaflet": "^5.0.0",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.9"
@@ -31,8 +35,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.8",
+    "eslint-config-next": "16.0.11",
     "tailwindcss": "^4",
     "typescript": "5.9.3"
-  }
+  },
+  "packageManager": "pnpm@11.24.0"
 }

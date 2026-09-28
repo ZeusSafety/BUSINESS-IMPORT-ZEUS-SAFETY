@@ -10,6 +10,12 @@
 !.yarn/releases
 !.yarn/versions
 
+package-lock.json
+yarn.lock
+
+# editor: un tasks.json con runOn:folderOpen ejecuta código al abrir la carpeta
+.vscode/
+
 # testing
 /coverage
 
